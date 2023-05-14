@@ -1,0 +1,10 @@
+::if newline;;		<div class="form-group">
+::/if;;			<label for="::id;;" class="col-lg-::indent;; control-label">::label;;</label>
+			<div class="col-lg-::width;;">
+				<select class="form-control" id="::id;;" name="::id;;"::autofocus;;::if disabled;; disabled::/if;;>
+					{{each a in ::items;;}}
+						<option{{if a.selected}} selected{{/if}}>{{a.text}}</option>
+					{{/each}}
+				</select>
+			</div>::if endline;;
+		</div>::/if;;

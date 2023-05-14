@@ -1,0 +1,19 @@
+repositories {
+	maven { url 'https://www.javaxt.com/maven' }
+}
+
+dependencies {
+	api 'com.sparkjava:spark-core:2.9.4'
+	implementation 'org.slf4j:slf4j-nop:2.0.6'
+	api 'org.tinylog:tinylog:1.3.6'
+    api 'com.github.template72:template72:1.0.0'
+	api 'com.google.guava:guava:31.1-jre'
+	api 'com.google.code.gson:gson:2.10.1'
+	api 'commons-lang:commons-lang:2.6' // TODO auf Version 3 gehen
+	api 'org.quartz-scheduler:quartz:2.3.2'
+	implementation 'javaxt:javaxt-core:1.7.9' // https://www.javaxt.com/downloads/
+	implementation 'org.simplejavamail:simple-java-mail:6.0.5'
+	api 'org.apache.httpcomponents:httpclient:4.5.5'
+	
+	testImplementation 'junit:junit:4.12'
+}

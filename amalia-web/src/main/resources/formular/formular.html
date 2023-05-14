@@ -1,0 +1,16 @@
+<form action="::action;;" class="form-horizontal" method="post">
+	<fieldset>
+::version;;
+::each f in fields;;
+::f.html;;
+::/each;;
+::if hasButtons;;
+		<div class="form-group">
+			<div class="col-lg-offset-::indent;; col-lg-5">
+				<button type="submit" class="btn btn-primary br">Speichern</button>
+				<a href="::hrefCancel;;" class="btn btn-default">Abbruch</a>
+			</div>
+		</div>
+	</fieldset>
+::/if;;
+</form>

@@ -1,0 +1,5 @@
+dependencies {
+	api project(':amalia-web')
+	
+	api 'dev.morphia.morphia:morphia-core:2.3.0'
+}
