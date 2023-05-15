@@ -23,7 +23,7 @@ import github.soltaufintel.amalia.web.templating.TemplatesInitializer;
 public class WebAppBuilder {
 	private final String appVersion;
 	private final List<Initializer> initializers = new ArrayList<>();
-	private LoggingInitializer logging = new LoggingInitializer(Level.OFF);
+	private LoggingInitializer logging = new LoggingInitializer(Level.INFO);
 	private AppConfig config = new AppConfig();
 	private IAuth auth = new NoOpAuth();
 	private final List<Routes> routes = new ArrayList<>();
