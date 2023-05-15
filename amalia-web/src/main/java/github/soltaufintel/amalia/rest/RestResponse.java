@@ -1,6 +1,7 @@
 package github.soltaufintel.amalia.rest;
 
 import java.io.IOException;
+import java.lang.reflect.Type;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -29,5 +30,14 @@ public class RestResponse {
 	
 	public <T> T fromJson(Class<T> cls) {
 		return new Gson().fromJson(response(), cls);
+	}
+
+	/**
+	 * @param <T> any type
+	 * @param type example: <code>java.lang.reflect.Type type = new TypeToken&lt;ArrayList&lt;TheItemClass&gt;&gt;() {}.getType();</code>
+	 * @return object
+	 */
+	public <T> T fromJson(Type type) {
+		return new Gson().fromJson(response(), type);
 	}
 }
