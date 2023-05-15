@@ -133,10 +133,7 @@ public class REST {
 		if (handleErrors) {
 			handleError(response);
 		}
-		if (client == null) {
-			closeClient(httpClient);
-		}
-		return new RestResponse(response);
+		return new RestResponse(response, client == null ? httpClient : null);
 	}
 	
 	protected void initRequest(HttpRequestBase request) {
@@ -147,13 +144,6 @@ public class REST {
 
 	protected CloseableHttpClient createClient() {
 		return HttpClients.custom().build();
-	}
-
-	protected void closeClient(CloseableHttpClient httpClient) {
-		try {
-			httpClient.close();
-		} catch (IOException quiet) {
-		}
 	}
 
 	protected void handleError(CloseableHttpResponse response) {
