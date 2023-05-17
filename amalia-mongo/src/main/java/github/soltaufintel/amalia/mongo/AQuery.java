@@ -165,7 +165,7 @@ public class AQuery<E> {
 		return query.count();
 	}
 
-	public AQuery<E> or(Filter ...filters) {
+	public AQuery<E> or(Filter... filters) {
 		return q(Filters.or(filters));
 	}
 	
@@ -173,6 +173,7 @@ public class AQuery<E> {
 		return new AQuery<E>(query.filter(filters), options);
 	}
 
+	// TODO Morphia-interne Klasse nicht rausgeben
 	public DeleteResult delete() {
 		return query.delete();
 	}

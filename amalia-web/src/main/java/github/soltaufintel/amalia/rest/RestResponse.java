@@ -10,6 +10,7 @@ import org.apache.http.util.EntityUtils;
 
 import com.google.gson.Gson;
 
+// TODO REST umbauen. Wenn mich die response gar nicht interessiert, muss ich close() aufrufen. Das ist doof.
 public class RestResponse {
 	private final CloseableHttpResponse response;
 	private CloseableHttpClient httpClient;

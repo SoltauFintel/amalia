@@ -26,6 +26,7 @@ public abstract class AbstractDAO<E> {
 		}
 	}
 	
+	// TODO Morphia-interne Klasse nicht rausgeben
 	public DeleteResult delete(E entity) {
 		return ds().delete(entity);
 	}
