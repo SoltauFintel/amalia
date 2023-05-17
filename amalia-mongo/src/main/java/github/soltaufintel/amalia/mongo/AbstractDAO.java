@@ -3,6 +3,7 @@ package github.soltaufintel.amalia.mongo;
 import java.util.Iterator;
 import java.util.List;
 
+import org.bson.Document;
 import org.bson.types.ObjectId;
 
 import com.mongodb.DuplicateKeyException;
@@ -83,6 +84,17 @@ public abstract class AbstractDAO<E> {
 
 	public long size() {
 		return createQuery().count();
+	}
+
+	public long estimatedSize() {
+		return ds().getCollection(getEntityClass()).estimatedDocumentCount();
+	}
+	
+	/**
+	 * @return size of whole database in Bytes
+	 */
+	public Double getDatabaseSize() {
+		return ds().getDatabase().runCommand(new Document("dbStats", 1)).getDouble("storageSize");
 	}
 
 	protected AQuery<E> eq(String field, Object val) {
