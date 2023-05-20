@@ -51,6 +51,16 @@ public abstract class RouteDefinitions implements Routes {
 		engine.put(path, getRouteHandler(routeClass));
 	}
 
+	/**
+	 * get()+post()
+	 * @param path path
+	 * @param pageClass route class
+	 */
+	public void form(String path, Class<? extends Route<?>> pageClass) {
+		get(path, pageClass);
+		post(path, pageClass);
+	}
+
 	public void delete(String path, Class<? extends Route<?>> routeClass) {
 		engine.delete(path, getRouteHandler(routeClass));
 	}

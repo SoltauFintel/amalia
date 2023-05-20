@@ -22,6 +22,7 @@ public class KnownUser implements IKnownUser {
     private String userId;
     private java.util.Date createdAt;
 
+    @Override
     public String getId() {
         return id;
     }

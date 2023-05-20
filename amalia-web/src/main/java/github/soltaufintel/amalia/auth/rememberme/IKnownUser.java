@@ -5,6 +5,8 @@ package github.soltaufintel.amalia.auth.rememberme;
  */
 public interface IKnownUser {
 
+	String getId();
+	
     String getUser();
 
     String getUserId();
