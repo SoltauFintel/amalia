@@ -11,7 +11,15 @@ import java.util.stream.Collectors;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
-public abstract class AbstractFileBasedKnownUserDAO implements IKnownUserDAO {
+public class FileBasedKnownUserDAO implements IKnownUserDAO {
+	private final String filename;
+
+	/**
+	 * @param filename for known users JSON file (e.g. "<app-name>/known-users.json") saved in user home folder
+	 */
+	public FileBasedKnownUserDAO(String filename) {
+		this.filename = filename;
+	}
 
 	@Override
 	public IKnownUser get(String id) {
@@ -63,8 +71,6 @@ public abstract class AbstractFileBasedKnownUserDAO implements IKnownUserDAO {
 	}
 	
 	protected File file() {
-		return new File(System.getProperty("user.home"), getFilename());
+		return new File(System.getProperty("user.home"), filename);
 	}
-	
-	protected abstract String getFilename();
 }

@@ -1,5 +1,7 @@
 package github.soltaufintel.amalia.auth.rememberme;
 
+import java.util.UUID;
+
 import org.pmw.tinylog.Logger;
 
 import github.soltaufintel.amalia.auth.webcontext.WebContext;
@@ -50,5 +52,16 @@ public abstract class AbstractRememberMe implements RememberMe {
 
 	protected abstract IKnownUserDAO dao();
 
-	protected abstract IKnownUser createKnownUser(String user, String userId);
+	/**
+	 * @param user -
+	 * @param userId -
+	 * @return default implementation returns SimpleKnownUser
+	 */
+	protected IKnownUser createKnownUser(String user, String userId) {
+		SimpleKnownUser knownUser = new SimpleKnownUser();
+		knownUser.setId(UUID.randomUUID().toString());
+		knownUser.setUser(user);
+		knownUser.setUserId(userId);
+		return knownUser;
+	}
 }
