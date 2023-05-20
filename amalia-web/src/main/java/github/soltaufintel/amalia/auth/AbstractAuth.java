@@ -54,7 +54,7 @@ public abstract class AbstractAuth implements IAuth {
         }
 	}
 	
-	protected RememberMe getRememberMe() {
+	public RememberMe getRememberMe() {
 		return rememberMe;
 	}
 }

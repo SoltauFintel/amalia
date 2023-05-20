@@ -92,19 +92,7 @@ public class AuthService implements IAuthService {
 			String encryptedPassword = hashPassword(user.getSalt() + password);
 			if (encryptedPassword.equals(user.getPassword())) {
 				if (user.getLockState().equals(UserLockState.UNLOCKED)) {
-					ctx.session().setUserId(user.getId());
-					ctx.session().setLogin(user.getLogin());
-					ctx.session().setLoggedIn(true);
-					rememberMe.rememberMe(true, ctx, user.getLogin(), user.getId());
-
-					String path = ctx.session().getGoBackPath();
-					ctx.session().setGoBackPath(null);
-					if (path == null || path.isBlank() || path.equals(ctx.path())) {
-						ctx.redirect("/");
-					} else {
-						Logger.info("[Login] redirect to " + path);
-						ctx.redirect(path);
-					}
+					login(user.getId(), user.getLogin(), ctx, rememberMe);
 					return true;
 				} else {
 					Logger.info("Login " + user.getLogin() + " not possible because lock state is "
@@ -114,11 +102,31 @@ public class AuthService implements IAuthService {
 		}
 		return false;
 	}
+	
+	public static void login(String id, String login, WebContext ctx, RememberMe rememberMe) {
+		ctx.session().setUserId(id);
+		ctx.session().setLogin(login);
+		ctx.session().setLoggedIn(true);
+		rememberMe.rememberMe(true, ctx, login, id);
+
+		String path = ctx.session().getGoBackPath();
+		ctx.session().setGoBackPath(null);
+		if (path == null || path.isBlank() || path.equals(ctx.path())) {
+			ctx.redirect("/");
+		} else {
+			Logger.info("[Login] redirect to " + path);
+			ctx.redirect(path);
+		}
+	}
 
 	@Override
 	public void logout() {
-		final String login = getLogin();
-		rememberMe.forget(ctx, getUserId());
+		logout(ctx, rememberMe);
+	}
+	
+	public static void logout(WebContext ctx, RememberMe rememberMe) {
+		final String login = ctx.session().getLogin();
+		rememberMe.forget(ctx, ctx.session().getUserId());
 		ctx.session().setLoggedIn(false);
 		ctx.session().setUserId(null);
 		ctx.session().setLogin(null);
