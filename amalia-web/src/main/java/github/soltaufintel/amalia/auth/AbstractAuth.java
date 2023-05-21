@@ -14,7 +14,6 @@ public abstract class AbstractAuth implements IAuth {
 	private final IAuthRoutes routes;
 	
 	public AbstractAuth(RememberMe rememberMe, IAuthRoutes routes) {
-		super();
 		this.rememberMe = rememberMe;
 		this.routes = routes;
 	}

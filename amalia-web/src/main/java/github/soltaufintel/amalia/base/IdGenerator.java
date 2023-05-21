@@ -1,4 +1,4 @@
-package github.soltaufintel.amalia.mongo;
+package github.soltaufintel.amalia.base;
 
 import java.util.UUID;
 import java.util.zip.CRC32;
@@ -11,6 +11,10 @@ public class IdGenerator {
 	public static String genId() {
     	return UUID.randomUUID().toString().replace("-", "");
     }
+	
+	public static String createId6() {
+		return code6(genId());
+	}
 
 	public static String code6(String str) {
 		CRC32 crc = new CRC32();

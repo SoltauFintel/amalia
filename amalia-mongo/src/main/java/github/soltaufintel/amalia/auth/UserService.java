@@ -5,8 +5,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
+import github.soltaufintel.amalia.base.IdGenerator;
 import github.soltaufintel.amalia.mongo.AbstractDAO;
-import github.soltaufintel.amalia.mongo.IdGenerator;
 
 public class UserService implements IUserService {
 	private final UserDAO dao = new UserDAO();

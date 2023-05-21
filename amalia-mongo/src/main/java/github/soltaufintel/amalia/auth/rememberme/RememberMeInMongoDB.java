@@ -1,6 +1,6 @@
 package github.soltaufintel.amalia.auth.rememberme;
 
-import github.soltaufintel.amalia.mongo.IdGenerator;
+import github.soltaufintel.amalia.base.IdGenerator;
 
 public class RememberMeInMongoDB extends AbstractRememberMe {
 

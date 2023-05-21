@@ -12,6 +12,7 @@ import com.mongodb.client.result.DeleteResult;
 import dev.morphia.Datastore;
 import dev.morphia.query.Query;
 import dev.morphia.query.filters.Filters;
+import github.soltaufintel.amalia.base.IdGenerator;
 
 public abstract class AbstractDAO<E> {
 	public static Database database;
@@ -126,7 +127,7 @@ public abstract class AbstractDAO<E> {
 	}
 
 	public static String genId() {
-		return IdGenerator.code6(IdGenerator.genId());
+		return IdGenerator.createId6();
 	}
 }
 
