@@ -39,7 +39,7 @@ public class WebContext {
 	}
 	
 	public static void setCookieName(AppConfig config) {
-		String appName = new AppConfig().get("app.name");
+		String appName = config.get("app.name");
 		cookieName = "KNOWNUSERID" + appName;
 	}
 
