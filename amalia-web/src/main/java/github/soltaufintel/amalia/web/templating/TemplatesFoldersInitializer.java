@@ -43,7 +43,7 @@ public class TemplatesFoldersInitializer implements Initializer {
 			String resource;
 			while ((resource = br.readLine()) != null) {
 				if (resource.endsWith(extension)) {
-					filenames.add(resource);
+					filenames.add(resource.substring(0, resource.length() - extension.length()));
 				}
 			}
 		} catch (IOException e) {
