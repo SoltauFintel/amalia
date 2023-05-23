@@ -21,7 +21,6 @@ public class Engine {
 	public Engine(int port, String staticFilesFolder, boolean isDevelopment) {
 		Spark.port(port);
 		
-		Spark.staticFileLocation("staticweb"); // built-in
         Spark.staticFileLocation(staticFilesFolder);
         if (isDevelopment) {
             Spark.externalStaticFileLocation("src/main/resources/" + staticFilesFolder);
