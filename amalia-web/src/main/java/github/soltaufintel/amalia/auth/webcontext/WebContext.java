@@ -50,4 +50,12 @@ public class WebContext {
 	public void redirect(String url) {
 		ctx.redirect(url);
 	}
+	
+	public Request req() {
+		return ctx.req;
+	}
+	
+	public Response res() {
+		return ctx.res;
+	}
 }
