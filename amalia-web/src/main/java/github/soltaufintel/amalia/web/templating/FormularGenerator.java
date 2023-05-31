@@ -52,6 +52,22 @@ public class FormularGenerator extends AbstractFormularGenerator {
 		}
 		return this;
 	}
+	
+	public FormularGenerator save(String save) {
+	    this.save = save;
+	    return this;
+	}
+    
+    public FormularGenerator cancel(String cancel) {
+        this.cancel = cancel;
+        return this;
+    }
+
+    public FormularGenerator submit(String submit1, String submit2) {
+        this.submit1 = submit1;
+        this.submit2 = submit2;
+        return this;
+    }
 
 	@Override
 	public String getHTML(String action, String hrefCancel) {

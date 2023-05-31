@@ -17,6 +17,10 @@ public abstract class AbstractFormularGenerator {
 	protected String version = "";
 	protected boolean newline = false;
 	protected boolean buttons = true;
+	protected String save = "Speichern";
+	protected String cancel = "Abbruch";
+	protected String submit1 = "";
+	protected String submit2 = "";
 	
 	static {
 		TemplateCompiler compiler = new TemplateCompilerBuilder()
@@ -79,6 +83,10 @@ public abstract class AbstractFormularGenerator {
 		model.put("hasButtons", buttons);
 		model.put("action", action);
 		model.put("hrefCancel", hrefCancel);
+		model.put("save", save);
+		model.put("cancel", cancel);
+		model.put("submit1", submit1);
+		model.put("submit2", submit2);
 		return model;
 	}
 }

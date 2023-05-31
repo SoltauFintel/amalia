@@ -46,6 +46,22 @@ public class ColumnFormularGenerator extends AbstractFormularGenerator {
 		}
 		return this;
 	}
+    
+    public ColumnFormularGenerator save(String save) {
+        this.save = save;
+        return this;
+    }
+    
+    public ColumnFormularGenerator cancel(String cancel) {
+        this.cancel = cancel;
+        return this;
+    }
+
+    public ColumnFormularGenerator submit(String submit1, String submit2) {
+        this.submit1 = submit1;
+        this.submit2 = submit2;
+        return this;
+    }
 
 	@Override
 	public String getHTML(String action, String hrefCancel) {
