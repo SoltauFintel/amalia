@@ -117,7 +117,15 @@ public class REST {
 	}
 
 	protected RestResponse request(HttpEntityEnclosingRequestBase request, Object object) {
-		return request(request, new Gson().toJson(object), "application/json");
+		return request(request, new Gson().toJson(object), getJsonContentType());
+	}
+	
+	/**
+	 * You may want to set the content type to "application/json; charset=cp1252".
+	 * @return JSON content type
+	 */
+	protected String getJsonContentType() {
+	    return "application/json";
 	}
 	
 	protected RestResponse doRequest(HttpRequestBase request) {

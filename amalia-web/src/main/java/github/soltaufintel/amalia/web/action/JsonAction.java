@@ -9,7 +9,11 @@ public abstract class JsonAction<O> extends Route<String> {
 	
 	@Override
 	protected final String render() {
-		ctx.res.type("application/json");
+		ctx.res.type(getJsonContentType());
 		return new Gson().toJson(result);
+	}
+	
+	protected String getJsonContentType() {
+	    return "application/json";
 	}
 }
