@@ -11,10 +11,24 @@ public abstract class Action extends Route<String> {
 		return "";
 	}
 	
+	/**
+	 * Shortcut to Escaper
+	 * @param text any text
+	 * @return HTML escaped text
+	 */
 	protected String esc(String text) {
 		return Escaper.esc(text);
     }
     
+	/**
+     * Shortcut to Escaper
+	 * @param text any text
+	 * @return url encoded text
+	 */
+    protected String u(String text) {
+        return Escaper.urlEncode(text, "");
+    }
+
     public String getUserId() {
     	return auth().getUserId();
     }
