@@ -53,6 +53,14 @@ public abstract class Page extends Action {
         return model.list(name);
     }
 
+    /**
+     * single-select combobox
+     * @param listName -
+     * @param items -
+     * @param selected -
+     * @param withEmptyItem -
+     * @param model -
+     */
     public void combobox(String listName, List<String> items, String selected, boolean withEmptyItem, DataMap model) {
 		DataList list = model.list(listName);
 		if (withEmptyItem) {
@@ -66,7 +74,30 @@ public abstract class Page extends Action {
 			map.put("selected", text.equals(selected));
 		});
 	}
-    
+
+    /**
+     * multi-select combobox
+     * @param listName -
+     * @param items -
+     * @param selectedItems -
+     * @param withEmptyItem -
+     * @param model -
+     */
+    public void combobox(String listName, List<String> items, List<String> selectedItems,
+            boolean withEmptyItem, DataMap model) {
+        DataList list = model.list(listName);
+        if (withEmptyItem) {
+            DataMap map1 = list.add();
+            map1.put("text", "");
+            map1.put("selected", selectedItems == null || selectedItems.isEmpty() || selectedItems.contains(""));
+        }
+        items.forEach(text -> {
+            DataMap map = list.add();
+            map.put("text", Escaper.esc(text));
+            map.put("selected", selectedItems.contains(text));
+        });
+    }
+
     public boolean isPOST() {
     	return ctx.isPOST();
     }
