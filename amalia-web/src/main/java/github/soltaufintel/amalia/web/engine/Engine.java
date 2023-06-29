@@ -11,6 +11,9 @@ import spark.Request;
 import spark.Response;
 import spark.Route;
 import spark.Spark;
+import spark.embeddedserver.EmbeddedServerFactory;
+import spark.embeddedserver.EmbeddedServers;
+import spark.embeddedserver.jetty.EmbeddedJettyFactory;
 
 /**
  * Javalin Kapselung.
@@ -18,7 +21,14 @@ import spark.Spark;
  */
 public class Engine {
 	
-	public Engine(int port, String staticFilesFolder, boolean isDevelopment) {
+	public Engine(int port, String staticFilesFolder, String appName, boolean isDevelopment) {
+        if (appName != null) {
+            EmbeddedServerFactory fac = new EmbeddedJettyFactory().withCookieName("SESSIONID_" + appName);
+            System.out.println("Session Id Cookie Name: " + "SESSIONID_" + appName);
+            EmbeddedServers.add(EmbeddedServers.Identifiers.JETTY, fac);
+        }
+else             System.out.println("Session Id Cookie Name: (default)");
+	    
 		Spark.port(port);
 		
         Spark.staticFileLocation(staticFilesFolder);

@@ -57,6 +57,7 @@ public class WebApp {
 		return new Engine(
 				config.getPort(),
 				config.get("static-files", "web"),
+				config.get("app.name"),
 				config.isDevelopment());
 	}
 
