@@ -28,6 +28,12 @@ public class FormularGenerator extends AbstractFormularGenerator {
 		return this;
 	}
 
+   public FormularGenerator textarea(String id, String label, int width, int rows, boolean autofocus, boolean withValue) {
+        textarea(id, label, width, rows, autofocus, withValue, newline);
+        newline = false;
+        return this;
+    }
+
 	public FormularGenerator combobox(String id, String label, int width, String items) {
 		return combobox(id, label, width, items, false);
 	}

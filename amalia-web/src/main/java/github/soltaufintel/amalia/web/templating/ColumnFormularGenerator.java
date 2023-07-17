@@ -29,6 +29,11 @@ public class ColumnFormularGenerator extends AbstractFormularGenerator {
 		return this;
 	}
 
+    public ColumnFormularGenerator textarea(String id, String label, int width, int rows, boolean autofocus, boolean withValue) {
+        textarea(id, label, width, rows, autofocus, withValue, false);
+        return this;
+    }
+
 	public ColumnFormularGenerator combobox(String id, String label, int width, String items) {
 		return combobox(id, label, width, items, false);
 	}

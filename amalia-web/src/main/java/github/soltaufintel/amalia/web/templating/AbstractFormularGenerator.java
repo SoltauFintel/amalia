@@ -65,6 +65,15 @@ public abstract class AbstractFormularGenerator {
 		fields.add(model);
 	}
 
+   protected void textarea(String id, String label, int width, int rows, boolean autofocus, boolean withValue, boolean newline) {
+        DataMap model = new DataMap();
+        standard("textarea", id, label, width, autofocus, model);
+        model.put("newline", newline);
+        model.put("withValue", withValue);
+        model.putInt("rows", rows);
+        fields.add(model);
+    }
+
 	protected void combobox(String id, String label, int width,
 			String items, boolean autofocus, boolean newline) {
 		DataMap model = new DataMap();
