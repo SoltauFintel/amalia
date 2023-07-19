@@ -31,7 +31,7 @@ public class MailSender {
 					.withSubject(mail.getSubject())
 					.withPlainText(mail.getBody())
 					.buildEmail());
-			Logger.info("Mail sent to: " + sendTo);
+			Logger.info("Mail sent to: " + sendTo + " \"" + mail.getSubject() + "\"");
 		} else {
 			to = mail.getToEmailaddress();
 			subject = mail.getSubject();
