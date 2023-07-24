@@ -1,5 +1,6 @@
 package github.soltaufintel.amalia.rest;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 
@@ -13,6 +14,8 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.protocol.HttpClientContext;
+import org.apache.http.entity.ContentType;
+import org.apache.http.entity.FileEntity;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
@@ -100,6 +103,18 @@ public class REST {
 	public RestResponse delete() {
 		return doRequest(new HttpDelete(uri));
 	}
+	
+	/**
+	 * Upload a .zip file.
+	 * content type: APPLICATION_OCTET_STREAM,
+	 * verb: POST
+	 * @param zipFile -
+	 */
+    public void uploadZip(File zipFile) {
+        HttpPost request = new HttpPost(uri);
+        request.setEntity(new FileEntity(zipFile, ContentType.APPLICATION_OCTET_STREAM));
+        doRequest(request).close();
+    }
 	
 	protected RestResponse request(HttpEntityEnclosingRequestBase request, String str) {
 		return request(request, str, null);
