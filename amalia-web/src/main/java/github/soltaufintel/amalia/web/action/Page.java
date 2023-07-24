@@ -10,10 +10,11 @@ import com.github.template72.data.DataMap;
 public abstract class Page extends Action {
     public static CompiledTemplates templates;
     protected final DataMap model = new DataMap();
+    protected boolean render = true;
 
     @Override
     protected String render() {
-    	if (isPOST()) {
+    	if (!render || isPOST()) {
     		return "";
     	} else {
     		return templates.render(getPage(), model);
