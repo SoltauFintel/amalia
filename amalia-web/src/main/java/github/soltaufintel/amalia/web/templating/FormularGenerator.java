@@ -28,7 +28,13 @@ public class FormularGenerator extends AbstractFormularGenerator {
 		return this;
 	}
 
-   public FormularGenerator textarea(String id, String label, int width, int rows, boolean autofocus, boolean withValue) {
+    public FormularGenerator checkbox(String id, String label, String label2, int width, boolean autofocus, boolean checked) {
+        checkbox(id, label, label2, width, autofocus, checked, newline);
+        newline = false;
+        return this;
+    }
+
+    public FormularGenerator textarea(String id, String label, int width, int rows, boolean autofocus, boolean withValue) {
         textarea(id, label, width, rows, autofocus, withValue, newline);
         newline = false;
         return this;
