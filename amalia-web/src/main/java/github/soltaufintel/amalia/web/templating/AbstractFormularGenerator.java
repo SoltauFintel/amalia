@@ -65,12 +65,11 @@ public abstract class AbstractFormularGenerator {
         fields.add(model);
     }
 
-    protected void checkbox(String id, String label, String label2, int width, boolean autofocus, boolean checked, boolean newline) {
+    protected void checkbox(String id, String label, int width, boolean autofocus, boolean checked, boolean newline) {
         DataMap model = new DataMap();
         standard("checkbox", id, label, width, autofocus, model);
         model.put("newline", newline);
         model.put("checked", checked);
-        model.put("label2", label2);
         fields.add(model);
     }
 

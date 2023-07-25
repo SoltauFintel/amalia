@@ -1,6 +1,5 @@
 ::if newline;;		<div class="form-group">
-::/if;;			<label for="::id;;" class="col-lg-::indent;; control-label">::label;;</label>
-			<div class="col-lg-::width;;">
-				<input class="form-control" type="checkbox" id="::id;;" name="::id;;"::if checked;; checked::/if;;::autofocus;;::if disabled;; disabled::/if;;>::label2;;
-			</div>::if endline;;
+::/if;;			<div class="col-lg-::width;; col-lg-::indent;;"><div class="checkbox"><label>
+				<input type="checkbox" id="::id;;" name="::id;;"::if checked;; checked::/if;;::autofocus;;::if disabled;; disabled::/if;;> ::label;;
+			</label></div></div>::if endline;;
 		</div>::/if;;

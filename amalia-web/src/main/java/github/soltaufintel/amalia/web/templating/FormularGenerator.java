@@ -28,8 +28,8 @@ public class FormularGenerator extends AbstractFormularGenerator {
 		return this;
 	}
 
-    public FormularGenerator checkbox(String id, String label, String label2, int width, boolean autofocus, boolean checked) {
-        checkbox(id, label, label2, width, autofocus, checked, newline);
+    public FormularGenerator checkbox(String id, String label, int width, boolean autofocus, boolean checked) {
+        checkbox(id, label, width, autofocus, checked, newline);
         newline = false;
         return this;
     }
