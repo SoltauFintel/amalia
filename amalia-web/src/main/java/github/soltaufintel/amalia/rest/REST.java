@@ -21,6 +21,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.eclipse.jetty.http.HttpStatus;
+import org.pmw.tinylog.Logger;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
@@ -173,12 +174,16 @@ public class REST {
 		final int status = response.getStatusLine().getStatusCode();
 		if (status == HttpStatus.INTERNAL_SERVER_ERROR_500) {
 			try {
-				ErrorMessage msg = new Gson().fromJson(EntityUtils.toString(response.getEntity()), ErrorMessage.class);
-				throw new RestException(msg, status);
+			    String entityStr = EntityUtils.toString(response.getEntity());
+			    Logger.debug("REST error response: " + entityStr);
+                ErrorMessage msg = new Gson().fromJson(entityStr, ErrorMessage.class);
+                if (msg != null) {
+                    throw new RestException(msg, status);
+                }
 			} catch (JsonSyntaxException | IOException fallthru) {
 			}
 		}
-		if (status < 200 || status > 299) { // Status 2xx is okay.
+		if (status < HttpStatus.OK_200 || status > 299) { // Status 2xx is okay.
 			throw new RestStatusException(status);
 		}
 	}
