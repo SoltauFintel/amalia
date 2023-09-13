@@ -58,7 +58,7 @@ public abstract class Page extends Action {
      * single-select combobox
      * @param listName -
      * @param items -
-     * @param selected -
+     * @param selected can be null or empty
      * @param withEmptyItem -
      * @param model -
      */
@@ -75,6 +75,30 @@ public abstract class Page extends Action {
 			map.put("selected", text.equals(selected));
 		});
 	}
+
+    /**
+     * single-select combobox
+     * @param listName -
+     * @param items ID+Label list
+     * @param selected ID, can be null or empty
+     * @param withEmptyItem -
+     * @param model -
+     */
+    public void combobox_idAndLabel(String listName, List<IdAndLabel> items, String selected, boolean withEmptyItem, DataMap model) {
+        DataList list = model.list(listName);
+        if (withEmptyItem) {
+            DataMap map1 = list.add();
+            map1.put("id", "");
+            map1.put("text", "");
+            map1.put("selected", selected == null || selected.isBlank());
+        }
+        items.forEach(item -> {
+            DataMap map = list.add();
+            map.put("id", Escaper.esc(item.getId()));
+            map.put("text", Escaper.esc(item.getLabel()));
+            map.put("selected", item.getId().equals(selected));
+        });
+    }
 
     /**
      * multi-select combobox
@@ -96,6 +120,31 @@ public abstract class Page extends Action {
             DataMap map = list.add();
             map.put("text", Escaper.esc(text));
             map.put("selected", selectedItems.contains(text));
+        });
+    }
+
+    /**
+     * multi-select combobox
+     * @param listName -
+     * @param items ID+Label list
+     * @param selectedItems ID list, list can be null
+     * @param withEmptyItem -
+     * @param model -
+     */
+    public void combobox_idAndLabel(String listName, List<IdAndLabel> items, List<String> selectedItems,
+            boolean withEmptyItem, DataMap model) {
+        DataList list = model.list(listName);
+        if (withEmptyItem) {
+            DataMap map1 = list.add();
+            map1.put("id", "");
+            map1.put("text", "");
+            map1.put("selected", selectedItems == null || selectedItems.isEmpty() || selectedItems.contains(""));
+        }
+        items.forEach(item -> {
+            DataMap map = list.add();
+            map.put("id", Escaper.esc(item.getId()));
+            map.put("text", Escaper.esc(item.getLabel()));
+            map.put("selected", selectedItems.contains(item.getId()));
         });
     }
 

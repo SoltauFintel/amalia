@@ -44,12 +44,27 @@ public class FormularGenerator extends AbstractFormularGenerator {
 		return combobox(id, label, width, items, false);
 	}
 	
-	public FormularGenerator combobox(String id, String label, int width,
-			String items, boolean autofocus) {
+	public FormularGenerator combobox(String id, String label, int width, String items, boolean autofocus) {
 		combobox(id, label, width, items, autofocus, newline);
 		newline = false;
 		return this;
 	}
+
+    public FormularGenerator combobox_idAndLabel(String id, String label, int width, String items, boolean autofocus) {
+        return listbox_idAndLabel(id, label, width, items, autofocus, 0);
+    }
+
+    public FormularGenerator listbox(String id, String label, int width, String items, boolean autofocus, int size) {
+        listbox(id, label, width, items, autofocus, newline, size, false);
+        newline = false;
+        return this;
+    }
+
+    public FormularGenerator listbox_idAndLabel(String id, String label, int width, String items, boolean autofocus, int size) {
+        listbox(id, label, width, items, autofocus, newline, size, true);
+        newline = false;
+        return this;
+    }
 
 	public FormularGenerator newline() {
 		endline();

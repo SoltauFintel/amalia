@@ -87,8 +87,22 @@ public abstract class AbstractFormularGenerator {
 		standard("combobox", id, label, width, autofocus, model);
 		model.put("newline", newline);
 		model.put("items", items);
+        model.put("listbox", false);
+        model.putInt("size", 0);
+        model.put("idAndLabel", false);
 		fields.add(model);
 	}
+
+    protected void listbox(String id, String label, int width, String items, boolean autofocus, boolean newline, int size, boolean idAndLabel) {
+        DataMap model = new DataMap();
+        standard("combobox", id, label, width, autofocus, model);
+        model.put("newline", newline);
+        model.put("items", items);
+        model.put("listbox", size > 0);
+        model.putInt("size", size);
+        model.put("idAndLabel", idAndLabel);
+        fields.add(model);
+    }
 
 	public abstract String getHTML(String action, String hrefCancel);
 	
