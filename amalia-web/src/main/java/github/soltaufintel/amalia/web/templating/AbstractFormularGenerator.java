@@ -10,8 +10,6 @@ import com.github.template72.data.DataMap;
 import com.github.template72.loader.ResourceTemplateLoader;
 import com.github.template72.loader.TemplateFileCache;
 
-import github.soltaufintel.amalia.base.IdGenerator;
-
 public abstract class AbstractFormularGenerator {
     public static String STARTSEP = "{{";
     public static String ENDSEP = "}}";
@@ -118,9 +116,8 @@ public abstract class AbstractFormularGenerator {
 	 * @return HTML
 	 */
     public String getHTML(DataMap model, String actionlink, String cancellink) {
-        String key = IdGenerator.createId6(); // So that a variable with the same name is not accidentally overwritten.
-        String a = "actionlink" + key;
-        String c = "cancellink" + key;
+        String a = "formularActionLink";
+        String c = "formularCancelLink";
         model.put(a, actionlink);
         model.put(c, cancellink);
         return getHTML(STARTSEP + a + ENDSEP, STARTSEP + c + ENDSEP);
