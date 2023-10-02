@@ -66,6 +66,16 @@ public class FormularGenerator extends AbstractFormularGenerator {
         return this;
     }
 
+    public FormularGenerator empty(int width) {
+        _empty(width);
+        return this;
+    }
+
+    public FormularGenerator spacer(int width) {
+        _spacer(width);
+        return this;
+    }
+
 	public FormularGenerator newline() {
 		endline();
 		newline = true;

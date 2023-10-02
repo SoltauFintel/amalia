@@ -62,6 +62,21 @@ public class ColumnFormularGenerator extends AbstractFormularGenerator {
         return this;
     }
 
+    public ColumnFormularGenerator empty(int width) {
+        _empty(width);
+        return this;
+    }
+
+    public ColumnFormularGenerator spacer(int width) {
+        _spacer(width);
+        return this;
+    }
+    
+    public ColumnFormularGenerator newline() {
+        fields.get(fields.size() - 1).put("forceNewline", "1");
+        return this;
+    }
+
 	public ColumnFormularGenerator withoutButtons() {
 		buttons = false;
 		for (DataMap model : fields) {

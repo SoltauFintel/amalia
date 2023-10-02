@@ -57,6 +57,7 @@ public abstract class AbstractFormularGenerator {
 		model.put("autofocus", autofocus ? " autofocus" : "");
 		model.put("disabled", false);
 		model.put("endline", false);
+		model.put("spacer", "");
 	}
 	
     protected void textfield(String id, String label, int width, boolean autofocus, boolean withValue, boolean newline) {
@@ -104,6 +105,19 @@ public abstract class AbstractFormularGenerator {
         model.putInt("size", size);
         model.put("idAndLabel", idAndLabel);
         fields.add(model);
+    }
+    
+    protected void _empty(int width) {
+        DataMap model = new DataMap();
+        model.put("template", "empty");
+        model.put("indent", "" + (indent  ));
+        model.put("width", "" + (+ width));
+        model.put("spacer", "");
+        fields.add(model);
+    }
+    
+    protected void _spacer(int width) {
+        fields.get(fields.size() - 1).put("spacer", "<div class=\"col-lg-" + width + "\"></div>");
     }
 
 	public abstract String getHTML(String action, String hrefCancel);
