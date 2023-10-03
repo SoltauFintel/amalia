@@ -1,7 +1,7 @@
 ::if newline;;		<div class="form-group">
 ::/if;;			<label for="::id;;" class="col-lg-::indent;; control-label">::label;;</label>
 			<div class="col-lg-::width;;">
-				<select class="form-control" id="::id;;" name="::id;;"::if listbox;; size="::size;;"::/if;;::autofocus;;::if disabled;; disabled::/if;;>
+				<select class="form-control" id="::id;;" name="::id;;"::if listbox;; size="::size;;"::/if;;::autofocus;;::if disabled;; disabled::/if;;::if multiple;; multiple::/if;;>
 					{{each a in ::items;;}}
 						<option::if idAndLabel;; value="{{a.id}}"::/if;;{{if a.selected}} selected{{/if}}>{{a.text}}</option>
 					{{/each}}

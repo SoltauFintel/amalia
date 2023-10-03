@@ -49,16 +49,16 @@ public class ColumnFormularGenerator extends AbstractFormularGenerator {
 	}
 
     public ColumnFormularGenerator combobox_idAndLabel(String id, String label, int width, String items, boolean autofocus) {
-        return listbox_idAndLabel(id, label, width, items, autofocus, 0);
+        return listbox_idAndLabel(id, label, width, items, autofocus, 0, false);
     }
 
-    public ColumnFormularGenerator listbox(String id, String label, int width, String items, boolean autofocus, int size) {
-        listbox(id, label, width, items, autofocus, false, size, false);
+    public ColumnFormularGenerator listbox(String id, String label, int width, String items, boolean autofocus, int size, boolean multiple) {
+        listbox(id, label, width, items, autofocus, false, size, false, multiple);
         return this;
     }
 
-    public ColumnFormularGenerator listbox_idAndLabel(String id, String label, int width, String items, boolean autofocus, int size) {
-        listbox(id, label, width, items, autofocus, false, size, true);
+    public ColumnFormularGenerator listbox_idAndLabel(String id, String label, int width, String items, boolean autofocus, int size, boolean multiple) {
+        listbox(id, label, width, items, autofocus, false, size, true, multiple);
         return this;
     }
 

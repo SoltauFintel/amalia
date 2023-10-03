@@ -66,7 +66,7 @@ public abstract class AbstractField {
                 gen.textfield(field.getId(), field.getLabel(), field.getWidth(), first, edit);
             } else if (field instanceof Combobox c) {
                 if (c.getSize() > 0) {
-                    gen.listbox(field.getId(), field.getLabel(), field.getWidth(), c.getItems(), first, c.getSize());
+                    gen.listbox(field.getId(), field.getLabel(), field.getWidth(), c.getItems(), first, c.getSize(), c.isMultiple());
                 } else {
                     gen.combobox(field.getId(), field.getLabel(), field.getWidth(), c.getItems(), first);
                 }

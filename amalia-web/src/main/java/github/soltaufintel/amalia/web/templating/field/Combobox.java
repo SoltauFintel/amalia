@@ -4,6 +4,7 @@ public class Combobox extends AbstractField {
 	private String items;
 	/** >0: Listbox (multi-select) */
 	private int size;
+	private boolean multiple = false;
 	
 	public Combobox(int sort, String id, String label, int width, String items) {
 		super(sort, id, label, width);
@@ -29,4 +30,12 @@ public class Combobox extends AbstractField {
 	public void setSize(int size) {
 		this.size = size;
 	}
+
+    public boolean isMultiple() {
+        return multiple;
+    }
+
+    public void setMultiple(boolean multiple) {
+        this.multiple = multiple;
+    }
 }
