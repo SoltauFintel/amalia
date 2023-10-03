@@ -114,6 +114,6 @@ public class ColumnFormularGenerator extends AbstractFormularGenerator {
 			m.put("endline", i % columns == lastInGroup || i == last);
 			list.add().put("html", templates.render(m.get("template").toString(), m));
 		}
-		return templates.render("formular", model);
+		return templates_noCache.render("formular", model);
 	}
 }

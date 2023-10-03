@@ -114,7 +114,7 @@ public class FormularGenerator extends AbstractFormularGenerator {
 		for (DataMap m : fields) {
 			list.add().put("html", templates.render(m.get("template").toString(), m));
 		}
-		return templates.render("formular", model);
+		return templates_noCache.render("formular", model);
 	}
 	
 	private void endline() {

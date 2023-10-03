@@ -12,11 +12,17 @@ import com.github.template72.loader.TemplateFileCache;
 import com.github.template72.loader.TemplateLoader;
 
 public abstract class AbstractFormularGenerator {
+    /** experimentell */
     public static boolean DEVELOPMENT = false;
+    /** experimentell */
     public static TemplateLoader CACHE = new TemplateFileCache();
+    /** experimentell */
+    public static TemplateLoader CACHE2 = null;
+    
     public static String STARTSEP = "{{";
     public static String ENDSEP = "}}";
 	protected static CompiledTemplates templates;
+    protected static CompiledTemplates templates_noCache;
 	protected List<DataMap> fields = new ArrayList<>();
 	protected final String indent;
 	protected String version = "";
@@ -38,7 +44,8 @@ public abstract class AbstractFormularGenerator {
 	        })
 			.build();
 		templates = new CompiledTemplates(compiler, CACHE, DEVELOPMENT,
-			"checkbox", "combobox", "empty", "formular", "textarea", "textfield", "version");
+			"checkbox", "combobox", "empty", "textarea", "textfield", "version");
+		templates_noCache = new CompiledTemplates(compiler, CACHE2, true); // "formular" template must not be cached!
 	}
 	
 	public AbstractFormularGenerator(int indent) {
