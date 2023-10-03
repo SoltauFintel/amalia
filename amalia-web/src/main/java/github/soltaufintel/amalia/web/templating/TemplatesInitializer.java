@@ -8,7 +8,6 @@ import com.github.template72.compiler.preprocessor.IncludePreprocessor;
 import com.github.template72.compiler.preprocessor.MasterPreprocessor;
 import com.github.template72.compiler.preprocessor.TemplatePreprocessor;
 import com.github.template72.loader.ResourceTemplateLoader;
-import com.github.template72.loader.TemplateFileCache;
 import com.github.template72.syntax.TemplateSyntax;
 
 import github.soltaufintel.amalia.web.action.Page;
@@ -48,6 +47,6 @@ public class TemplatesInitializer implements Initializer {
 		ctx.setPreprocessor(preprocessor);
 		TemplateCompiler compiler = new TemplateCompiler(ctx);
 		
-		Page.templates = new CompiledTemplates(compiler, new TemplateFileCache(), config.isDevelopment(), pages);
+		Page.templates = new CompiledTemplates(compiler, new AmaliaTemplateFileCache(), config.isDevelopment(), pages);
 	}
 }
