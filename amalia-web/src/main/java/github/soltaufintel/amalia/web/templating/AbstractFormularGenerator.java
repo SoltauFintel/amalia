@@ -93,6 +93,7 @@ public abstract class AbstractFormularGenerator {
         model.put("listbox", false);
         model.putInt("size", 0);
         model.put("idAndLabel", false);
+        model.put("multiple", false);
 		fields.add(model);
 	}
 
