@@ -2,10 +2,6 @@ package github.soltaufintel.amalia.web.templating.field;
 
 import java.util.List;
 
-import com.github.template72.data.DataCondition;
-import com.github.template72.data.DataMap;
-import com.github.template72.data.IDataItem;
-
 import github.soltaufintel.amalia.web.templating.ColumnFormularGenerator;
 
 public abstract class AbstractField {
@@ -57,7 +53,7 @@ public abstract class AbstractField {
 	    fields.sort((a, b) -> a.getSort() - b.getSort());
 	}
 	
-    public static void generate(List<AbstractField> fields, boolean edit, DataMap model, ColumnFormularGenerator gen) {
+    public static void generate(List<AbstractField> fields, boolean edit, ColumnFormularGenerator gen) {
         boolean first = true;
         for (AbstractField field : fields) {
             if (field instanceof Textarea a) {
@@ -71,7 +67,7 @@ public abstract class AbstractField {
                     gen.combobox(field.getId(), field.getLabel(), field.getWidth(), c.getItems(), first);
                 }
             } else if (field instanceof Checkbox) {
-                gen.checkbox(field.getId(), field.getLabel(), field.getWidth(), first, isChecked(edit, model, field));
+                gen.checkbox(field.getId(), field.getLabel(), field.getWidth(), first);
             } else if (field instanceof Spacer) {
                 gen.spacer(field.getWidth());
             } else if (field instanceof Empty) {
@@ -79,15 +75,5 @@ public abstract class AbstractField {
             }
             first = false;
         }
-    }
-    
-    public static boolean isChecked(boolean edit, DataMap model, AbstractField field) {
-        if (edit) {
-            IDataItem f = model.get(field.getId());
-            if (f instanceof DataCondition c) {
-                return c.isTrue();
-            }
-        }
-        return false;
     }
 }

@@ -29,8 +29,8 @@ public class ColumnFormularGenerator extends AbstractFormularGenerator {
 		return this;
 	}
 
-    public ColumnFormularGenerator checkbox(String id, String label, int width, boolean autofocus, boolean checked) {
-        checkbox(id, label, width, autofocus, checked, false);
+    public ColumnFormularGenerator checkbox(String id, String label, int width, boolean autofocus) {
+        checkbox(id, label, width, autofocus, false);
         return this;
     }
 

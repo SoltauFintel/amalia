@@ -1,5 +1,5 @@
 ::if newline;;		<div class="form-group">
 ::/if;;			<div class="col-lg-::width;; col-lg-offset-::indent;;"><div class="checkbox"><label>
-				<input type="checkbox" id="::id;;" name="::id;;"::if checked;; checked::/if;;::autofocus;;::if disabled;; disabled::/if;;> ::label;;
+				<input type="checkbox" id="::id;;" name="::id;;"{{if ::id;;}} checked{{/if}}::autofocus;;::if disabled;; disabled::/if;;> ::label;;
 			</label></div></div>::spacer;;::if endline;;
 		</div>::/if;;

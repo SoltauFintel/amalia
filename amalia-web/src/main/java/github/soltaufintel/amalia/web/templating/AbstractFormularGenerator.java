@@ -9,8 +9,11 @@ import com.github.template72.compiler.TemplateCompilerBuilder;
 import com.github.template72.data.DataMap;
 import com.github.template72.loader.ResourceTemplateLoader;
 import com.github.template72.loader.TemplateFileCache;
+import com.github.template72.loader.TemplateLoader;
 
 public abstract class AbstractFormularGenerator {
+    public static boolean DEVELOPMENT = false;
+    public static TemplateLoader CACHE = new TemplateFileCache();
     public static String STARTSEP = "{{";
     public static String ENDSEP = "}}";
 	protected static CompiledTemplates templates;
@@ -34,8 +37,8 @@ public abstract class AbstractFormularGenerator {
 	            }
 	        })
 			.build();
-		templates = new CompiledTemplates(compiler, new TemplateFileCache(), false,
-			"checkbox", "combobox", "formular", "textarea", "textfield", "version");
+		templates = new CompiledTemplates(compiler, CACHE, DEVELOPMENT,
+			"checkbox", "combobox", "empty", "formular", "textarea", "textfield", "version");
 	}
 	
 	public AbstractFormularGenerator(int indent) {
@@ -68,11 +71,10 @@ public abstract class AbstractFormularGenerator {
         fields.add(model);
     }
 
-    protected void checkbox(String id, String label, int width, boolean autofocus, boolean checked, boolean newline) {
+    protected void checkbox(String id, String label, int width, boolean autofocus, boolean newline) {
         DataMap model = new DataMap();
         standard("checkbox", id, label, width, autofocus, model);
         model.put("newline", newline);
-        model.put("checked", checked);
         fields.add(model);
     }
 
