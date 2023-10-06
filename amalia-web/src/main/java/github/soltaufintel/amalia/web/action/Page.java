@@ -104,7 +104,7 @@ public abstract class Page extends Action {
      * multi-select combobox
      * @param listName -
      * @param items -
-     * @param selectedItems -
+     * @param selectedItems list can be null
      * @param withEmptyItem -
      * @param model -
      */
