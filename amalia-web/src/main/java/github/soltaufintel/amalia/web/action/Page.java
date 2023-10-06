@@ -119,7 +119,7 @@ public abstract class Page extends Action {
         items.forEach(text -> {
             DataMap map = list.add();
             map.put("text", Escaper.esc(text));
-            map.put("selected", selectedItems.contains(text));
+            map.put("selected", selectedItems != null && selectedItems.contains(text));
         });
     }
 
@@ -144,7 +144,7 @@ public abstract class Page extends Action {
             DataMap map = list.add();
             map.put("id", Escaper.esc(item.getId()));
             map.put("text", Escaper.esc(item.getLabel()));
-            map.put("selected", selectedItems.contains(item.getId()));
+            map.put("selected", selectedItems != null && selectedItems.contains(item.getId()));
         });
     }
 
