@@ -28,6 +28,10 @@ public class Context {
 		res.redirect(url);
 	}
 	
+	public void redirectToReferer() {
+        redirect(req.headers("Referer"));
+    }
+	
 	public String pathParam(String key) {
 		return req.params(key);
 	}
