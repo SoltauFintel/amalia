@@ -21,6 +21,10 @@ public abstract class Page extends Action {
     	}
     }
 
+    public boolean isPOST() {
+        return ctx.isPOST();
+    }
+
     protected String getPage() {
         return this.getClass().getSimpleName();
     }
@@ -60,44 +64,20 @@ public abstract class Page extends Action {
      * @param items -
      * @param selected can be null or empty
      * @param withEmptyItem -
-     * @param model -
      */
-    public void combobox(String listName, List<String> items, String selected, boolean withEmptyItem, DataMap model) {
-		DataList list = model.list(listName);
-		if (withEmptyItem) {
-			DataMap map1 = list.add();
-			map1.put("text", "");
-			map1.put("selected", selected == null || selected.isBlank());
-		}
-		items.forEach(text -> {
-			DataMap map = list.add();
-			map.put("text", Escaper.esc(text));
-			map.put("selected", text.equals(selected));
-		});
+    public void combobox(String listName, List<String> items, String selected, boolean withEmptyItem) {
+        ComboboxCreator.combobox(listName, items, selected, withEmptyItem, model);
 	}
 
     /**
      * single-select combobox
      * @param listName -
      * @param items ID+Label list
-     * @param selected ID, can be null or empty
+     * @param selected ID can be null or empty
      * @param withEmptyItem -
-     * @param model -
      */
-    public void combobox_idAndLabel(String listName, List<IdAndLabel> items, String selected, boolean withEmptyItem, DataMap model) {
-        DataList list = model.list(listName);
-        if (withEmptyItem) {
-            DataMap map1 = list.add();
-            map1.put("id", "");
-            map1.put("text", "");
-            map1.put("selected", selected == null || selected.isBlank());
-        }
-        items.forEach(item -> {
-            DataMap map = list.add();
-            map.put("id", Escaper.esc(item.getId()));
-            map.put("text", Escaper.esc(item.getLabel()));
-            map.put("selected", item.getId().equals(selected));
-        });
+    public void combobox_idAndLabel(String listName, List<IdAndLabel> items, String selected, boolean withEmptyItem) {
+        ComboboxCreator.combobox_idAndLabel(listName, items, selected, withEmptyItem, model);
     }
 
     /**
@@ -106,21 +86,9 @@ public abstract class Page extends Action {
      * @param items -
      * @param selectedItems list can be null
      * @param withEmptyItem -
-     * @param model -
      */
-    public void combobox(String listName, List<String> items, List<String> selectedItems,
-            boolean withEmptyItem, DataMap model) {
-        DataList list = model.list(listName);
-        if (withEmptyItem) {
-            DataMap map1 = list.add();
-            map1.put("text", "");
-            map1.put("selected", selectedItems == null || selectedItems.isEmpty() || selectedItems.contains(""));
-        }
-        items.forEach(text -> {
-            DataMap map = list.add();
-            map.put("text", Escaper.esc(text));
-            map.put("selected", selectedItems != null && selectedItems.contains(text));
-        });
+    public void combobox(String listName, List<String> items, List<String> selectedItems, boolean withEmptyItem) {
+        ComboboxCreator.combobox(listName, items, selectedItems, withEmptyItem, model);
     }
 
     /**
@@ -129,26 +97,8 @@ public abstract class Page extends Action {
      * @param items ID+Label list
      * @param selectedItems ID list, list can be null
      * @param withEmptyItem -
-     * @param model -
      */
-    public void combobox_idAndLabel(String listName, List<IdAndLabel> items, List<String> selectedItems,
-            boolean withEmptyItem, DataMap model) {
-        DataList list = model.list(listName);
-        if (withEmptyItem) {
-            DataMap map1 = list.add();
-            map1.put("id", "");
-            map1.put("text", "");
-            map1.put("selected", selectedItems == null || selectedItems.isEmpty() || selectedItems.contains(""));
-        }
-        items.forEach(item -> {
-            DataMap map = list.add();
-            map.put("id", Escaper.esc(item.getId()));
-            map.put("text", Escaper.esc(item.getLabel()));
-            map.put("selected", selectedItems != null && selectedItems.contains(item.getId()));
-        });
-    }
-
-    public boolean isPOST() {
-    	return ctx.isPOST();
+    public void combobox_idAndLabel(String listName, List<IdAndLabel> items, List<String> selectedItems, boolean withEmptyItem) {
+        ComboboxCreator.combobox_idAndLabel(listName, items, selectedItems, withEmptyItem, model);
     }
 }
