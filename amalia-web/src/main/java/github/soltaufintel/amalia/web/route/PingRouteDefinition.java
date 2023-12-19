@@ -10,6 +10,8 @@ public class PingRouteDefinition extends RouteDefinitions {
 	
 	@Override
 	public void routes() {
+        get("/rest/ping", PingAction.class);
+        addNotProtected("/rest/ping");
 		get("/rest/_ping", PingAction.class);
 		addNotProtected("/rest/_");
 	}
@@ -22,7 +24,7 @@ public class PingRouteDefinition extends RouteDefinitions {
 		
 		@Override
 		protected String render() {
-			return "ping";
+			return "pong";
 		}
 	}
 }
