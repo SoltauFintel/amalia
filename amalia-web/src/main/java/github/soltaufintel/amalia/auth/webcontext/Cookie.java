@@ -20,7 +20,7 @@ public class Cookie {
     }
 
     public void set(String value, String action) {
-    	ctx.res.cookie("", "/", name, value, 60 * 60 * 24 * 30 /* 30 days */, false, false);
+        ctx.res.cookie("", "/", name, value, 60 * 60 * 24 * 30 /* 30 days */, false, false);
         Logger.trace("Cookie " + name + " set [" + action + "]: " + value);
     }
 

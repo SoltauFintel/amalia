@@ -5,11 +5,11 @@ import github.soltaufintel.amalia.spark.Context;
 
 public interface IAuth {
 
-	IAuthService getService(Context ctx);
-	
-	IAuthRoutes getRoutes();
-		
-	void addNotProtected(String path);
-	
-	void filter(WebContext ctx);
+    IAuthService getService(Context ctx);
+    
+    IAuthRoutes getRoutes();
+        
+    void addNotProtected(String path);
+    
+    void filter(WebContext ctx);
 }

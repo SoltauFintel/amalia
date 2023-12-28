@@ -14,11 +14,11 @@ public class KnownUserDAO extends AbstractDAO<KnownUser> implements IKnownUserDA
      */
     @Override
     public void delete(String userId) {
-    	eq("userId", userId).delete();
+        eq("userId", userId).delete();
     }
 
-	@Override
-	public void save(IKnownUser knownUser) {
-		super.save((KnownUser) knownUser);
-	}
+    @Override
+    public void save(IKnownUser knownUser) {
+        super.save((KnownUser) knownUser);
+    }
 }

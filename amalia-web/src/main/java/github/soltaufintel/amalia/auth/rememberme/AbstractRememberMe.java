@@ -7,8 +7,8 @@ import org.pmw.tinylog.Logger;
 import github.soltaufintel.amalia.auth.webcontext.WebContext;
 
 public abstract class AbstractRememberMe implements RememberMe {
-	// https://stackoverflow.com/a/5083809/3478021
-	
+    // https://stackoverflow.com/a/5083809/3478021
+    
     @Override
     public void rememberMe(boolean rememberMeWanted, WebContext ctx, String user, String userId) {
         if (rememberMeWanted) {
@@ -38,7 +38,7 @@ public abstract class AbstractRememberMe implements RememberMe {
         }
         IKnownUser ku = dao().get(id);
         if (ku == null) {
-        	ctx.cookie().remove();
+            ctx.cookie().remove();
         } else {
             logRememberedUser(ku.getUser(), ku.getUserId());
             ctx.cookie().extendLifeTime(ku.getId());
@@ -50,18 +50,18 @@ public abstract class AbstractRememberMe implements RememberMe {
         Logger.debug("Remembered user: " + user + " (" + userId + ")");
     }
 
-	protected abstract IKnownUserDAO dao();
+    protected abstract IKnownUserDAO dao();
 
-	/**
-	 * @param user -
-	 * @param userId -
-	 * @return default implementation returns SimpleKnownUser
-	 */
-	protected IKnownUser createKnownUser(String user, String userId) {
-		SimpleKnownUser knownUser = new SimpleKnownUser();
-		knownUser.setId(UUID.randomUUID().toString());
-		knownUser.setUser(user);
-		knownUser.setUserId(userId);
-		return knownUser;
-	}
+    /**
+     * @param user -
+     * @param userId -
+     * @return default implementation returns SimpleKnownUser
+     */
+    protected IKnownUser createKnownUser(String user, String userId) {
+        SimpleKnownUser knownUser = new SimpleKnownUser();
+        knownUser.setId(UUID.randomUUID().toString());
+        knownUser.setUser(user);
+        knownUser.setUserId(userId);
+        return knownUser;
+    }
 }

@@ -9,15 +9,15 @@ import github.soltaufintel.amalia.web.engine.Engine;
  */
 public interface Routes {
 
-	void init(Engine engine, IAuth auth, PageInitializer pageInit);
-	
-	/**
-	 * Define routes
-	 */
-	void routes();
-	
-	/**
-	 * @return the higher the number the later the processing
-	 */
-	int getPriority();
+    void init(Engine engine, IAuth auth, PageInitializer pageInit);
+    
+    /**
+     * Define routes
+     */
+    void routes();
+    
+    /**
+     * @return the higher the number the later the processing
+     */
+    int getPriority();
 }

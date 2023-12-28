@@ -65,18 +65,18 @@ public class GridFSDAO {
      * @throws IOException
      */
     public BinaryData load(ObjectId id) throws IOException {
-    	ByteArrayOutputStream saveTo = new ByteArrayOutputStream();
-    	GridFSDownloadStream downloadStream;
-		try {
-			downloadStream = bucket.openDownloadStream(id);
-		} catch (MongoGridFSException e) {
-			return new BinaryData(null, null);
-		}
-    	String dn = downloadStream.getGridFSFile().getFilename();
-    	downloadStream.close();
-    	// Wäre gut, wenn Morphia das in einer Aktion könnte. Ich starte erneut DownloadStream.
+        ByteArrayOutputStream saveTo = new ByteArrayOutputStream();
+        GridFSDownloadStream downloadStream;
+        try {
+            downloadStream = bucket.openDownloadStream(id);
+        } catch (MongoGridFSException e) {
+            return new BinaryData(null, null);
+        }
+        String dn = downloadStream.getGridFSFile().getFilename();
+        downloadStream.close();
+        // Wäre gut, wenn Morphia das in einer Aktion könnte. Ich starte erneut DownloadStream.
         loadToOutputStream(id, saveTo);
-		return new BinaryData(saveTo, dn);
+        return new BinaryData(saveTo, dn);
     }
 
     public void loadToOutputStream(ObjectId id, OutputStream saveTo) throws IOException {

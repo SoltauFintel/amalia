@@ -7,5 +7,5 @@ import github.soltaufintel.amalia.web.config.AppConfig;
  */
 public interface Initializer {
 
-	void init(AppConfig config);
+    void init(AppConfig config);
 }

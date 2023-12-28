@@ -19,16 +19,16 @@ public class GuruErrorPage extends AbstractGuruErrorPage implements ErrorPage {
     
     @Override
     protected void execute() {
-    	Logger.error("Error rendering path \"" + ctx.path() + "\":");
-    	if (exception == null) {
-    		try {
-				Logger.error(model.get("msg").toString());
-			} catch (Exception e) {
-				Logger.error("(no error message)");
-			}
-    	} else {
-    		Logger.error(exception);
-    	}
+        Logger.error("Error rendering path \"" + ctx.path() + "\":");
+        if (exception == null) {
+            try {
+                Logger.error(model.get("msg").toString());
+            } catch (Exception e) {
+                Logger.error("(no error message)");
+            }
+        } else {
+            Logger.error(exception);
+        }
         ctx.status(500);
     }
 }

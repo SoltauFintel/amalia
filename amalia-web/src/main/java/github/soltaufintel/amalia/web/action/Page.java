@@ -14,11 +14,11 @@ public abstract class Page extends Action {
 
     @Override
     protected String render() {
-    	if (!render || isPOST()) {
-    		return "";
-    	} else {
-    		return templates.render(getPage(), model);
-    	}
+        if (!render || isPOST()) {
+            return "";
+        } else {
+            return templates.render(getPage(), model);
+        }
     }
 
     public boolean isPOST() {
@@ -67,7 +67,7 @@ public abstract class Page extends Action {
      */
     public void combobox(String listName, List<String> items, String selected, boolean withEmptyItem) {
         ComboboxCreator.combobox(listName, items, selected, withEmptyItem, model);
-	}
+    }
 
     /**
      * single-select combobox

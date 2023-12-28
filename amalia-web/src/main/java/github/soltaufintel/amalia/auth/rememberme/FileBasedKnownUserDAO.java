@@ -12,65 +12,65 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 public class FileBasedKnownUserDAO implements IKnownUserDAO {
-	private final String filename;
+    private final String filename;
 
-	/**
-	 * @param filename for known users JSON file (e.g. "<app-name>/known-users.json") saved in user home folder
-	 */
-	public FileBasedKnownUserDAO(String filename) {
-		this.filename = filename;
-	}
+    /**
+     * @param filename for known users JSON file (e.g. "<app-name>/known-users.json") saved in user home folder
+     */
+    public FileBasedKnownUserDAO(String filename) {
+        this.filename = filename;
+    }
 
-	@Override
-	public IKnownUser get(String id) {
-		return load().stream().filter(i -> i.getId().equals(id)).findFirst().orElse(null);
-	}
-	
-	@Override
-	public void save(IKnownUser user) {
-		// add
-		List<SimpleKnownUser> list = load();
-		list.add((SimpleKnownUser) user);
-		save(list);
-	}
+    @Override
+    public IKnownUser get(String id) {
+        return load().stream().filter(i -> i.getId().equals(id)).findFirst().orElse(null);
+    }
+    
+    @Override
+    public void save(IKnownUser user) {
+        // add
+        List<SimpleKnownUser> list = load();
+        list.add((SimpleKnownUser) user);
+        save(list);
+    }
 
-	@Override
-	public void delete(String userId) {
-		List<SimpleKnownUser> newList = load().stream()
-				.filter(i -> !i.getUserId().equals(userId))
-				.collect(Collectors.toList());
-		save(newList);
-	}
-	
-	protected List<SimpleKnownUser> load() {
-		List<SimpleKnownUser> list;
-		if (file().isFile()) {
-			try {
-				String json = new String(Files.readAllBytes(file().toPath()));
-				java.lang.reflect.Type type = new TypeToken<ArrayList<SimpleKnownUser>>() {}.getType();
-				list = new Gson().fromJson(json, type);
-			} catch (Exception ignore) {
-				list = new ArrayList<>();
-			}
-		} else {
-			list = new ArrayList<>();
-		}
-		return list;
-	}
-	
-	protected void save(List<SimpleKnownUser> list) {
-		if (!file().getParentFile().isDirectory()) {
-			file().getParentFile().mkdirs();
-		}
-		String json = new Gson().toJson(list);
-		try (FileWriter w = new FileWriter(file())) {
-			w.write(json);
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
-	}
-	
-	protected File file() {
-		return new File(System.getProperty("user.home"), filename);
-	}
+    @Override
+    public void delete(String userId) {
+        List<SimpleKnownUser> newList = load().stream()
+                .filter(i -> !i.getUserId().equals(userId))
+                .collect(Collectors.toList());
+        save(newList);
+    }
+    
+    protected List<SimpleKnownUser> load() {
+        List<SimpleKnownUser> list;
+        if (file().isFile()) {
+            try {
+                String json = new String(Files.readAllBytes(file().toPath()));
+                java.lang.reflect.Type type = new TypeToken<ArrayList<SimpleKnownUser>>() {}.getType();
+                list = new Gson().fromJson(json, type);
+            } catch (Exception ignore) {
+                list = new ArrayList<>();
+            }
+        } else {
+            list = new ArrayList<>();
+        }
+        return list;
+    }
+    
+    protected void save(List<SimpleKnownUser> list) {
+        if (!file().getParentFile().isDirectory()) {
+            file().getParentFile().mkdirs();
+        }
+        String json = new Gson().toJson(list);
+        try (FileWriter w = new FileWriter(file())) {
+            w.write(json);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    
+    protected File file() {
+        return new File(System.getProperty("user.home"), filename);
+    }
 }

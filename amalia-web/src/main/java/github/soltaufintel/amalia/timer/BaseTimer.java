@@ -15,7 +15,7 @@ import org.quartz.TriggerBuilder;
 import org.quartz.impl.StdSchedulerFactory;
 
 public abstract class BaseTimer implements org.quartz.Job {
-	public static org.quartz.Scheduler _scheduler;
+    public static org.quartz.Scheduler _scheduler;
     protected org.quartz.Scheduler scheduler;
     private String cron;
 
@@ -35,14 +35,14 @@ public abstract class BaseTimer implements org.quartz.Job {
     }
     
     public static void stop() {
-    	try {
-			if (_scheduler != null) {
-				_scheduler.shutdown();
-				_scheduler = null;
-			}
-		} catch (SchedulerException e) {
-			Logger.error(e);
-		}
+        try {
+            if (_scheduler != null) {
+                _scheduler.shutdown();
+                _scheduler = null;
+            }
+        } catch (SchedulerException e) {
+            Logger.error(e);
+        }
     }
 
     /**

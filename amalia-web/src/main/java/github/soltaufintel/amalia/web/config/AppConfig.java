@@ -16,7 +16,7 @@ import com.google.common.base.Strings;
  * </p>
  */
 public class AppConfig {
-	private final Properties properties;
+    private final Properties properties;
     private final String configFile;
 
     public AppConfig() {
@@ -42,8 +42,8 @@ public class AppConfig {
     }
     
     public AppConfig(Properties properties, String configFile) {
-    	this.properties = properties;
-    	this.configFile = configFile;
+        this.properties = properties;
+        this.configFile = configFile;
     }
 
     /**
@@ -51,7 +51,7 @@ public class AppConfig {
      * @return null if property does not exist
      */
     public String get(String key) {
-    	return get(key, null);
+        return get(key, null);
     }
 
     /**
@@ -65,8 +65,8 @@ public class AppConfig {
     }
     
     public int getInt(String key, int pDefault) {
-    	String a = get(key, null);
-    	return a == null ? pDefault : Integer.parseInt(a);
+        String a = get(key, null);
+        return a == null ? pDefault : Integer.parseInt(a);
     }
 
     public String getFilename() {
@@ -87,6 +87,6 @@ public class AppConfig {
     }
     
     public int getPort() {
-    	return getInt("port", 8080);
+        return getInt("port", 8080);
     }
 }

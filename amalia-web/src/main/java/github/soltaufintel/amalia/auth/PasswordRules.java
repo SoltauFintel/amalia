@@ -5,9 +5,9 @@ package github.soltaufintel.amalia.auth;
  */
 public interface PasswordRules {
 
-	void checkPassword(String password);
-	
-	void checkLogin(String login);
-	
-	void checkMailAddress(String mail);
+    void checkPassword(String password);
+    
+    void checkLogin(String login);
+    
+    void checkMailAddress(String mail);
 }

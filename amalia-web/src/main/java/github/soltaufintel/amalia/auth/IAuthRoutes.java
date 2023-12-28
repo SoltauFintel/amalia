@@ -5,5 +5,5 @@ import github.soltaufintel.amalia.web.route.Routes;
 
 public interface IAuthRoutes extends Routes {
 
-	RouteHandler getLoginPageRouteHandler();
+    RouteHandler getLoginPageRouteHandler();
 }

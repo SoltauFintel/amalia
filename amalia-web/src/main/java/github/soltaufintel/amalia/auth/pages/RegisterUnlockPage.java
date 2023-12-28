@@ -7,8 +7,8 @@ import github.soltaufintel.amalia.web.action.Page;
  */
 public class RegisterUnlockPage extends Page {
 
-	@Override
-	protected void execute() {
-		auth().registerUnlock(ctx.queryParam("id"));
-	}
+    @Override
+    protected void execute() {
+        auth().registerUnlock(ctx.queryParam("id"));
+    }
 }

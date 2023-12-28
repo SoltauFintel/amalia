@@ -4,7 +4,7 @@ import github.soltaufintel.amalia.web.action.Page;
 
 public class RegisteredPage extends Page {
 
-	@Override
-	protected void execute() {
-	}
+    @Override
+    protected void execute() {
+    }
 }

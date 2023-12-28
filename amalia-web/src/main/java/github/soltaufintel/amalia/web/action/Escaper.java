@@ -10,9 +10,9 @@ import org.pmw.tinylog.Logger;
 
 public class Escaper {
 
-	private Escaper() {
-	}
-	
+    private Escaper() {
+    }
+    
     /** Escape HTML */
     public static String esc(String text) {
         return text == null ? "" : StringEscapeUtils.escapeHtml(text);

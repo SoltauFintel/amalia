@@ -2,12 +2,12 @@ package github.soltaufintel.amalia.web.action;
 
 public abstract class AbstractGuruErrorPage extends Page {
 
-	public AbstractGuruErrorPage() {
-		put("msg", "");
-	}
-	
+    public AbstractGuruErrorPage() {
+        put("msg", "");
+    }
+    
     public void setMsg(String msg) {
-    	put("msg", esc(msg));
+        put("msg", esc(msg));
     }
 
     @Override

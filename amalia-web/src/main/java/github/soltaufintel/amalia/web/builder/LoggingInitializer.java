@@ -5,9 +5,9 @@ import org.pmw.tinylog.Level;
 import org.pmw.tinylog.writers.ConsoleWriter;
 
 public class LoggingInitializer {
-	private final Level defaultLevel;
-	private final String formatPattern;
-	
+    private final Level defaultLevel;
+    private final String formatPattern;
+    
     public LoggingInitializer(Level level) {
         this(level, "{date}  {message}");
     }
@@ -22,16 +22,16 @@ public class LoggingInitializer {
     }
 
     public void init() {
-		Level level;
-		try {
-			level = Level.valueOf(System.getenv("LOGLEVEL").toUpperCase());
-		} catch (Exception ignore) {
-			level = defaultLevel;
-		}
+        Level level;
+        try {
+            level = Level.valueOf(System.getenv("LOGLEVEL").toUpperCase());
+        } catch (Exception ignore) {
+            level = defaultLevel;
+        }
         Configurator.currentConfig()
                 .writer(new ConsoleWriter())
                 .formatPattern(formatPattern)
                 .level(level)
                 .activate();
-	}
+    }
 }

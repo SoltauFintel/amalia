@@ -8,29 +8,29 @@ import github.soltaufintel.amalia.auth.webcontext.WebContext;
  */
 public interface RememberMe {
 
-	/**
-	 * Remembers user. Used for login.
-	 * 
-	 * @param rememberMeWanted
-	 * @param ctx
-	 * @param user
-	 * @param userId
-	 */
-	void rememberMe(boolean rememberMeWanted, WebContext ctx, String user, String userId);
+    /**
+     * Remembers user. Used for login.
+     * 
+     * @param rememberMeWanted
+     * @param ctx
+     * @param user
+     * @param userId
+     */
+    void rememberMe(boolean rememberMeWanted, WebContext ctx, String user, String userId);
 
-	/**
-	 * Used for auto-login.
-	 * 
-	 * @param ctx
-	 * @return null if there's no known user
-	 */
-	IKnownUser getUserIfKnown(WebContext ctx);
+    /**
+     * Used for auto-login.
+     * 
+     * @param ctx
+     * @return null if there's no known user
+     */
+    IKnownUser getUserIfKnown(WebContext ctx);
 
-	/**
-	 * Forgets user. Used for logout.
-	 * 
-	 * @param ctx
-	 * @param userId contains service name and foreign user id
-	 */
-	void forget(WebContext ctx, String userId);
+    /**
+     * Forgets user. Used for logout.
+     * 
+     * @param ctx
+     * @param userId contains service name and foreign user id
+     */
+    void forget(WebContext ctx, String userId);
 }

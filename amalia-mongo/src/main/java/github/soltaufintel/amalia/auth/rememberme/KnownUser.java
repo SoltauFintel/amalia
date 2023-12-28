@@ -12,9 +12,9 @@ import dev.morphia.annotations.Indexes;
  */
 @Entity
 @Indexes({@Index(
-			fields = { @Field("createdAt") },
-			options = @IndexOptions(expireAfterSeconds = 60 * 60 * 24 * 30 /* 30 days */
-		)) })
+            fields = { @Field("createdAt") },
+            options = @IndexOptions(expireAfterSeconds = 60 * 60 * 24 * 30 /* 30 days */
+        )) })
 public class KnownUser implements IKnownUser {
     @Id
     private String id;
