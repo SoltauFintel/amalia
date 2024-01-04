@@ -48,7 +48,9 @@ public abstract class AbstractAuth implements IAuth {
                 ctx.session().setLoggedIn(true);
                 return;
             }
-            ctx.session().setGoBackPath(path); // Go back to this page after login
+            if (!"/login".equals(path)) {
+                ctx.session().setGoBackPath(path); // Go back to this page after login
+            }
             Spark.halt(401, (String) ctx.handle(routes.getLoginPageRouteHandler()));
         }
     }
