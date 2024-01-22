@@ -89,7 +89,7 @@ public class AuthService implements IAuthService {
             if (password == null || password.isBlank()) {
                 return false;
             }
-            String encryptedPassword = hashPassword(user.getSalt() + password);
+            String encryptedPassword = hashPassword(user, password);
             if (encryptedPassword.equals(user.getPassword())) {
                 if (user.getLockState().equals(UserLockState.UNLOCKED)) {
                     login(user.getId(), user.getLogin(), ctx, rememberMe);
@@ -291,7 +291,7 @@ public class AuthService implements IAuthService {
     @Override
     public void changePassword(String oldPassword, String newPassword) {
         IUser user = byId(getUserId());
-        String encryptedOldPassword = hashPassword(user.getSalt() + oldPassword);
+        String encryptedOldPassword = hashPassword(user, oldPassword);
         if (user.getPassword().equals(encryptedOldPassword)) {
             passwordRules.checkPassword(newPassword);
             setNewPassword(user, newPassword);
@@ -359,20 +359,30 @@ public class AuthService implements IAuthService {
         IUser user = sv.createUser("admin", "Admin", null, UserLockState.UNLOCKED);
         user.getRoles().add(ADMIN_ROLE);
         user.setSalt(createSalt());
-        user.setPassword(hashPassword(user.getSalt() + user.getLogin()));
+        user.setPassword(hashPassword(user, user.getLogin()));
         sv.insert(user);
     }
 
     private void setNewPassword(IUser user, String newPassword) {
         user.setSalt(createSalt());
-        user.setPassword(hashPassword(user.getSalt() + newPassword));
+        user.setPassword(hashPassword(user, newPassword));
+    }
+    
+    /**
+     * @param user for getting SALT
+     * @param password -
+     * @return hashed password
+     */
+    private String hashPassword(IUser user, String password) {
+        return hashPassword(user.getSalt() + password, encryptionFrequency);
     }
     
     /**
      * @param password inkl. SALT
-     * @return hashed password
+     * @param encryptionFrequency -
+     * @return
      */
-    private String hashPassword(String password) {
+    public static String hashPassword(String password, int encryptionFrequency) {
         try {
             byte[] b = password.getBytes();
             MessageDigest algo = MessageDigest.getInstance("MD5");
