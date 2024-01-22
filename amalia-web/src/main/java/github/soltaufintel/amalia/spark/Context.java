@@ -47,4 +47,8 @@ public class Context {
     public void status(int status) {
         res.status(status);
     }
+
+    public String body() {
+        return res.body();
+    }
 }
