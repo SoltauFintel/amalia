@@ -80,6 +80,10 @@ public class AQuery<E> {
     public AQuery<E> exists(String field) {
         return q(Filters.exists(field));
     }
+    
+    public AQuery<E> text(String text, String language) {
+        return q(Filters.text(text).language(language));
+    }
 
     public AQuery<E> query(Object... pairs) {
         AQuery<E> q = this;
