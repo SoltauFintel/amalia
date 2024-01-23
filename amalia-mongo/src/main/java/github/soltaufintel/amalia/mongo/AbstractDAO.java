@@ -7,7 +7,6 @@ import org.bson.Document;
 import org.bson.types.ObjectId;
 
 import com.mongodb.DuplicateKeyException;
-import com.mongodb.client.result.DeleteResult;
 
 import dev.morphia.Datastore;
 import dev.morphia.query.Query;
@@ -28,9 +27,11 @@ public abstract class AbstractDAO<E> {
         }
     }
     
-    // TODO Morphia-interne Klasse nicht rausgeben
-    public DeleteResult delete(E entity) {
-        return ds().delete(entity);
+    /**
+     * @return number of deleted documents
+     */
+    public long delete(E entity) {
+        return ds().delete(entity).getDeletedCount();
     }
 
     /**
