@@ -26,7 +26,7 @@ public class AUpdateOperation<E> {
      * @return number of modified documents
      */
     public long update() {
-        UpdateResult r = query.query.update(new UpdateOptions(), ops.toArray(new UpdateOperator[0]));
+        UpdateResult r = query.query.update(new UpdateOptions().multi(true), ops.toArray(new UpdateOperator[0]));
         return r.getModifiedCount();
     }
 }

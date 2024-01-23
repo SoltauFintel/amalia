@@ -4,6 +4,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import dev.morphia.DeleteOptions;
 import dev.morphia.query.FindOptions;
 import dev.morphia.query.Meta;
 import dev.morphia.query.Query;
@@ -214,7 +215,7 @@ public class AQuery<E> {
      * @return number of deleted documents
      */
     public long delete() {
-        return query.delete().getDeletedCount();
+        return query.delete(new DeleteOptions().multi(true)).getDeletedCount();
     }
 
     public AUpdateOperation<E> update() {

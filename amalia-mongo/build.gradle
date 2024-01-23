@@ -1,5 +1,5 @@
 dependencies {
 	api project(':amalia-web')
 	
-	api 'dev.morphia.morphia:morphia-core:2.3.9'
+	api 'dev.morphia.morphia:morphia-core:2.3.0' // keep 2.3.0 ! (MongoDB 3.2 support)
 }
