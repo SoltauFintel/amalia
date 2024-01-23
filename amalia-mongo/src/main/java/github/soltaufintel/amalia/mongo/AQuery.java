@@ -4,8 +4,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import com.mongodb.client.result.DeleteResult;
-
 import dev.morphia.query.FindOptions;
 import dev.morphia.query.Meta;
 import dev.morphia.query.Query;
@@ -212,11 +210,13 @@ public class AQuery<E> {
         return new AQuery<E>(query.filter(filters), options);
     }
 
-    // TODO Morphia-interne Klasse nicht rausgeben
-    public DeleteResult delete() {
-        return query.delete();
+    /**
+     * @return number of deleted documents
+     */
+    public long delete() {
+        return query.delete().getDeletedCount();
     }
-    
+
     public AUpdateOperation<E> update() {
         return new AUpdateOperation<E>(this);
     }
