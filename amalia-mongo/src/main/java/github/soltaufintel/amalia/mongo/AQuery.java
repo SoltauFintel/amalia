@@ -7,6 +7,7 @@ import java.util.regex.Pattern;
 import com.mongodb.client.result.DeleteResult;
 
 import dev.morphia.query.FindOptions;
+import dev.morphia.query.Meta;
 import dev.morphia.query.Query;
 import dev.morphia.query.Sort;
 import dev.morphia.query.filters.Filter;
@@ -96,8 +97,22 @@ public class AQuery<E> {
     }
 
     public AQuery<E> order(String fields) {
+        return order(fields, null);
+    }
+
+    public AQuery<E> orderByTextScore(String textSearchField) {
+        return order(null, textSearchField);
+    }
+
+    public AQuery<E> order(String fields, String textSearchField) {
         FindOptions newOptions = options == null ? new FindOptions() : options;
-        newOptions = newOptions.sort(makeSortArray(fields));
+        if (fields != null && !fields.isEmpty()) {
+            newOptions = newOptions.sort(makeSortArray(fields));
+        }
+        if (textSearchField != null && !textSearchField.isEmpty()) {
+            // adds also projection on same field
+            newOptions = newOptions.sort(Meta.textScore(textSearchField));
+        }
         return new AQuery<E>(query, newOptions);
     }
 
