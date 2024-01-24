@@ -49,6 +49,6 @@ public class Context {
     }
 
     public String body() {
-        return res.body();
+        return req.body();
     }
 }
