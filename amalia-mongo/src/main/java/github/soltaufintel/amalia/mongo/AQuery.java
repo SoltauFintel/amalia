@@ -115,22 +115,15 @@ public class AQuery<E> {
         return q;
     }
 
+    /**
+     * Combination of order() and orderByTextScore() is not possible!
+     * @param fields comma separated field names, prepend "-" for descending sort order
+     * @return new AQuery object
+     */
     public AQuery<E> order(String fields) {
-        return order(fields, null);
-    }
-
-    public AQuery<E> orderByTextScore(String textSearchField) {
-        return order(null, textSearchField);
-    }
-
-    public AQuery<E> order(String fields, String textSearchField) {
         FindOptions newOptions = options == null ? new FindOptions() : options;
         if (fields != null && !fields.isEmpty()) {
             newOptions = newOptions.sort(makeSortArray(fields));
-        }
-        if (textSearchField != null && !textSearchField.isEmpty()) {
-            // adds also projection on same field
-            newOptions = newOptions.sort(Meta.textScore(textSearchField));
         }
         return new AQuery<E>(query, newOptions);
     }
@@ -151,6 +144,20 @@ public class AQuery<E> {
             }
         }
         return sorts;
+    }
+
+    /**
+     * Combination of order() and orderByTextScore() is not possible!
+     * @param scoreField e.g. "score". It's not the name of the field that have the text index.
+     * <p>Adds also projection on that field. Other projections are not allowed.</p>
+     * @return new AQuery object
+     */
+    public AQuery<E> orderByTextScore(String scoreField) {
+        FindOptions newOptions = options == null ? new FindOptions() : options;
+        if (scoreField != null && !scoreField.isEmpty()) {
+            newOptions = newOptions.sort(Meta.textScore(scoreField));
+        }
+        return new AQuery<E>(query, newOptions);
     }
 
     public AQuery<E> limit(int limit) {
