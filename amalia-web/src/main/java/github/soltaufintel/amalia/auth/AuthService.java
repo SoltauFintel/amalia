@@ -92,7 +92,8 @@ public class AuthService implements IAuthService {
             String encryptedPassword = hashPassword(user, password);
             if (encryptedPassword.equals(user.getPassword())) {
                 if (user.getLockState().equals(UserLockState.UNLOCKED)) {
-                    login(user.getId(), user.getLogin(), ctx, rememberMe);
+                    boolean redirect = !"false".equals(config.get("redirect-after-login", "true"));
+                    login(user.getId(), user.getLogin(), ctx, rememberMe, redirect);
                     return true;
                 } else {
                     Logger.info("Login " + user.getLogin() + " not possible because lock state is "
@@ -104,6 +105,10 @@ public class AuthService implements IAuthService {
     }
     
     public static void login(String id, String login, WebContext ctx, RememberMe rememberMe) {
+        login(id, login, ctx, rememberMe, true);
+    }
+    
+    public static void login(String id, String login, WebContext ctx, RememberMe rememberMe, boolean redirect) {
         ctx.session().setUserId(id);
         ctx.session().setLogin(login);
         ctx.session().setLoggedIn(true);
@@ -111,11 +116,13 @@ public class AuthService implements IAuthService {
 
         String path = ctx.session().getGoBackPath();
         ctx.session().setGoBackPath(null);
-        if (path == null || path.isBlank() || path.equals(ctx.path())) {
-            ctx.redirect("/");
-        } else {
-            Logger.info("[Login] redirect to " + path);
-            ctx.redirect(path);
+        if (redirect) {
+            if (path == null || path.isBlank() || path.equals(ctx.path())) {
+                ctx.redirect("/");
+            } else {
+                Logger.info("[Login] redirect to " + path);
+                ctx.redirect(path);
+            }
         }
     }
 
