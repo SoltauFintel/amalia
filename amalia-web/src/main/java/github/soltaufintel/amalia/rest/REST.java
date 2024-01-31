@@ -187,4 +187,36 @@ public class REST {
             throw new RestStatusException(status);
         }
     }
+    
+    public static String get(String url) {
+        return new REST(url).get().response();
+    }
+    public static void post(String url, Object data) {
+        new REST(url).post(data).close();
+    }
+    public static void post_cp1252(String url, Object data) {
+        new REST(url) {
+            @Override
+            protected String getJsonContentType() {
+                return "application/json; charset=cp1252";
+            }
+        }.post(data).close();
+    }
+    public static void put(String url, Object data) {
+        new REST(url).put(data).close();
+    }
+    public static void put_cp1252(String url, Object data) {
+        new REST(url) {
+            @Override
+            protected String getJsonContentType() {
+                return "application/json; charset=cp1252";
+            }
+        }.put(data).close();
+    }
+    public static void patch(String url, Object data) {
+        new REST(url).patch(data).close();
+    }
+    public static void delete(String url) {
+        new REST(url).delete().close();
+    }
 }

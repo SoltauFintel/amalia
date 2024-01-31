@@ -10,7 +10,6 @@ import org.apache.http.util.EntityUtils;
 
 import com.google.gson.Gson;
 
-// TODO REST umbauen. Wenn mich die response gar nicht interessiert, muss ich close() aufrufen. Das ist doof.
 public class RestResponse {
     private final CloseableHttpResponse response;
     private CloseableHttpClient httpClient;
@@ -29,7 +28,7 @@ public class RestResponse {
     }
 
     /**
-     * Must only be called if getHttpResponse() has been called.
+     * Must only be called if these methods have not been called: response(), fromJson()
      */
     public void close() {
         if (httpClient != null) {
@@ -41,6 +40,10 @@ public class RestResponse {
         }
     }
 
+    /**
+     * close() is called.
+     * @return response String
+     */
     public String response() {
         try {
             String ret = EntityUtils.toString(response.getEntity()); // must fetch result before closing http client
@@ -51,11 +54,18 @@ public class RestResponse {
         }
     }
     
+    /**
+     * close() is called.
+     * @param <T> any type
+     * @param cls Java class for JSON data
+     * @return object
+     */
     public <T> T fromJson(Class<T> cls) {
         return new Gson().fromJson(response(), cls);
     }
 
     /**
+     * close() is called.
      * @param <T> any type
      * @param type example: <code>java.lang.reflect.Type type = new TypeToken&lt;ArrayList&lt;TheItemClass&gt;&gt;() {}.getType();</code>
      * @return object
