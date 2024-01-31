@@ -67,7 +67,7 @@ public class Database {
             throw new RuntimeException("Config parameter 'dbname' missing!");
         }
         String dbhost = config.get("dbhost", "localhost");
-        String dbuser = config.get("dbuser");
+        String dbuser = config.get("dbuser", dbname);
         String dbpw = config.get("dbpw");
         AbstractDAO.database = new Database(dbhost, dbname, dbuser, dbpw, entityClasses);
         System.out.println("MongoDB database: " + dbname + "@" + dbhost

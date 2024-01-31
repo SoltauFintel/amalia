@@ -96,7 +96,23 @@ public abstract class AbstractDAO<E> {
      * @return size of whole database in Bytes
      */
     public Double getDatabaseSize() {
-        return ds().getDatabase().runCommand(new Document("dbStats", 1)).getDouble("storageSize");
+        Document cmd = new Document("dbStats", 1);
+        Document ret = runCommand(cmd);
+        return ret.getDouble("storageSize");
+    }
+    
+    /**
+     * Reduce collection size. The execution may take a few minutes. User needs dbAdmin role.
+     * @return JSON response
+     */
+    public String compact() {
+        Document cmd = new Document("compact", getEntityClass().getSimpleName());
+        Document ret = runCommand(cmd);
+        return ret.toJson();
+    }
+
+    private Document runCommand(Document cmd) {
+        return ds().getDatabase().runCommand(cmd);
     }
 
     protected AQuery<E> eq(String field, Object val) {
@@ -112,7 +128,7 @@ public abstract class AbstractDAO<E> {
     }
 
     protected final Query<E> createQuery() {
-        return database.ds().find(getEntityClass());
+        return ds().find(getEntityClass());
     }
     
     protected final AQuery<E> cq() {
@@ -123,7 +139,7 @@ public abstract class AbstractDAO<E> {
         return cq().query(pairs);
     }
 
-    protected final Datastore ds() {
+    protected Datastore ds() {
         return database.ds();
     }
 
