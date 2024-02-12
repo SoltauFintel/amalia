@@ -3,6 +3,7 @@ package github.soltaufintel.amalia.rest;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
+import java.nio.charset.Charset;
 
 import org.apache.http.HttpHost;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -74,7 +75,7 @@ public class REST {
     public RestResponse post(String str) {
         return request(new HttpPost(uri), str);
     }
-    public RestResponse post(String str, String contentType) {
+    public RestResponse post(String str, ContentType contentType) {
         return request(new HttpPost(uri), str, contentType);
     }
     public RestResponse post(Object object) {
@@ -84,7 +85,7 @@ public class REST {
     public RestResponse put(String str) {
         return request(new HttpPut(uri), str);
     }
-    public RestResponse put(String str, String contentType) {
+    public RestResponse put(String str, ContentType contentType) {
         return request(new HttpPut(uri), str, contentType);
     }
     public RestResponse put(Object object) {
@@ -94,7 +95,7 @@ public class REST {
     public RestResponse patch(String str) {
         return request(new HttpPatch(uri), str);
     }
-    public RestResponse patch(String str, String contentType) {
+    public RestResponse patch(String str, ContentType contentType) {
         return request(new HttpPatch(uri), str, contentType);
     }
     public RestResponse patch(Object object) {
@@ -121,10 +122,14 @@ public class REST {
         return request(request, str, null);
     }
 
-    protected RestResponse request(HttpEntityEnclosingRequestBase request, String str, String contentType) {
+    protected RestResponse request(HttpEntityEnclosingRequestBase request, String str, ContentType contentType) {
         try {
-            StringEntity entity = new StringEntity(str);
-            entity.setContentType(contentType);
+            StringEntity entity;
+            if (contentType == null) {
+                entity = new StringEntity(str); // text/plain ISO-8859-1
+            } else {
+                entity = new StringEntity(str, contentType);
+            }
             request.setEntity(entity);
             return doRequest(request);
         } catch (IOException e) {
@@ -137,11 +142,11 @@ public class REST {
     }
     
     /**
-     * You may want to set the content type to "application/json; charset=cp1252".
+     * You may want to set the content type to <code>ContentType.create("application/json", Charset.forName("cp1252"))</code>
      * @return JSON content type
      */
-    protected String getJsonContentType() {
-        return "application/json";
+    protected ContentType getJsonContentType() {
+        return ContentType.create("application/json");
     }
     
     protected RestResponse doRequest(HttpRequestBase request) {
@@ -199,8 +204,8 @@ public class REST {
     public static void post_cp1252(String url, Object data) {
         new REST(url) {
             @Override
-            protected String getJsonContentType() {
-                return "application/json; charset=cp1252";
+            protected ContentType getJsonContentType() {
+                return json_cp1252();
             }
         }.post(data).close();
     }
@@ -212,8 +217,8 @@ public class REST {
     public static void put_cp1252(String url, Object data) {
         new REST(url) {
             @Override
-            protected String getJsonContentType() {
-                return "application/json; charset=cp1252";
+            protected ContentType getJsonContentType() {
+                return json_cp1252();
             }
         }.put(data).close();
     }
@@ -224,5 +229,13 @@ public class REST {
     
     public static void delete(String url) {
         new REST(url).delete().close();
+    }
+    
+    public static ContentType json_cp1252() {
+        return ContentType.create("application/json", Charset.forName("cp1252"));
+    }
+    
+    public static ContentType json_utf8() {
+        return ContentType.create("application/json", Charset.forName("UTF-8"));
     }
 }
