@@ -122,21 +122,23 @@ public class REST {
         return request(request, str, null);
     }
 
+    /**
+     * @param request -
+     * @param str data, often JSON string
+     * @param contentType can be null, see json_utf8() and json_cp1252()
+     * @return RestResponse
+     */
     protected RestResponse request(HttpEntityEnclosingRequestBase request, String str, ContentType contentType) {
-        try {
-            StringEntity entity;
-            if (contentType == null) {
-                entity = new StringEntity(str); // text/plain ISO-8859-1
-            } else {
-                entity = new StringEntity(str, contentType);
-            }
-            request.setEntity(entity);
-            return doRequest(request);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        request.setEntity(new StringEntity(str, contentType));
+        return doRequest(request);
     }
 
+    /**
+     * Content-Type: getJsonContentType() will be used, default: "application/json"
+     * @param request -
+     * @param object will be converted to JSON
+     * @return RestResponse
+     */
     protected RestResponse request(HttpEntityEnclosingRequestBase request, Object object) {
         return request(request, new Gson().toJson(object), getJsonContentType());
     }
