@@ -48,6 +48,7 @@ public abstract class BaseTimer implements org.quartz.Job {
     /**
      * call start() in this method, e.g. start("0 30 18 * * ?") for daily 18:30 No
      * access to injected objects!
+     * <p><a href="https://www.freeformatter.com/cron-expression-generator-quartz.html">Cron calculator</a></p>
      * 
      * @throws SchedulerException
      */
