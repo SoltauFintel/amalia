@@ -4,8 +4,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.Properties;
 
-import com.google.common.base.Strings;
-
 /**
  * Gives access to the application configuration
  * 
@@ -21,10 +19,24 @@ public class AppConfig {
 
     public AppConfig() {
         String dn = System.getenv("CONFIG");
-        if (Strings.isNullOrEmpty(dn)) {
+        if (dn == null || dn.isBlank()) {
             dn = "AppConfig.properties";
         }
         properties = new Properties();
+        configFile = load(dn);
+    }
+    
+    /** for test */
+    public AppConfig(Properties properties, String configFile) {
+        this.properties = properties;
+        this.configFile = configFile;
+    }
+    
+    /**
+     * @param dn name of config file
+     * @return name of used config file
+     */
+    protected String load(String dn) {
         try {
             properties.load(new FileReader(dn));
         } catch (IOException e1) {
@@ -38,12 +50,7 @@ public class AppConfig {
                 throw new RuntimeException(e);
             }
         }
-        configFile = dn;
-    }
-    
-    public AppConfig(Properties properties, String configFile) {
-        this.properties = properties;
-        this.configFile = configFile;
+        return dn;
     }
 
     /**
@@ -83,10 +90,20 @@ public class AppConfig {
      */
     public boolean hasFilledKey(String key) {
         String value = get(key);
-        return value != null && !value.trim().isEmpty();
+        return value != null && !value.isBlank();
     }
     
+    /**
+     * @return port number from configuration file
+     * (or if not set default from env var 'PORT'
+     *  or if not set built-in value 8080)
+     */
     public int getPort() {
-        return getInt("port", 8080);
+        int de = 8080;
+        String p = System.getenv("PORT");
+        if (p != null && !p.isBlank()) {
+            de = Integer.parseInt(p);
+        }
+        return getInt("port", de);
     }
 }
