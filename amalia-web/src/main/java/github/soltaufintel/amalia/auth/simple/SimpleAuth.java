@@ -10,10 +10,11 @@ import github.soltaufintel.amalia.web.config.AppConfig;
  * and set encryption-frequency= in the AppConfig.properties with a secret value greater 7000.
  */
 public class SimpleAuth extends Auth {
-    private final IUserService userService = new SimpleUserService();
+    private final IUserService userService;
 
-    public SimpleAuth() {
-        super(new NoOpRememberMe(), new AppConfig().getInt("encryption-frequency", 0), new SimpleAuthRoutes());
+    public SimpleAuth(AppConfig config) {
+        super(config, new NoOpRememberMe(), config.getInt("encryption-frequency", 0), new SimpleAuthRoutes());
+        userService = new SimpleUserService(config);
     }
 
     @Override

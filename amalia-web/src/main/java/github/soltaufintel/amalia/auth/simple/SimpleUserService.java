@@ -9,11 +9,10 @@ import github.soltaufintel.amalia.auth.UserLockState;
 import github.soltaufintel.amalia.web.config.AppConfig;
 
 public class SimpleUserService implements IUserService {
-    private static final SimpleUser user = user();
+    private final SimpleUser user;
     
-    private static SimpleUser user() {
-        AppConfig c = new AppConfig();
-        return new SimpleUser(c.get("user.login"), c.get("user.mail"), c.get("user.password"), c.get("user.salt"));
+    public SimpleUserService(AppConfig config) {
+        user = new SimpleUser(config.get("user.login"), config.get("user.mail"), config.get("user.password"), config.get("user.salt"));
     }
 
     @Override

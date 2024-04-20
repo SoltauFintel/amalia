@@ -60,8 +60,7 @@ public class Database {
         }
     }
     
-    public static void open(Class<?>... entityClasses) {
-        AppConfig config = new AppConfig();
+    public static void openDatabase(AppConfig config, Class<?>... entityClasses) {
         String dbname = config.get("dbname");
         if (dbname == null || dbname.isEmpty()) {
             throw new RuntimeException("Config parameter 'dbname' missing!");

@@ -7,31 +7,35 @@ import github.soltaufintel.amalia.web.config.AppConfig;
 
 public abstract class Auth extends AbstractAuth {
     public static IAuth auth;
+    private final AppConfig config;
     private final int encryptionFrequency;
     private PasswordRules passwordRules = new MinimalPasswordRules();
     
     /**
+     * @param config -
      * @param rememberMe -
      * @param encryptionFrequency secret value, usually between 7000 and 10000
      */
-    public Auth(RememberMe rememberMe, int encryptionFrequency) {
-        this(rememberMe, encryptionFrequency, new AuthRoutes(new AuthPages()));
+    public Auth(AppConfig config, RememberMe rememberMe, int encryptionFrequency) {
+        this(config, rememberMe, encryptionFrequency, new AuthRoutes(new AuthPages()));
     }
 
     /**
+     * @param config -
      * @param rememberMe -
      * @param encryptionFrequency secret value, usually between 7000 and 10000
      * @param routes -
      */
-    public Auth(RememberMe rememberMe, int encryptionFrequency, IAuthRoutes routes) {
+    public Auth(AppConfig config, RememberMe rememberMe, int encryptionFrequency, IAuthRoutes routes) {
         super(rememberMe, routes);
+        this.config = config;
         this.encryptionFrequency = encryptionFrequency;
     }
     
     @Override
     public IAuthService getService(Context ctx) {
         return new AuthService(getUserService(), encryptionFrequency, passwordRules,
-                getRememberMe(), new WebContext(ctx), new AppConfig());
+                getRememberMe(), new WebContext(ctx), config);
     }
     
     protected abstract IUserService getUserService();
