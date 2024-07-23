@@ -14,18 +14,18 @@ public abstract class AbstractImageDownload extends Route<Object> {
         // load image
         BinaryData r = getLoader().load();
         byte[] data = r.getData();
-        if (data == null) {
-            throw new RuntimeException("Image not found!");
-        }
-        initHeader(r.getFilename());
-        
-        // resize image
-        int width = getWidth();
-        if (width > 0) {
-            try {
-                data = resize(width, data, isSpecial());
-            } catch (IOException ex) {
-                throw new RuntimeException("Error resizing image!", ex);
+
+        if (data != null) {
+            initHeader(r.getFilename());
+            
+            // resize image
+            int width = getWidth();
+            if (width > 0) {
+                try {
+                    data = resize(width, data, isSpecial());
+                } catch (IOException ex) {
+                    throw new RuntimeException("Error resizing image!", ex);
+                }
             }
         }
         

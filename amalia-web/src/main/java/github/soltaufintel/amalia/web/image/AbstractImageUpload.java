@@ -34,6 +34,7 @@ public abstract class AbstractImageUpload extends Action {
         return "file";
     }
     
+    // TODO can part.getSubmittedFileName() be used instead?! See Minerva ImageUploadAction.
     private String getFileName(Part part) {
         for (String cd : part.getHeader("content-disposition").split(";")) {
             if (cd.trim().startsWith("filename")) {
