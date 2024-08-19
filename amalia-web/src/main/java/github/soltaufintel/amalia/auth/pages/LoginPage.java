@@ -8,7 +8,7 @@ public class LoginPage extends Page {
     
     @Override
     protected void execute() {
-        Logger.info("LoginPage " + ctx.method());
+        Logger.debug(ctx.req.ip() + " | " + ctx.method() + " LoginPage");
         if (isPOST()) {
             String user = ctx.formParam("amalia_user");
             String password = ctx.formParam("amalia_password");
