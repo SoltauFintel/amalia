@@ -10,12 +10,7 @@ subprojects {
     java {
         toolchain {
             languageVersion = JavaLanguageVersion.of(17)
-            if (System.env['JITPACK'] == 'true') {
-                println 'Jitpack am Start'
-                vendor = JvmVendorSpec.ADOPTIUM
-            } else {
-                println 'kein Jitpack'
-            }
+            //vendor = JvmVendorSpec.ADOPTIUM
         }
     }
     
