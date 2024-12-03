@@ -54,6 +54,18 @@ public abstract class Page extends Action {
         model.putSize(name, collection);
     }
 
+    public void put(String name, Page component) {
+        component.init(ctx);
+        String html = component.run();
+        put(name, html); // no esc
+    }
+
+    public void put(String name, Action component) {
+        component.init(ctx);
+        String html = component.run();
+        put(name, html); // no esc
+    }
+
     public DataList list(String name) {
         return model.list(name);
     }
