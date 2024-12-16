@@ -6,8 +6,6 @@ import java.util.List;
 import org.pmw.tinylog.Level;
 
 import github.soltaufintel.amalia.auth.Auth;
-import github.soltaufintel.amalia.auth.IAuth;
-import github.soltaufintel.amalia.auth.NoOpAuth;
 import github.soltaufintel.amalia.web.WebApp;
 import github.soltaufintel.amalia.web.action.Action;
 import github.soltaufintel.amalia.web.action.GuruError404Page;
@@ -25,7 +23,6 @@ public class WebAppBuilder {
     private final List<Initializer> initializers = new ArrayList<>();
     private LoggingInitializer logging = new LoggingInitializer(Level.INFO);
     private AppConfig config = new AppConfig();
-    private IAuth auth = new NoOpAuth();
     private final List<Routes> routes = new ArrayList<>();
     private PageInitializer pageInit = new PageInitializer();
     private Banner banner = new Banner();
@@ -37,8 +34,7 @@ public class WebAppBuilder {
     }
 
     public WebApp build() {
-        Auth.auth = auth;
-        return new WebApp(appVersion, logging, config, auth, initializers, routes, pageInit, banner);
+        return new WebApp(appVersion, logging, config, initializers, routes, pageInit, banner);
     }
     
     public WebAppBuilder withDefaultLogLevel(Level level) {
@@ -55,9 +51,11 @@ public class WebAppBuilder {
         return this;
     }
 
-    public WebAppBuilder withAuth(IAuth auth) {
-        this.auth = auth;
-        routes.add(auth.getRoutes());
+    public WebAppBuilder withAuth(InitAuth initAuth) {
+        withInitializer(config -> {
+            Auth.auth = initAuth.createIAuth(config);
+            routes.add(Auth.auth.getRoutes());
+        });
         return this;
     }
     
