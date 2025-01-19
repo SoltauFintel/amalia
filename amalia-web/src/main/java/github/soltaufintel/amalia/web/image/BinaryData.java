@@ -3,6 +3,7 @@ package github.soltaufintel.amalia.web.image;
 import java.io.ByteArrayOutputStream;
 
 public class BinaryData {
+    public static final BinaryData NULL = new BinaryData((byte[]) null, null);
     private final byte[] data;
     private final String filename;
     
