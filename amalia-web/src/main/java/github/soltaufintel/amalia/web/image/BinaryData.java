@@ -7,7 +7,11 @@ public class BinaryData {
     private final String filename;
     
     public BinaryData(ByteArrayOutputStream stream, String filename) {
-        data = stream == null ? null : stream.toByteArray();
+        this(stream == null ? null : stream.toByteArray(), filename);
+    }
+
+    public BinaryData(byte[] data, String filename) {
+        this.data = data;
         this.filename = filename;
     }
 
