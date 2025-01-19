@@ -62,13 +62,17 @@ public class AppConfig {
     }
 
     /**
-     * @param key
-     * @param pDefault
-     * @return pDefault if property does not exist
+     * @param key -
+     * @param pDefault -
+     * @return pDefault if property does not exist.
+     * If property value starts with "!!" the following value is used as environment variable and its value is returned.
      */
     public String get(String key, String pDefault) {
         String ret = properties.getProperty(key);
-        return ret == null ? pDefault : ret.trim();
+        if (ret != null && ret.startsWith("!!")) {
+            ret = System.getenv(ret.substring("!!".length()));
+        }
+        return ret == null ? pDefault : ret;
     }
     
     public int getInt(String key, int pDefault) {
