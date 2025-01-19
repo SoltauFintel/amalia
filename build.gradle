@@ -6,14 +6,10 @@ subprojects {
     apply plugin: 'java-library'
     apply plugin: 'maven-publish'
     apply plugin: 'eclipse'
-    
-    java {
-        toolchain {
-            languageVersion = JavaLanguageVersion.of(17)
-            //vendor = JvmVendorSpec.ADOPTIUM
-        }
-    }
-    
+
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+
     repositories {
         mavenCentral()
         maven { url 'https://jitpack.io' }
