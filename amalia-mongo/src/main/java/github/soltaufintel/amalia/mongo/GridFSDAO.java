@@ -70,7 +70,7 @@ public class GridFSDAO {
         try {
             downloadStream = bucket.openDownloadStream(id);
         } catch (MongoGridFSException e) {
-            return new BinaryData(null, null);
+            return BinaryData.NULL;
         }
         String dn = downloadStream.getGridFSFile().getFilename();
         downloadStream.close();
