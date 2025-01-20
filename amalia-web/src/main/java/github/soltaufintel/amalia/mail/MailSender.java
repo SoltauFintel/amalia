@@ -15,29 +15,32 @@ public class MailSender {
     public static String body;
     
     public void send(Mail mail, AppConfig config) {
-        String fromName = mail.getSendername();
         String fromMailAddress = config.get("mail.from.mail-address");
         String forceTo = config.get("mail.to", "");
         String sendTo = forceTo.isBlank() ? getTo(mail) : forceTo;
 
         if (active) {
             Mailer mailer = MailerBuilder
-                    .withSMTPServer(config.get(SMTP_SERVER), config.getInt("mail.smtp-server-port", 25))
+                    .withSMTPServer(config.get(SMTP_SERVER), config.getInt("mail.smtp-server-port", 587))
                     .withSMTPServerUsername(config.get("mail.username"))
                     .withSMTPServerPassword(config.get("mail.password"))
                     .buildMailer();
             mailer.sendMail(EmailBuilder.startingBlank()
-                    .from(fromName, fromMailAddress)
+                    .from(mail.getSendername(), fromMailAddress)
                     .to(sendTo)
                     .withSubject(mail.getSubject())
                     .withPlainText(mail.getBody())
                     .buildEmail());
-            Logger.info("Mail sent to: " + sendTo + " \"" + mail.getSubject() + "\"");
+            logSendMail(mail, sendTo, fromMailAddress);
         } else {
             to = mail.getToEmailaddress();
             subject = mail.getSubject();
             body = mail.getBody();
         }
+    }
+    
+    protected void logSendMail(Mail mail, String sendTo, String froMAString) {
+        Logger.info("Mail sent to: " + sendTo + " \"" + mail.getSubject() + "\"");
     }
     
     private String getTo(Mail mail) {

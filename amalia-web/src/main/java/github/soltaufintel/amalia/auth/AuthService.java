@@ -28,6 +28,7 @@ import github.soltaufintel.amalia.web.action.Escaper;
 import github.soltaufintel.amalia.web.config.AppConfig;
 
 public class AuthService implements IAuthService {
+    public static MailSender mailSender = new MailSender();
     private final IUserService sv;
     private final int encryptionFrequency;
     private final PasswordRules passwordRules;
@@ -196,19 +197,6 @@ public class AuthService implements IAuthService {
         }
     }
 
-    protected void sendRegisterMail(IUser user) {
-        if (isSendMailAllowed()) {
-            Mail mail = new Mail();
-            mail.setSendername(config.get("register.sender", "Amalia"));
-            mail.setSubject(config.get("register.subject", "Registrierung"));
-            String url = config.get("url", "") + "/auth/rm?id=" + user.getNotificationId();
-            mail.setBody(config.get("register.body", "{url}").replace("{login}", user.getLogin()).replace("{url}", url));
-            mail.setToName(user.getName());
-            mail.setToEmailaddress(user.getMailAddress());
-            new MailSender().send(mail, config);
-        }
-    }
-
     @Override
     public void registerUnlock(String notificationId) {
         ok(notificationId, "notificationId");
@@ -256,19 +244,6 @@ public class AuthService implements IAuthService {
             sendForgotPasswordMail(user);
         }
         Logger.info("forgotPassword " + mail + ", size=" + users.size());
-    }
-
-    protected void sendForgotPasswordMail(IUser user) {
-        if (isSendMailAllowed()) {
-            Mail mail = new Mail();
-            mail.setSendername(config.get("forgot-password.sender", "Amalia"));
-            mail.setSubject(config.get("forgot-password.subject", "Passwort vergessen"));
-            String url = config.get("url", "") + "/auth/rp?id=" + user.getNotificationId();
-            mail.setBody(config.get("forgot-password.body", "{url}").replace("{login}", user.getLogin()).replace("{url}", url));
-            mail.setToName(user.getName());
-            mail.setToEmailaddress(user.getMailAddress());
-            new MailSender().send(mail, config);
-        }
     }
 
     @Override
@@ -342,21 +317,6 @@ public class AuthService implements IAuthService {
         
         sendChangedPasswordMail(user, ctx.ipAddress(), "admin");
         Logger.info("New password set for user '" + user.getLogin() + "'");
-    }
-
-    protected void sendChangedPasswordMail(IUser user, String ipAddress, String changedBy) {
-        if (isSendMailAllowed()) {
-            Mail mail = new Mail();
-            mail.setSendername(config.get("changed-password.sender", "Amalia"));
-            mail.setSubject(config.get("changed-password.subject", "Passwort geändert"));
-            mail.setBody(config.get("changed-password.body", "{login}, {changedby}, {ip}")
-                    .replace("{login}", user.getLogin())
-                    .replace("{changedby}", changedBy) // "you" or "admin"
-                    .replace("{ip}", ipAddress));
-            mail.setToName(user.getName());
-            mail.setToEmailaddress(user.getMailAddress());
-            new MailSender().send(mail, config);
-        }
     }
 
     @Override
@@ -449,6 +409,48 @@ public class AuthService implements IAuthService {
         if (value == null || value.isBlank() || !Escaper.esc(value).equals(value)) {
             throw new RuntimeException("Illegal " + attrName);
         }
+    }
+
+    protected void sendRegisterMail(IUser user) {
+        if (isSendMailAllowed()) {
+            Mail mail = createMail(user, "register", "Registrierung");
+            String url = config.get("url", "") + "/auth/rm?id=" + user.getNotificationId();
+            mail.setBody(config.get("register.body", "{url}").replace("{login}", user.getLogin()).replace("{url}", url));
+            sendMail(mail);
+        }
+    }
+
+    protected void sendForgotPasswordMail(IUser user) {
+        if (isSendMailAllowed()) {
+            Mail mail = createMail(user, "forgot-password", "Passwort vergessen");
+            String url = config.get("url", "") + "/auth/rp?id=" + user.getNotificationId();
+            mail.setBody(config.get("forgot-password.body", "{url}").replace("{login}", user.getLogin()).replace("{url}", url));
+            sendMail(mail);
+        }
+    }
+
+    protected void sendChangedPasswordMail(IUser user, String ipAddress, String changedBy) {
+        if (isSendMailAllowed()) {
+            Mail mail = createMail(user, "changed-password", "Passwort geändert");
+            mail.setBody(config.get("changed-password.body", "{login}, {changedby}, {ip}")
+                    .replace("{login}", user.getLogin())
+                    .replace("{changedby}", changedBy) // "you" or "admin"
+                    .replace("{ip}", ipAddress));
+            sendMail(mail);
+        }
+    }
+    
+    protected Mail createMail(IUser user, String keyprefix, String defaultSubject) {
+        Mail mail = new Mail();
+        mail.setToName(user.getName());
+        mail.setToEmailaddress(user.getMailAddress());
+        mail.setSendername(config.get(keyprefix + ".sender", "Amalia"));
+        mail.setSubject(config.get(keyprefix + ".subject", defaultSubject));
+        return mail;
+    }
+    
+    protected void sendMail(Mail mail) {
+        mailSender.send(mail, config);
     }
 
     public boolean isSendMailAllowed() {
