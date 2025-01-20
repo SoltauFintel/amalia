@@ -195,7 +195,7 @@ public class AuthService implements IAuthService {
         }
     }
 
-    private void sendRegisterMail(IUser user) {
+    protected void sendRegisterMail(IUser user) {
         Mail mail = new Mail();
         mail.setSendername(config.get("register.sender", "Amalia"));
         mail.setSubject(config.get("register.subject", "Registrierung"));
@@ -225,7 +225,7 @@ public class AuthService implements IAuthService {
         Logger.info("User '" + user.getLogin() + "' unlocked by mail.");
     }
     
-    private boolean isTooLate(IUser user, String action) {
+    protected boolean isTooLate(IUser user, String action) {
         LocalDateTime timestamp = sv.parseDate(user.getNotificationTimestamp());
         long hours = ChronoUnit.HOURS.between(timestamp, LocalDateTime.now());
         long maxHours = config.getInt(action + "-mail.max-time", 0);
@@ -255,7 +255,7 @@ public class AuthService implements IAuthService {
         Logger.info("forgotPassword " + mail + ", size=" + users.size());
     }
 
-    private void sendForgotPasswordMail(IUser user) {
+    protected void sendForgotPasswordMail(IUser user) {
         Mail mail = new Mail();
         mail.setSendername(config.get("forgot-password.sender", "Amalia"));
         mail.setSubject(config.get("forgot-password.subject", "Passwort vergessen"));
@@ -271,7 +271,7 @@ public class AuthService implements IAuthService {
         checkForgottenPasswordNotificationId2(notificationId);
     }
     
-    private IUser checkForgottenPasswordNotificationId2(String notificationId) {
+    protected IUser checkForgottenPasswordNotificationId2(String notificationId) {
         ok(notificationId, "notificationId");
         IUser user = sv.byNotificationId(notificationId);
         if (user == null) {
@@ -296,7 +296,7 @@ public class AuthService implements IAuthService {
         sendChangedPasswordMail(user, ctx.ipAddress(), "you");
     }
 
-    private void resetNotification(IUser user) {
+    protected void resetNotification(IUser user) {
         user.setMode(null);
         user.setNotificationId(null);
         user.setNotificationTimestamp(null);
@@ -339,7 +339,7 @@ public class AuthService implements IAuthService {
         Logger.info("New password set for user '" + user.getLogin() + "'");
     }
 
-    private void sendChangedPasswordMail(IUser user, String ipAddress, String changedBy) {
+    protected void sendChangedPasswordMail(IUser user, String ipAddress, String changedBy) {
         Mail mail = new Mail();
         mail.setSendername(config.get("changed-password.sender", "Amalia"));
         mail.setSubject(config.get("changed-password.subject", "Passwort geändert"));
@@ -378,7 +378,7 @@ public class AuthService implements IAuthService {
         sv.insert(user);
     }
 
-    private void setNewPassword(IUser user, String newPassword) {
+    protected void setNewPassword(IUser user, String newPassword) {
         user.setSalt(createSalt());
         user.setPassword(hashPassword(user, newPassword));
     }
@@ -431,7 +431,7 @@ public class AuthService implements IAuthService {
         return UserLockState.UNLOCKED; // oder LOCKED damit Admin noch User freischalten muss
     }
 
-    private void isAdmin() {
+    protected void isAdmin() {
         IUser admin = byId(getUserId());
         if (!admin.getRoles().contains(ADMIN_ROLE)) {
             throw new MissingRoleException("You must be admin to execute this operation!");
