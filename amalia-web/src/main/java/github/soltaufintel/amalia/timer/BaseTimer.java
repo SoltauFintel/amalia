@@ -14,6 +14,9 @@ import org.quartz.Trigger;
 import org.quartz.TriggerBuilder;
 import org.quartz.impl.StdSchedulerFactory;
 
+/**
+ * Prefer to use the new classes AbstractTimer and its builder class Timer.
+ */
 public abstract class BaseTimer implements org.quartz.Job {
     public static org.quartz.Scheduler _scheduler;
     protected org.quartz.Scheduler scheduler;
