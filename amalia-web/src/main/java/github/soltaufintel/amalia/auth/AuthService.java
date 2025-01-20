@@ -34,6 +34,7 @@ public class AuthService implements IAuthService {
     private final RememberMe rememberMe;
     private final WebContext ctx;
     private final AppConfig config;
+    private boolean sendMailAllowed = true;
     
     /**
      * @param userService database access to user
@@ -196,14 +197,16 @@ public class AuthService implements IAuthService {
     }
 
     protected void sendRegisterMail(IUser user) {
-        Mail mail = new Mail();
-        mail.setSendername(config.get("register.sender", "Amalia"));
-        mail.setSubject(config.get("register.subject", "Registrierung"));
-        String url = config.get("url", "") + "/auth/rm?id=" + user.getNotificationId();
-        mail.setBody(config.get("register.body", "{url}").replace("{login}", user.getLogin()).replace("{url}", url));
-        mail.setToName(user.getName());
-        mail.setToEmailaddress(user.getMailAddress());
-        new MailSender().send(mail, config);
+        if (isSendMailAllowed()) {
+            Mail mail = new Mail();
+            mail.setSendername(config.get("register.sender", "Amalia"));
+            mail.setSubject(config.get("register.subject", "Registrierung"));
+            String url = config.get("url", "") + "/auth/rm?id=" + user.getNotificationId();
+            mail.setBody(config.get("register.body", "{url}").replace("{login}", user.getLogin()).replace("{url}", url));
+            mail.setToName(user.getName());
+            mail.setToEmailaddress(user.getMailAddress());
+            new MailSender().send(mail, config);
+        }
     }
 
     @Override
@@ -256,14 +259,16 @@ public class AuthService implements IAuthService {
     }
 
     protected void sendForgotPasswordMail(IUser user) {
-        Mail mail = new Mail();
-        mail.setSendername(config.get("forgot-password.sender", "Amalia"));
-        mail.setSubject(config.get("forgot-password.subject", "Passwort vergessen"));
-        String url = config.get("url", "") + "/auth/rp?id=" + user.getNotificationId();
-        mail.setBody(config.get("forgot-password.body", "{url}").replace("{login}", user.getLogin()).replace("{url}", url));
-        mail.setToName(user.getName());
-        mail.setToEmailaddress(user.getMailAddress());
-        new MailSender().send(mail, config);
+        if (isSendMailAllowed()) {
+            Mail mail = new Mail();
+            mail.setSendername(config.get("forgot-password.sender", "Amalia"));
+            mail.setSubject(config.get("forgot-password.subject", "Passwort vergessen"));
+            String url = config.get("url", "") + "/auth/rp?id=" + user.getNotificationId();
+            mail.setBody(config.get("forgot-password.body", "{url}").replace("{login}", user.getLogin()).replace("{url}", url));
+            mail.setToName(user.getName());
+            mail.setToEmailaddress(user.getMailAddress());
+            new MailSender().send(mail, config);
+        }
     }
 
     @Override
@@ -340,16 +345,18 @@ public class AuthService implements IAuthService {
     }
 
     protected void sendChangedPasswordMail(IUser user, String ipAddress, String changedBy) {
-        Mail mail = new Mail();
-        mail.setSendername(config.get("changed-password.sender", "Amalia"));
-        mail.setSubject(config.get("changed-password.subject", "Passwort geändert"));
-        mail.setBody(config.get("changed-password.body", "{login}, {changedby}, {ip}")
-                .replace("{login}", user.getLogin())
-                .replace("{changedby}", changedBy) // "you" or "admin"
-                .replace("{ip}", ipAddress));
-        mail.setToName(user.getName());
-        mail.setToEmailaddress(user.getMailAddress());
-        new MailSender().send(mail, config);
+        if (isSendMailAllowed()) {
+            Mail mail = new Mail();
+            mail.setSendername(config.get("changed-password.sender", "Amalia"));
+            mail.setSubject(config.get("changed-password.subject", "Passwort geändert"));
+            mail.setBody(config.get("changed-password.body", "{login}, {changedby}, {ip}")
+                    .replace("{login}", user.getLogin())
+                    .replace("{changedby}", changedBy) // "you" or "admin"
+                    .replace("{ip}", ipAddress));
+            mail.setToName(user.getName());
+            mail.setToEmailaddress(user.getMailAddress());
+            new MailSender().send(mail, config);
+        }
     }
 
     @Override
@@ -442,5 +449,13 @@ public class AuthService implements IAuthService {
         if (value == null || value.isBlank() || !Escaper.esc(value).equals(value)) {
             throw new RuntimeException("Illegal " + attrName);
         }
+    }
+
+    public boolean isSendMailAllowed() {
+        return sendMailAllowed;
+    }
+
+    public void setSendMailAllowed(boolean sendMailAllowed) {
+        this.sendMailAllowed = sendMailAllowed;
     }
 }
