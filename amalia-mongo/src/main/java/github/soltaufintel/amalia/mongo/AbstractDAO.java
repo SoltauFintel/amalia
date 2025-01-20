@@ -2,11 +2,14 @@ package github.soltaufintel.amalia.mongo;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 import org.bson.Document;
 import org.bson.types.ObjectId;
 
 import com.mongodb.DuplicateKeyException;
+import com.mongodb.client.DistinctIterable;
 
 import dev.morphia.Datastore;
 import dev.morphia.query.Query;
@@ -82,6 +85,13 @@ public abstract class AbstractDAO<E> {
 
     public E firstIgnoreCase(String field, String val) {
         return eqIgnoreCase(field, val).first();
+    }
+
+    public <T> Set<T> distinct(String fieldname, Class<T> datatype) {
+        Set<T> ret = new TreeSet<>();
+        DistinctIterable<T> distinct = ds().getCollection(getEntityClass()).distinct(fieldname, datatype);
+        distinct.forEach(o -> ret.add(o));
+        return ret;
     }
 
     public long size() {
