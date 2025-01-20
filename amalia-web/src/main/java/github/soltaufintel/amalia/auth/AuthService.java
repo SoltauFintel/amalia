@@ -90,8 +90,8 @@ public class AuthService implements IAuthService {
                 return false;
             }
             String encryptedPassword = hashPassword(user, password);
-            if (encryptedPassword.equals(user.getPassword())) {
-                if (user.getLockState().equals(UserLockState.UNLOCKED)) {
+            if (comparePasswords(encryptedPassword, user.getPassword())) {
+                if (isUserUnlocked(user)) {
                     boolean redirect = !"false".equals(config.get("redirect-after-login", "true"));
                     login(user.getId(), user.getLogin(), ctx, rememberMe, redirect);
                     return true;
@@ -102,6 +102,14 @@ public class AuthService implements IAuthService {
             }
         }
         return false;
+    }
+    
+    protected boolean comparePasswords(String pw, String userPw) {
+        return pw.equals(userPw);
+    }
+    
+    protected boolean isUserUnlocked(IUser user) {
+        return UserLockState.UNLOCKED.equals(user.getLockState());
     }
     
     public static void login(String id, String login, WebContext ctx, RememberMe rememberMe) {
@@ -380,7 +388,7 @@ public class AuthService implements IAuthService {
      * @param password -
      * @return hashed password
      */
-    private String hashPassword(IUser user, String password) {
+    protected String hashPassword(IUser user, String password) {
         return hashPassword(user.getSalt() + password, encryptionFrequency);
     }
     
