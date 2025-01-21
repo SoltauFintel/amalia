@@ -7,6 +7,7 @@ import github.soltaufintel.amalia.web.action.Page;
 import github.soltaufintel.amalia.web.action.PageInitializer;
 
 public class RouteHandler {
+    public static final boolean PAGE_INITIALIZER_FIRST = false; 
     private final PageInitializer pageInit;
     private final Class<? extends Route<?>> routeClass;
     
@@ -48,9 +49,16 @@ public class RouteHandler {
         }
         
         // init route
-        route.init(ctx);
-        if (pageInit != null && route instanceof Page page) {
-            pageInit.initPage(ctx, page);
+        if (PAGE_INITIALIZER_FIRST) {
+            if (pageInit != null && route instanceof Page page) {
+                pageInit.initPage(ctx, page);
+            }
+            route.init(ctx);
+        } else {
+            route.init(ctx);
+            if (pageInit != null && route instanceof Page page) {
+                pageInit.initPage(ctx, page);
+            }
         }
         extraInit.accept(route);
         
