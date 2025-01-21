@@ -63,8 +63,12 @@ public abstract class AbstractAuth implements IAuth {
         return false;
     }
 
-    protected void userIsNotLoggedIn(WebContext ctx, String path) {
+    public void userIsNotLoggedIn(WebContext ctx, String path) {
         saveGoBackPath(ctx, path);
+        haltToLoginPage(ctx);
+    }
+    
+    public void haltToLoginPage(WebContext ctx) {
         Spark.halt(401, (String) ctx.handle(routes.getLoginPageRouteHandler()));
     }
 
