@@ -40,16 +40,27 @@ public abstract class AbstractAuth implements IAuth {
     @Override
     public void filter(WebContext ctx) {
         String path = ctx.path();
-        if (isProtected(path) && !ctx.session().isLoggedIn()) {
-            IKnownUser knownUser = rememberMe.getUserIfKnown(ctx);
-            if (knownUser != null) {
-                ctx.session().setUserId(knownUser.getUserId());
-                ctx.session().setLogin(knownUser.getUser());
-                ctx.session().setLoggedIn(true);
+        if (isProtected(path) && !isLoggedIn(ctx)) {
+            if (checkRememberMe(ctx)) {
                 return;
             }
             userIsNotLoggedIn(ctx, path);
         }
+    }
+    
+    protected boolean isLoggedIn(WebContext ctx) {
+        return ctx.session().isLoggedIn();
+    }
+
+    public boolean checkRememberMe(WebContext ctx) {
+        IKnownUser knownUser = rememberMe.getUserIfKnown(ctx);
+        if (knownUser != null) {
+            ctx.session().setUserId(knownUser.getUserId());
+            ctx.session().setLogin(knownUser.getUser());
+            ctx.session().setLoggedIn(true);
+            return true;
+        }
+        return false;
     }
 
     protected void userIsNotLoggedIn(WebContext ctx, String path) {
@@ -57,7 +68,7 @@ public abstract class AbstractAuth implements IAuth {
         Spark.halt(401, (String) ctx.handle(routes.getLoginPageRouteHandler()));
     }
 
-    protected void saveGoBackPath(WebContext ctx, String path) {
+    public void saveGoBackPath(WebContext ctx, String path) {
         if (!"/login".equals(path)) {
             String qs = ctx.req().queryString();
             if (qs != null) {

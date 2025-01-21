@@ -38,7 +38,7 @@ public abstract class Auth extends AbstractAuth {
                 getRememberMe(), new WebContext(ctx), config);
     }
     
-    protected abstract IUserService getUserService();
+    public abstract IUserService getUserService();
 
     public PasswordRules getPasswordRules() {
         return passwordRules;

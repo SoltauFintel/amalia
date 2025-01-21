@@ -18,7 +18,7 @@ public class SimpleAuth extends Auth {
     }
 
     @Override
-    protected IUserService getUserService() {
+    public IUserService getUserService() {
         return userService;
     }
 }

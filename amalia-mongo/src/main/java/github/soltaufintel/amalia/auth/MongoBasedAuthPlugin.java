@@ -21,7 +21,7 @@ public class MongoBasedAuthPlugin extends Auth {
     }
 
     @Override
-    protected IUserService getUserService() {
+    public IUserService getUserService() {
         return sv;
     }
 }
