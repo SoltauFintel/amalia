@@ -6,6 +6,7 @@ import java.util.List;
 import com.github.template72.compiler.CompiledTemplates;
 import com.github.template72.data.DataList;
 import com.github.template72.data.DataMap;
+import com.github.template72.exceptions.MissingContentException;
 
 public abstract class Page extends Action {
     public static CompiledTemplates templates;
@@ -64,6 +65,14 @@ public abstract class Page extends Action {
         component.init(ctx);
         String html = component.run();
         put(name, html); // no esc
+    }
+    
+    public boolean hasVar(String name) {
+        try {
+            return model.get(name) != null; // TODO template72
+        } catch (MissingContentException e) {
+            return false;
+        }
     }
 
     public DataList list(String name) {
