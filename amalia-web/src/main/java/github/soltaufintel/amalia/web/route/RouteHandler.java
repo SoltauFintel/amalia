@@ -7,7 +7,7 @@ import github.soltaufintel.amalia.web.action.Page;
 import github.soltaufintel.amalia.web.action.PageInitializer;
 
 public class RouteHandler {
-    public static final boolean PAGE_INITIALIZER_FIRST = false; 
+    public static boolean PAGE_INITIALIZER_FIRST = false; 
     private final PageInitializer pageInit;
     private final Class<? extends Route<?>> routeClass;
     
