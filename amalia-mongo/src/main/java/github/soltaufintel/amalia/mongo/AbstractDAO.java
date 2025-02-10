@@ -4,6 +4,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.function.Predicate;
 
 import org.bson.Document;
 import org.bson.types.ObjectId;
@@ -86,6 +87,28 @@ public abstract class AbstractDAO<E> {
     public E firstIgnoreCase(String field, String val) {
         return eqIgnoreCase(field, val).first();
     }
+
+    /**
+     * Sometimes you can not specify a delete expression as a query
+     * and you need a Predicate for each document.
+     * @param test if predicate returns true the document will be deleted
+     * @return number of deleted documents
+     */
+	public int removeIf(Predicate<E> test) {
+		return removeIf(iterator(), test);
+	}
+
+	public int removeIf(Iterator<E> iter, Predicate<E> test) {
+		int deleted = 0;
+		while (iter.hasNext()) {
+			E entity = iter.next();
+			if (test.test(entity)) {
+				delete(entity);
+				deleted++;
+			}
+		}
+		return deleted;
+	}
 
     public <T> Set<T> distinct(String fieldname, Class<T> datatype) {
         Set<T> ret = new TreeSet<>();
