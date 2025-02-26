@@ -86,11 +86,11 @@ public class AQuery<E> {
     }
 
     public AQuery<E> startsWith(String field, String text) {
-        return regex(field, Pattern.quote(text) + ".*");
+        return regex(field, "^" + Pattern.quote(text) + ".*");
     }
 
     public AQuery<E> startsWith_ignoreCase(String field, String text) {
-        return regex_ignoreCase(field, Pattern.quote(text) + ".*");
+        return regex_ignoreCase(field, "^" + Pattern.quote(text) + ".*");
     }
 
     public AQuery<E> in(String field, Iterable<?> iterable) {
