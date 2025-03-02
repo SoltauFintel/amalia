@@ -121,10 +121,11 @@ public class AQuery<E> {
      * @return new AQuery object
      */
     public AQuery<E> order(String fields) {
+    	if (fields == null || fields.isBlank()) {
+    		return this;
+    	}
         FindOptions newOptions = options == null ? new FindOptions() : options;
-        if (fields != null && !fields.isEmpty()) {
-            newOptions = newOptions.sort(makeSortArray(fields));
-        }
+        newOptions = newOptions.sort(makeSortArray(fields));
         return new AQuery<E>(query, newOptions);
     }
 
@@ -194,6 +195,15 @@ public class AQuery<E> {
         }
     }
 
+    /**
+     * Shortcut for order() and list()
+     * @param fields comma separated field names, prepend "-" for descending sort order
+     * @return ordered documents
+     */
+    public List<E> list(String order) {
+    	return order(order).list();
+    }
+
     public Iterator<E> iterator() {
         if (options == null) {
             return query.iterator();
@@ -225,6 +235,9 @@ public class AQuery<E> {
         return query.delete(new DeleteOptions().multi(true)).getDeletedCount();
     }
 
+    /**
+     * @return call e.g. set() and at the end you must call update()
+     */
     public AUpdateOperation<E> update() {
         return new AUpdateOperation<E>(this);
     }

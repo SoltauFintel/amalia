@@ -18,11 +18,38 @@ public class AUpdateOperation<E> {
     }
 
     public AUpdateOperation<E> set(String field, Object value) {
-        ops.add(UpdateOperators.set(field, value));
-        return this;
+        return _add(UpdateOperators.set(field, value));
     }
 
     /**
+     * Deletes field.
+     * @param field field name
+     * @return this
+     */
+    public AUpdateOperation<E> unset(String field) {
+        return _add(UpdateOperators.unset(field));
+    }
+
+    public AUpdateOperation<E> inc(String field) {
+    	return _add(UpdateOperators.inc(field));
+    }
+
+    public AUpdateOperation<E> dec(String field) {
+    	return _add(UpdateOperators.dec(field));
+    }
+
+    /**
+     * Use this method for extending this class.
+     * @param updateOperator use UpdateOperators to create an UpdateOperator
+     * @return this
+     */
+    public AUpdateOperation<E> _add(UpdateOperator updateOperator) {
+    	ops.add(updateOperator);
+    	return this;
+    }
+
+    /**
+     * Call this method at the end to execute the update operation.
      * @return number of modified documents
      */
     public long update() {
