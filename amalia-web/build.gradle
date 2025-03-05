@@ -3,12 +3,12 @@ repositories {
 }
 
 dependencies {
-    api 'com.github.sparkjavateam:spark:2.10.0-alpha1'
-    api 'org.slf4j:slf4j-nop:2.0.6'
+    api 'com.github.sparkjavateam:spark:2.10.0-alpha2'
+    api 'org.slf4j:slf4j-nop:2.0.17'
     api 'org.tinylog:tinylog:1.3.6'
     api 'com.github.template72:template72:1.0.0'
     api 'com.google.guava:guava:31.1-jre'
-    api 'com.google.code.gson:gson:2.10.1'
+    api 'com.google.code.gson:gson:2.12.1'
     api 'commons-lang:commons-lang:2.6' // TODO auf Version 3 gehen | Wofür wird das benötigt? (s.a. commons-text) Muss das "api" sein?
     api 'org.quartz-scheduler:quartz:2.3.2'
     implementation 'javaxt:javaxt-core:1.7.9' // https://www.javaxt.com/downloads/

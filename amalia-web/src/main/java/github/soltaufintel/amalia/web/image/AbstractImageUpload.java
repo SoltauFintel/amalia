@@ -3,12 +3,11 @@ package github.soltaufintel.amalia.web.image;
 import java.io.IOException;
 import java.io.InputStream;
 
-import javax.servlet.MultipartConfigElement;
-import javax.servlet.http.Part;
-
 import org.pmw.tinylog.Logger;
 
 import github.soltaufintel.amalia.web.action.Action;
+import jakarta.servlet.MultipartConfigElement;
+import jakarta.servlet.http.Part;
 
 /**
  * Foto Upload
