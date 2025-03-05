@@ -1,5 +1,6 @@
 package github.soltaufintel.amalia.web.table;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Stream;
@@ -8,10 +9,15 @@ import com.github.template72.compiler.CompiledTemplate;
 import com.github.template72.compiler.TemplateCompiler;
 import com.github.template72.compiler.TemplateCompilerBuilder;
 import com.github.template72.data.DataMap;
+import com.github.template72.data.IDataItem;
 import com.github.template72.data.IDataMap;
 
 import github.soltaufintel.amalia.web.action.Action;
 
+/**
+ * Using the TableComponent the use gets the ability to sort columns without reloading the entire page.
+ * This is achieved using HTMX calls that replace only the table HTML.
+ */
 public class TableComponent extends Action {
 	protected final TemplateCompiler compiler = new TemplateCompilerBuilder().build();
 	protected final String tableCSS;
@@ -24,11 +30,18 @@ public class TableComponent extends Action {
 	protected int sortedColumn = -1;
 	protected boolean asc = false;
 	protected String html;
+	protected String rowClass;
 
 	public TableComponent(List<Col> cols, DataMap model, String listName) {
 		this("", cols, model, listName);
 	}
 
+	/**
+	 * @param tableCSS CSS classes for the table. "!" at begin to replace the default CSS classes
+	 * @param cols -
+	 * @param model -
+	 * @param listName name of the list in model that contains data for all rows
+	 */
 	public TableComponent(String tableCSS, List<Col> cols, DataMap model, String listName) {
 		this.tableCSS = tableCSS;
 		this.cols = cols;
@@ -41,6 +54,12 @@ public class TableComponent extends Action {
 
 	@Override
 	protected void execute() {
+		for (Col col : cols) {
+			if (col.isRemove()) {
+				System.err.println("warning: there is a TableComponent Col \"" + col.getHeaderHTML() +
+						"\" with isRemove()=true! You should use Cols and call remove() before adding it to Cols.");
+			}
+		}
 		StringBuilder sb = new StringBuilder();
 		if (tableCSS.startsWith("!")) {
             sb.append("<table class=\"" + tableCSS.substring(1) + " " + sid + "\">\n<tr>");
@@ -82,13 +101,29 @@ public class TableComponent extends Action {
 	}
 
 	protected void makeRows(StringBuilder rows) {
-		Comparator<IDataMap> comparator = comparator();
+		final String r = rowClass != null && !rowClass.isBlank() ? rowClass : null;
 		Stream<IDataMap> stream = model.getList(listName).stream();
+		Comparator<IDataMap> comparator = comparator();
 		if (comparator != null) {
 			stream = stream.sorted(comparator);
 		}
 		stream.forEach(map -> {
-			rows.append("\n\t<tr>");
+			boolean hasRowClass = false;
+			if (r != null) {
+				IDataItem rcdi = map.get(r);
+				if (rcdi != null) {
+					String rc = rcdi.toString();
+					if (rc != null && !rc.isEmpty()) {
+						rows.append("\n\t<tr ");
+						rows.append(rc);
+						rows.append(">");
+						hasRowClass = true;
+					}
+				}
+			}
+			if (!hasRowClass) {
+				rows.append("\n\t<tr>");
+			}
 			model.put(runVarName, map);
 			cols.forEach(col -> {
 				String content = col.template.render(model);
@@ -106,6 +141,19 @@ public class TableComponent extends Action {
 		return ret;
 	}
 	
+	public static class Cols extends ArrayList<Col> {
+		
+		public static Cols of(Col ...cols) {
+			Cols ret = new Cols();
+			for (Col i : cols) {
+				if (!i.isRemove()) {
+					ret.add(i);
+				}
+			}
+			return ret;
+		}
+	}
+	
 	public static class Col {
 		/** null or empty: sort by column content (but be aware if there's HTML as content!) */
 		private final String sortkey;
@@ -115,13 +163,42 @@ public class TableComponent extends Action {
 		private final String rowCSS;
 		private final String rowHTML;
 		private final ColAlign align;
+		private final boolean remove;
 		CompiledTemplate template;
-		
-		public Col(String headerCSS, String headerHTML, String rowCSS, String rowHTML) {
-			this(null, ColSort.NONE, headerCSS, headerHTML, rowCSS, rowHTML, ColAlign.LEFT);
+
+		/**
+		 * Common Col constructor
+		 * @param headerHTML usually just the column title
+		 * @param rowHTML something like "{{i.FIELDNAME}}" where FIELDNAME varies. But it could be more complex HTML, e.g. a link.
+		 */
+		public Col(String headerHTML, String rowHTML) {
+			this(false, null, ColSort.NONE, "", headerHTML, "", rowHTML, ColAlign.LEFT);
+		}
+
+		/**
+		 * Col constructor with 2nd argument rowCSS
+		 * @param headerHTML usually just the column title
+		 * @param rowCSS CSS class for the cell in a row; can be empty
+		 * @param rowHTML something like "{{i.FIELDNAME}}" where FIELDNAME varies. But it could be more complex HTML, e.g. a link.
+		 */
+		public Col(String headerHTML, String rowCSS, String rowHTML) {
+			this(false, null, ColSort.NONE, "", headerHTML, rowCSS, rowHTML, ColAlign.LEFT);
 		}
 		
-		protected Col(String sortkey, ColSort sort, String headerCSS, String headerHTML, String rowCSS, String rowHTML, ColAlign align) {
+		/**
+		 * Col constructor with 3rd argument rowCSS and 1st argument headerCSS
+		 * @param headerCSS CSS class for the cell in the header row; can be empty
+		 * @param headerHTML usually just the column title
+		 * @param rowCSS CSS class for the cell in a row; can be empty
+		 * @param rowHTML something like "{{i.FIELDNAME}}" where FIELDNAME varies. But it could be more complex HTML, e.g. a link.
+		 */
+		public Col(String headerCSS, String headerHTML, String rowCSS, String rowHTML) {
+			this(false, null, ColSort.NONE, headerCSS, headerHTML, rowCSS, rowHTML, ColAlign.LEFT);
+		}
+
+		protected Col(boolean remove, String sortkey, ColSort sort, String headerCSS, String headerHTML, String rowCSS,
+				String rowHTML, ColAlign align) {
+			this.remove = remove;
 			this.sortkey = sortkey;
 			this.sort = sort;
 			this.headerCSS = headerCSS;
@@ -130,29 +207,72 @@ public class TableComponent extends Action {
 			this.rowHTML = rowHTML;
 			this.align = align;
 		}
-
-		public Col(String headerHTML, String rowHTML) {
-			this(null, ColSort.NONE, "", headerHTML, "", rowHTML, ColAlign.LEFT);
+		
+		/**
+		 * Convenience method for creating a Col with run var "i".
+		 * @param header column title (can be HTML)
+		 * @param fieldname just the fieldname - makes rowHTML = "{{i.FIELDNAME}}"
+		 * @return new Col
+		 */
+		public static Col i(String header, String fieldname) {
+			return new Col(header, "{{i." + fieldname + "}}");
 		}
 
-		public Col(String headerHTML, String rowCSS, String rowHTML) {
-			this(null, ColSort.NONE, "", headerHTML, rowCSS, rowHTML, ColAlign.LEFT);
+		/**
+		 * Convenience method for creating a Col with run var "i". Col is a link.
+		 * @param header column title (can be HTML)
+		 * @param fieldname just the fieldname - makes rowHTML = "<a href=LINK>{{i.FIELDNAME}}</a>"
+		 * @param link -
+		 * @return new Col
+		 */
+		public static Col i(String header, String fieldname, String link) {
+			return new Col(header, "<a href=\"" + link + "\">{{i." + fieldname + "}}</a>").sortable(fieldname);
+		}
+
+		/**
+		 * Convenience method for creating a sortable Col with run var "i".
+		 * @param header column title (can be HTML)
+		 * @param fieldname just the fieldname - makes rowHTML = "{{i.FIELDNAME}}"
+		 * @return new Col, sorted by fieldname
+		 */
+		public static Col si(String header, String fieldname) {
+			return i(header, fieldname).sortable(fieldname);
+		}
+
+		/**
+		 * Convenience method for creating a Col with run var "i". Col is a link and is sortable.
+		 * @param header column title (can be HTML)
+		 * @param fieldname just the fieldname - makes rowHTML = "<a href=LINK>{{i.FIELDNAME}}</a>"
+		 * @param link -
+		 * @return new Col, sorted by fieldname
+		 */
+		public static Col si(String header, String fieldname, String link) {
+			return i(header, fieldname, link).sortable(fieldname);
 		}
 
 		public Col sortable(String sortkey) {
-			return new Col(sortkey, ColSort.ASC_DESC, headerCSS, headerHTML, rowCSS, rowHTML, align);
+			return new Col(remove, sortkey, ColSort.ASC_DESC, headerCSS, headerHTML, rowCSS, rowHTML, align);
 		}
 
 		public Col asc(String sortkey) {
-			return new Col(sortkey, ColSort.ASC, headerCSS, headerHTML, rowCSS, rowHTML, align);
+			return new Col(remove, sortkey, ColSort.ASC, headerCSS, headerHTML, rowCSS, rowHTML, align);
 		}
 
 		public Col desc(String sortkey) {
-			return new Col(sortkey, ColSort.DESC, headerCSS, headerHTML, rowCSS, rowHTML, align);
+			return new Col(remove, sortkey, ColSort.DESC, headerCSS, headerHTML, rowCSS, rowHTML, align);
 		}
 
 		public Col right() {
-			return new Col(sortkey, sort, headerCSS, headerHTML, rowCSS, rowHTML, ColAlign.RIGHT);
+			return new Col(remove, sortkey, sort, headerCSS, headerHTML, rowCSS, rowHTML, ColAlign.RIGHT);
+		}
+
+		/**
+		 * Must be called before Col is added to Cols.
+		 * @param condition true: this column will be removed
+		 * @return change Col
+		 */
+		public Col remove(boolean condition) {
+			return new Col(condition, sortkey, sort, headerCSS, headerHTML, rowCSS, rowHTML, align);
 		}
 
 		public String getSortkey() {
@@ -181,6 +301,10 @@ public class TableComponent extends Action {
 
 		public ColAlign getAlign() {
 			return align;
+		}
+		
+		public boolean isRemove() {
+			return remove;
 		}
 	}
 	
@@ -267,8 +391,25 @@ public class TableComponent extends Action {
 		return runVarName;
 	}
 
+	/**
+	 * @param runVarName default value is "i"
+	 * @return this
+	 */
 	public TableComponent setRunVarName(String runVarName) {
 		this.runVarName = runVarName;
+		return this;
+	}
+
+	public String getRowClass() {
+		return rowClass;
+	}
+
+	/**
+	 * @param rowClass e.g. class="highlight", null for no rowClass
+	 * @return this
+	 */
+	public TableComponent setRowClass(String rowClass) {
+		this.rowClass = rowClass;
 		return this;
 	}
 }
