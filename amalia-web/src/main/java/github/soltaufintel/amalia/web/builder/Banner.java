@@ -5,6 +5,8 @@ import java.io.InputStream;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.pmw.tinylog.Logger;
 
@@ -14,7 +16,13 @@ public class Banner {
 
     public void print(String appVersion, AppConfig config) {
         banner();
-        System.out.println("v" + appVersion + " ready on port " + config.getPort());
+		List<Integer> ports = config.getPorts();
+		if (ports == null || ports.isEmpty()) {
+			System.out.println("v" + appVersion + " ready on port " + config.getPort());
+		} else {
+			System.out.println("v" + appVersion + " ready on port" + (ports.size() == 1 ? "" : "s") + " "
+					+ ports.stream().map(i -> i + "").collect(Collectors.joining(", ")));
+		}
         System.out.println("Configuration file: " + config.getFilename()
             + " | Log level: " + Logger.getLevel()
             + " | Mode: " + (config.isDevelopment() ? "development" : "production"));
