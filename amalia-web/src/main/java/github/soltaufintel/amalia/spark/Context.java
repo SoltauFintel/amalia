@@ -20,6 +20,10 @@ public class Context {
         return req.uri();
     }
     
+    public int port() {
+    	return req.port();
+    }
+    
     public String method() {
         return req.requestMethod();
     }

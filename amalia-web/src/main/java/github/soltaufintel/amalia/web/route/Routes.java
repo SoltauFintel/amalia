@@ -2,14 +2,14 @@ package github.soltaufintel.amalia.web.route;
 
 import github.soltaufintel.amalia.auth.IAuth;
 import github.soltaufintel.amalia.web.action.PageInitializer;
-import github.soltaufintel.amalia.web.engine.Engine;
+import github.soltaufintel.amalia.web.engine.IEngine;
 
 /**
  * Define routes
  */
 public interface Routes {
 
-    void init(Engine engine, IAuth auth, PageInitializer pageInit);
+    void init(IEngine engine, IAuth auth, PageInitializer pageInit);
     
     /**
      * Define routes
@@ -20,4 +20,6 @@ public interface Routes {
      * @return the higher the number the later the processing
      */
     int getPriority();
+    
+    int getPort();
 }

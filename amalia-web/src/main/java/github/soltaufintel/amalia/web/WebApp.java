@@ -2,6 +2,7 @@ package github.soltaufintel.amalia.web;
 
 import static spark.Spark.initExceptionHandler;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
@@ -15,6 +16,8 @@ import github.soltaufintel.amalia.web.builder.Initializer;
 import github.soltaufintel.amalia.web.builder.LoggingInitializer;
 import github.soltaufintel.amalia.web.config.AppConfig;
 import github.soltaufintel.amalia.web.engine.Engine;
+import github.soltaufintel.amalia.web.engine.EngineMP;
+import github.soltaufintel.amalia.web.engine.IEngine;
 import github.soltaufintel.amalia.web.route.Routes;
 
 public class WebApp {
@@ -26,7 +29,7 @@ public class WebApp {
     private final PageInitializer pageInit;
     private final Banner banner;
     
-    private Engine engine;
+    private List<IEngine> engines;
 
     public WebApp(String appVersion, LoggingInitializer logging, AppConfig config,
             List<Initializer> initializers, List<Routes> routes, PageInitializer pageInit, Banner banner) {
@@ -45,8 +48,8 @@ public class WebApp {
             Logger.error("[FATAL] " + ex.getMessage());
             System.exit(100);
         });
-        engine = startEngine(config);
-        banner.print(appVersion, config, engine);
+        startEngine(config);
+        banner.print(appVersion, config);
         initializers.forEach(i -> i.init(config));
         if (Auth.auth == null) {
             Logger.debug("Auth.auth is null and is set to NoOpAuth");
@@ -56,17 +59,27 @@ public class WebApp {
         banner.ready();
     }
 
-    protected Engine startEngine(AppConfig config) {
-        return new Engine(
-                config.getPort(),
-                config.get("static-files", "web"),
-                config.get("app.name"),
-                config.isDevelopment());
+    protected void startEngine(AppConfig config) {
+    	engines = new ArrayList<>();
+    	String staticFiles = config.get("static-files", "web");
+    	String appName = config.get("app.name");
+    	List<Integer> ports = config.getPorts();
+		if (ports == null || ports.isEmpty()) {
+	        int port = config.getPort();
+	        Logger.debug("single port application: " + port);
+			engines.add(new Engine(port, staticFiles, appName, config.isDevelopment()));
+    	} else {
+    		for (Integer port : ports) {
+				Logger.debug("multi-port application: " + port);
+				engines.add(new EngineMP(port, staticFiles, appName, config.isDevelopment()));
+				appName = null;
+    		}
+    	}
     }
 
     private void routes(Routes r) {
         Logger.debug("<routes> " + r.getClass().getSimpleName() + ", " + r.getPriority());
-        r.init(engine, Auth.auth, pageInit);
+		engines.forEach(engine -> r.init(engine, Auth.auth, pageInit));
         r.routes();
     }
     

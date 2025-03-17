@@ -3,13 +3,13 @@ package github.soltaufintel.amalia.web.route;
 import github.soltaufintel.amalia.auth.IAuth;
 import github.soltaufintel.amalia.web.action.Action;
 import github.soltaufintel.amalia.web.action.PageInitializer;
-import github.soltaufintel.amalia.web.engine.Engine;
+import github.soltaufintel.amalia.web.engine.IEngine;
 
 /**
  * Implement this class for defining routes
  */
 public abstract class RouteDefinitions implements Routes {
-    private Engine engine;
+    private IEngine engine;
     private IAuth auth;
     private PageInitializer pageInit;
     private final int priority;
@@ -29,7 +29,7 @@ public abstract class RouteDefinitions implements Routes {
     }
     
     @Override
-    public void init(Engine engine, IAuth auth, PageInitializer pageInit) {
+    public void init(IEngine engine, IAuth auth, PageInitializer pageInit) {
         this.engine = engine;
         this.auth = auth;
         this.pageInit = pageInit;
@@ -84,5 +84,10 @@ public abstract class RouteDefinitions implements Routes {
     @Override
     public int getPriority() {
         return priority;
+    }
+    
+    @Override
+    public int getPort() {
+    	return engine.port();
     }
 }

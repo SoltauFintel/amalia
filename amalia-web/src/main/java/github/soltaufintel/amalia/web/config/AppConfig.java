@@ -2,6 +2,8 @@ package github.soltaufintel.amalia.web.config;
 
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 
 /**
@@ -109,5 +111,25 @@ public class AppConfig {
             de = Integer.parseInt(p);
         }
         return getInt("port", de);
+    }
+
+    public List<Integer> getPorts() {
+    	List<Integer> ports = splitPorts(System.getenv("PORTS"));
+    	if (ports == null) {
+    		ports = splitPorts(get("PORTS"));
+    	}
+    	return ports;
+    }
+    
+    private List<Integer> splitPorts(String ports) {
+        if (ports != null && !ports.isBlank()) {
+        	List<Integer> ret = new ArrayList<>();
+        	for (String i : ports.split(",")) {
+        		ret.add(Integer.parseInt(i.trim()));
+        	}
+        	return ret;
+        }
+        return null;
+    	
     }
 }

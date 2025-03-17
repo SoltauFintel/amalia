@@ -9,11 +9,10 @@ import java.time.format.DateTimeFormatter;
 import org.pmw.tinylog.Logger;
 
 import github.soltaufintel.amalia.web.config.AppConfig;
-import github.soltaufintel.amalia.web.engine.Engine;
 
 public class Banner {
 
-    public void print(String appVersion, AppConfig config, Engine engine) {
+    public void print(String appVersion, AppConfig config) {
         banner();
         System.out.println("v" + appVersion + " ready on port " + config.getPort());
         System.out.println("Configuration file: " + config.getFilename()
