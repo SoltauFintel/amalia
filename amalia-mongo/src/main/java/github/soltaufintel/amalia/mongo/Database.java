@@ -21,18 +21,30 @@ public class Database {
     
     public Database(String dbhost, String name, String user, String password, Class<?> ... entityClasses) {
         this.name = name;
+        client = createClient(dbhost, name, user, password);
+        ds = createDatastore(client, name);
+        initDatastore(ds, entityClasses);
+    }
+    
+    protected MongoClient createClient(String dbhost, String name, String user, String password) {
         String cs = "";
         if (user != null && !user.isEmpty()) {
             cs = user + ":" + password + "@";
         }
-        client = MongoClients.create("mongodb://" + cs + dbhost + "/" + name);
+        return MongoClients.create("mongodb://" + cs + dbhost + "/" + name);
+    }
+    
+    protected Datastore createDatastore(MongoClient client, String name) {
         MapperOptions mapperOptions = MapperOptions.builder() // Morphia legacy mode
                 .discriminatorKey("className")
                 .discriminator(DiscriminatorFunction.className())
                 .collectionNaming(NamingStrategy.identity())
                 .propertyNaming(NamingStrategy.identity())
                 .build();
-        ds = Morphia.createDatastore(client, name, mapperOptions);
+        return Morphia.createDatastore(client, name, mapperOptions);
+    }
+    
+    protected void initDatastore(Datastore ds, Class<?> ... entityClasses) {
         for (Class<?> entityClass : entityClasses) {
             ds.getMapper().mapPackageFromClass(entityClass);
         }
