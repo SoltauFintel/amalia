@@ -116,7 +116,7 @@ public class AppConfig {
     public List<Integer> getPorts() {
     	List<Integer> ports = splitPorts(System.getenv("PORTS"));
     	if (ports == null) {
-    		ports = splitPorts(get("PORTS"));
+    		ports = splitPorts(get("ports"));
     	}
     	return ports;
     }
