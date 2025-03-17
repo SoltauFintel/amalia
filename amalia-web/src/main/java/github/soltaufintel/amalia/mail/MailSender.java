@@ -21,7 +21,7 @@ public class MailSender {
 
         if (active) {
             Mailer mailer = MailerBuilder
-                    .withSMTPServer(config.get(SMTP_SERVER), config.getInt("mail.smtp-server-port", 587))
+                    .withSMTPServer(config.get(SMTP_SERVER), config.getInt("mail.smtp-server-port", getDefaultPort()))
                     .withSMTPServerUsername(config.get("mail.username"))
                     .withSMTPServerPassword(config.get("mail.password"))
                     .buildMailer();
@@ -37,6 +37,14 @@ public class MailSender {
             subject = mail.getSubject();
             body = mail.getBody();
         }
+    }
+    
+    /**
+     * Port can also be 25 or 2525.
+     * @return 587
+     */
+    protected int getDefaultPort() {
+    	return 587;
     }
     
     protected void logSendMail(Mail mail, String sendTo, String froMAString) {
