@@ -9,6 +9,7 @@ import java.util.List;
 import org.pmw.tinylog.Logger;
 
 import github.soltaufintel.amalia.auth.Auth;
+import github.soltaufintel.amalia.auth.IAuth;
 import github.soltaufintel.amalia.auth.NoOpAuth;
 import github.soltaufintel.amalia.web.action.PageInitializer;
 import github.soltaufintel.amalia.web.builder.Banner;
@@ -25,14 +26,14 @@ public class WebApp {
     private final LoggingInitializer logging;
     private final AppConfig config;
     private final List<Initializer> initializers;
-    private final List<Routes> routes;
+    private final List<Class<? extends Routes>> routes;
     private final PageInitializer pageInit;
     private final Banner banner;
     
     private List<IEngine> engines;
 
     public WebApp(String appVersion, LoggingInitializer logging, AppConfig config,
-            List<Initializer> initializers, List<Routes> routes, PageInitializer pageInit, Banner banner) {
+            List<Initializer> initializers, List<Class<? extends Routes>> routes, PageInitializer pageInit, Banner banner) {
         this.appVersion = appVersion;
         this.logging = logging;
         this.config = config;
@@ -55,7 +56,7 @@ public class WebApp {
             Logger.debug("Auth.auth is null and is set to NoOpAuth");
             Auth.auth = new NoOpAuth();
         }
-        routes.stream().sorted(Comparator.comparing(Routes::getPriority)).forEach(r -> routes(r));
+        initRoutes();
         banner.ready();
     }
 
@@ -77,12 +78,26 @@ public class WebApp {
     	}
     }
 
-    private void routes(Routes r) {
-        Logger.debug("<routes> " + r.getClass().getSimpleName() + ", " + r.getPriority());
-		engines.forEach(engine -> r.init(engine, Auth.auth, pageInit));
-        r.routes();
-    }
-    
+	protected void initRoutes() {
+		List<Routes> list = new ArrayList<>();
+        for (Class<? extends Routes> rc : routes) {
+        	for (IEngine engine : engines) {
+	        	Routes r;
+				try {
+					r = rc.getConstructor(IEngine.class, IAuth.class, PageInitializer.class)
+						.newInstance(engine, Auth.auth, pageInit);
+				} catch (Exception e) {
+					throw new RuntimeException("Can't instantiate Routes class " + rc.getName(), e);
+				}
+	        	list.add(r);
+        	}
+        }
+        list.stream().sorted(Comparator.comparing(Routes::getPriority)).forEach(r -> {
+			Logger.debug("<routes> " + r.getClass().getSimpleName() + ", " + r.getPriority());
+			r.routes();
+		});
+	}
+
     public AppConfig getConfig() {
         return config;
     }

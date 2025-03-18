@@ -7,7 +7,7 @@ public interface IAuth {
 
     IAuthService getService(Context ctx);
     
-    IAuthRoutes getRoutes();
+    Class<? extends IAuthRoutes> getRoutes();
         
     void addNotProtected(String path);
     

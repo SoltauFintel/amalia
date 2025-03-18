@@ -7,9 +7,6 @@ import org.pmw.tinylog.Level;
 
 import github.soltaufintel.amalia.auth.Auth;
 import github.soltaufintel.amalia.web.WebApp;
-import github.soltaufintel.amalia.web.action.Action;
-import github.soltaufintel.amalia.web.action.GuruError404Page;
-import github.soltaufintel.amalia.web.action.GuruErrorPage;
 import github.soltaufintel.amalia.web.action.PageInitializer;
 import github.soltaufintel.amalia.web.config.AppConfig;
 import github.soltaufintel.amalia.web.route.ExceptionRouteDefinition;
@@ -23,14 +20,14 @@ public class WebAppBuilder {
     private final List<Initializer> initializers = new ArrayList<>();
     private LoggingInitializer logging = new LoggingInitializer(Level.INFO);
     private AppConfig config = new AppConfig();
-    private final List<Routes> routes = new ArrayList<>();
+    private final List<Class<? extends Routes>> routes = new ArrayList<>();
     private PageInitializer pageInit = new PageInitializer();
     private Banner banner = new Banner();
     
     public WebAppBuilder(String appVersion) {
         this.appVersion = appVersion;
-        routes.add(new PingRouteDefinition());
-        routes.add(new ExceptionRouteDefinition(GuruErrorPage.class, GuruError404Page.class));
+        routes.add(PingRouteDefinition.class);
+        routes.add(ExceptionRouteDefinition.class);
     }
 
     public WebApp build() {
@@ -72,14 +69,14 @@ public class WebAppBuilder {
         return this;
     }
 
-    public WebAppBuilder withRoutes(Routes routes) {
+    public WebAppBuilder withRoutes(Class<? extends Routes> routes) {
         this.routes.add(routes);
         return this;
     }
 
-    public WebAppBuilder withErrorPage(Class<? extends Action> errorPage, Class<? extends Action> error404Page) {
-        routes.removeIf(r -> r instanceof ExceptionRouteDefinition);
-        routes.add(new ExceptionRouteDefinition(errorPage, error404Page));
+    public WebAppBuilder withErrorPage(Class<? extends ExceptionRouteDefinition> exceptionRouteDefinitionClass) {
+        routes.removeIf(r -> r.getClass().getName().equals(ExceptionRouteDefinition.class.getName()));
+        routes.add(exceptionRouteDefinitionClass);
         return this;
     }
 

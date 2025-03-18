@@ -15,9 +15,10 @@ public abstract class Auth extends AbstractAuth {
      * @param config -
      * @param rememberMe -
      * @param encryptionFrequency secret value, usually between 7000 and 10000
+     * @param loginPageHtml deliver HTML of login page
      */
-    public Auth(AppConfig config, RememberMe rememberMe, int encryptionFrequency) {
-        this(config, rememberMe, encryptionFrequency, new AuthRoutes(new AuthPages()));
+    public Auth(AppConfig config, RememberMe rememberMe, int encryptionFrequency, LoginPageHtml loginPageHtml) {
+        this(config, rememberMe, encryptionFrequency, AuthRoutes.class, loginPageHtml);
     }
 
     /**
@@ -25,9 +26,10 @@ public abstract class Auth extends AbstractAuth {
      * @param rememberMe -
      * @param encryptionFrequency secret value, usually between 7000 and 10000
      * @param routes -
+     * @param loginPageHtml deliver HTML of login page
      */
-    public Auth(AppConfig config, RememberMe rememberMe, int encryptionFrequency, IAuthRoutes routes) {
-        super(rememberMe, routes);
+    public Auth(AppConfig config, RememberMe rememberMe, int encryptionFrequency, Class<? extends IAuthRoutes> routes, LoginPageHtml loginPageHtml) {
+        super(rememberMe, routes, loginPageHtml);
         this.config = config;
         this.encryptionFrequency = encryptionFrequency;
     }

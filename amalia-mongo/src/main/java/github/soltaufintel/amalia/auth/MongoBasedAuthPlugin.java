@@ -11,12 +11,12 @@ public class MongoBasedAuthPlugin extends Auth {
     /**
      * constructor with RememberMeInMongoDB
      */
-    public MongoBasedAuthPlugin(AppConfig config, int encryptionFrequency) {
-        this(config, new RememberMeInMongoDB(), encryptionFrequency);
+    public MongoBasedAuthPlugin(AppConfig config, int encryptionFrequency, LoginPageHtml loginPageHtml) {
+        this(config, new RememberMeInMongoDB(), encryptionFrequency, loginPageHtml);
     }
     
-    public MongoBasedAuthPlugin(AppConfig config, RememberMe rememberMe, int encryptionFrequency) {
-        super(config, rememberMe, encryptionFrequency);
+    public MongoBasedAuthPlugin(AppConfig config, RememberMe rememberMe, int encryptionFrequency, LoginPageHtml loginPageHtml) {
+        super(config, rememberMe, encryptionFrequency, loginPageHtml);
         WebContext.setCookieName(config);
     }
 

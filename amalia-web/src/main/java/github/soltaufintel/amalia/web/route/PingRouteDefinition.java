@@ -1,14 +1,22 @@
 package github.soltaufintel.amalia.web.route;
 
+import github.soltaufintel.amalia.auth.IAuth;
 import github.soltaufintel.amalia.web.action.Action;
+import github.soltaufintel.amalia.web.action.PageInitializer;
+import github.soltaufintel.amalia.web.engine.IEngine;
 
 public class PingRouteDefinition extends RouteDefinitions {
 
-    public PingRouteDefinition() {
-        super(30);
-    }
+    public PingRouteDefinition(IEngine engine, IAuth auth, PageInitializer pageInit) {
+		super(engine, auth, pageInit);
+	}
     
     @Override
+    public int getPriority() {
+    	return 30;
+    }
+
+	@Override
     public void routes() {
         get("/rest/ping", PingAction.class);
         addNotProtected("/rest/ping");

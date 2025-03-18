@@ -11,15 +11,17 @@ import spark.Spark;
 public abstract class AbstractAuth implements IAuth {
     private final Set<String> notProtected = new HashSet<>();
     private final RememberMe rememberMe;
-    private final IAuthRoutes routes;
+    private final Class<? extends IAuthRoutes> routes;
+    private final LoginPageHtml loginPageHtml;
     
-    public AbstractAuth(RememberMe rememberMe, IAuthRoutes routes) {
+    public AbstractAuth(RememberMe rememberMe, Class<? extends IAuthRoutes> routes, LoginPageHtml loginPageHtml) {
         this.rememberMe = rememberMe;
         this.routes = routes;
+        this.loginPageHtml = loginPageHtml;
     }
 
     @Override
-    public final IAuthRoutes getRoutes() {
+    public final Class<? extends IAuthRoutes> getRoutes() {
         return routes;
     }
 
@@ -69,7 +71,12 @@ public abstract class AbstractAuth implements IAuth {
     }
     
     public void haltToLoginPage(WebContext ctx) {
-        Spark.halt(401, (String) ctx.handle(routes.getLoginPageRouteHandler()));
+        Spark.halt(401, loginPageHtml.getHtml(ctx));
+    }
+    
+    public interface LoginPageHtml {
+    	
+    	String getHtml(WebContext ctx);
     }
 
     public void saveGoBackPath(WebContext ctx, String path) {

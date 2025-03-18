@@ -4,8 +4,6 @@ import java.util.List;
 
 import github.soltaufintel.amalia.auth.webcontext.WebContext;
 import github.soltaufintel.amalia.spark.Context;
-import github.soltaufintel.amalia.web.action.PageInitializer;
-import github.soltaufintel.amalia.web.engine.IEngine;
 import github.soltaufintel.amalia.web.route.RouteHandler;
 
 public class NoOpAuth implements IAuth {
@@ -81,35 +79,26 @@ public class NoOpAuth implements IAuth {
         };
     }
 
-    @Override
-    public IAuthRoutes getRoutes() {
-        return new IAuthRoutes() {
-        	private int port;
-            
-            @Override
-            public void routes() {
-            }
-            
-            @Override
-            public void init(IEngine engine, IAuth auth, PageInitializer pageInit) {
-            	port = engine.port();
-            }
-            
-            @Override
-            public int getPriority() {
-                return 0;
-            }
-            
-            @Override
-            public RouteHandler getLoginPageRouteHandler() {
-                return null;
-            }
+    public static class NoOpAuthRoutes implements IAuthRoutes {
 
-			@Override
-			public int getPort() {
-				return port;
-			}
-        };
+        @Override
+        public void routes() {
+        }
+        
+        @Override
+        public int getPriority() {
+            return 0;
+        }
+        
+        @Override
+        public RouteHandler getLoginPageRouteHandler() {
+            return null;
+        }
+    }
+    
+    @Override
+    public Class<? extends IAuthRoutes> getRoutes() {
+        return NoOpAuthRoutes.class;
     }
 
     @Override

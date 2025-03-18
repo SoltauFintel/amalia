@@ -9,32 +9,21 @@ import github.soltaufintel.amalia.web.engine.IEngine;
  * Implement this class for defining routes
  */
 public abstract class RouteDefinitions implements Routes {
-    private IEngine engine;
-    private IAuth auth;
-    private PageInitializer pageInit;
-    private final int priority;
-    
-    /**
-     * priority 100
-     */
-    public RouteDefinitions() {
-        this(100);
-    }
+	private final IEngine engine;
+    private final IAuth auth;
+    private final PageInitializer pageInit;
 
-    /**
-     * @param priority the higher the number the later the processing
-     */
-    public RouteDefinitions(int priority) {
-        this.priority = priority;
+    public RouteDefinitions(IEngine engine, IAuth auth, PageInitializer pageInit) {
+    	this.engine = engine;
+    	this.auth = auth;
+    	this.pageInit = pageInit;
     }
     
     @Override
-    public void init(IEngine engine, IAuth auth, PageInitializer pageInit) {
-        this.engine = engine;
-        this.auth = auth;
-        this.pageInit = pageInit;
+    public int getPriority() {
+        return 100;
     }
-
+    
     protected void addNotProtected(String path) {
         auth.addNotProtected(path);
     }
@@ -79,15 +68,5 @@ public abstract class RouteDefinitions implements Routes {
     
     public void setupAuthFilter() {
         engine.setupAuthFilter(auth);
-    }
-
-    @Override
-    public int getPriority() {
-        return priority;
-    }
-    
-    @Override
-    public int getPort() {
-    	return engine.port();
     }
 }

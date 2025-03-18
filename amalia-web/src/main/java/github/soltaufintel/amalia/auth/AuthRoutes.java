@@ -1,18 +1,25 @@
 package github.soltaufintel.amalia.auth;
 
 import github.soltaufintel.amalia.web.action.Action;
+import github.soltaufintel.amalia.web.action.PageInitializer;
+import github.soltaufintel.amalia.web.engine.IEngine;
 import github.soltaufintel.amalia.web.route.RouteDefinitions;
 import github.soltaufintel.amalia.web.route.RouteHandler;
 
 public class AuthRoutes extends RouteDefinitions implements IAuthRoutes {
-    private final AuthPages pages;
     
-    public AuthRoutes(AuthPages pages) {
-        this.pages = pages;
+    public AuthRoutes(IEngine engine, IAuth auth, PageInitializer pageInit) {
+    	super(engine, auth, pageInit);
+    }
+    
+    public AuthPages getPages() {
+    	return new AuthPages();
     }
 
     @Override
     public void routes() {
+    	AuthPages pages = getPages();
+    	
         setupAuthFilter();
         
         _public("/auth/register", pages.getRegisterPageClass());
@@ -51,6 +58,6 @@ public class AuthRoutes extends RouteDefinitions implements IAuthRoutes {
 
     @Override
     public RouteHandler getLoginPageRouteHandler() {
-        return getRouteHandler(pages.getLoginPageClass());
+    	return getRouteHandler(getPages().getLoginPageClass());
     }
 }

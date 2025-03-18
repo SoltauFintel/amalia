@@ -12,8 +12,8 @@ import github.soltaufintel.amalia.web.config.AppConfig;
 public class SimpleAuth extends Auth {
     private final IUserService userService;
 
-    public SimpleAuth(AppConfig config) {
-        super(config, new NoOpRememberMe(), config.getInt("encryption-frequency", 0), new SimpleAuthRoutes());
+    public SimpleAuth(AppConfig config, LoginPageHtml loginPageHtml) {
+        super(config, new NoOpRememberMe(), config.getInt("encryption-frequency", 0), SimpleAuthRoutes.class, loginPageHtml);
         userService = new SimpleUserService(config);
     }
 
