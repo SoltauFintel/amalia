@@ -8,7 +8,7 @@ public class RegisterPage extends Page {
 
     @Override
     protected void execute() {
-        Logger.info("RegisterPage " + ctx.method());
+        Logger.info(ctx.req.ip() + " | RegisterPage " + ctx.method());
         if (isPOST()) {
             String login = ctx.formParam("amalia_user");
             String mail = ctx.formParam("amalia_mail");
@@ -21,7 +21,7 @@ public class RegisterPage extends Page {
                 throw new RuntimeException("Passwörter sind nicht gleich!");
             }
             auth().register(login, pw, mail);
-            Logger.info("User registered: " + login);
+            Logger.info("User registered: " + login + ", " + mail);
             ctx.redirect("/auth/registered");
         } else {
             put("title", "Registrierung eines neuen Benutzers");
