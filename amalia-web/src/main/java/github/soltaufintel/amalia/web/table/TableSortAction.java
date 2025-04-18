@@ -1,5 +1,6 @@
 package github.soltaufintel.amalia.web.table;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -11,6 +12,7 @@ public class TableSortAction extends Action {
 	public static String path = "/tablesort/";
 	private static Map<String, TableComponent> tables = new HashMap<>();
 	private String html;
+	public static String item = "item";
 	
 	public static String register(TableComponent table) {
 		synchronized (HANDLE) {
@@ -28,8 +30,18 @@ public class TableSortAction extends Action {
 			int col = Integer.parseInt(ctx.pathParam("col"));
 			
 			TableComponent table = tables.get(id);
-			table.sort(col);
-			html = table.run();
+			if (table != null) {
+    			if (col == -2) { // reorder manually mode
+        	        String[] itemParams = ctx.req.queryParamsValues(item);
+        	        if (itemParams != null) {
+        	            table.sortRowsByDragAndDrop(Arrays.asList(itemParams));
+        	        }
+    			}
+    			table.sort(col);
+    			html = table.run();
+			} else {
+			    html = "<span style=\"color: red;\">Please reload page and try again</span>";
+			}
 		}
 	}
 	
