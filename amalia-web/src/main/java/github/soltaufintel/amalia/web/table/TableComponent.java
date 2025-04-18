@@ -2,16 +2,21 @@ package github.soltaufintel.amalia.web.table;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Stream;
 
 import com.github.template72.compiler.CompiledTemplate;
 import com.github.template72.compiler.TemplateCompiler;
 import com.github.template72.compiler.TemplateCompilerBuilder;
+import com.github.template72.data.DataList;
 import com.github.template72.data.DataMap;
 import com.github.template72.data.IDataItem;
+import com.github.template72.data.IDataList;
 import com.github.template72.data.IDataMap;
 
+import github.soltaufintel.amalia.spark.Context;
 import github.soltaufintel.amalia.web.action.Action;
 
 /**
@@ -31,6 +36,10 @@ public class TableComponent extends Action {
 	protected boolean asc = false;
 	protected String html;
 	protected String rowClass;
+	// Sort rows by drag&drop
+	protected boolean rowDragDrop = false;
+	protected String rowDragDropCSS = "sortable";
+	protected String rowDragDropIdFieldname = "id";
 
 	public TableComponent(List<Col> cols, DataMap model, String listName) {
 		this("", cols, model, listName);
@@ -49,7 +58,12 @@ public class TableComponent extends Action {
 		this.listName = listName;
 		sortlink = TableSortAction.register(this);
 		sid = sortlink.replace("/", "");
-		cols.forEach(col -> col.template = compiler.compile(col.getRowHTML()));
+	}
+	
+	@Override
+	public void init(Context ctx) {
+	    cols.forEach(col -> col.template = compiler.compile(col.getRowHTML()));
+	    super.init(ctx);
 	}
 
 	@Override
@@ -62,15 +76,27 @@ public class TableComponent extends Action {
 		}
 		StringBuilder sb = new StringBuilder();
 		if (tableCSS.startsWith("!")) {
-            sb.append("<table class=\"" + tableCSS.substring(1) + " " + sid + "\">\n<tr>");
+            sb.append("<table class=\"" + tableCSS.substring(1) + " " + sid + "\">");
+		} else if (rowDragDrop) {
+            sb.append("<table class=\"table mt2 wauto " + tableCSS + " " + sid + "\">");
 		} else {
-		    sb.append("<table class=\"table table-striped table-hover mt2 " + tableCSS + " " + sid + "\">\n<tr>");
+		    sb.append("<table class=\"table table-striped table-hover mt2 " + tableCSS + " " + sid + "\">");
 		}
+		sb.append("\n<thead><tr>\n");
 		sb.append(makeHeader());
-		sb.append("\n</tr>");
+        sb.append("\n</tr></thead>");
+        sb.append("<tbody"
+                + (rowDragDrop ? " class=\"" + rowDragDropCSS + "\" hx-post=\"" + sortlink + "-2\" hx-target=\"#sid" + sid + "\" hx-trigger=\"end\"" : "")
+                + ">");
+        
 		makeRows(sb);
-		sb.append("\n</table>\n");
-		html = sb.toString();
+		
+		sb.append("\n</tbody></table>\n");
+        if (rowDragDrop) {
+            html = "<form id=\"sid" + sid + "\">" + sb.toString() + "</form>";
+        } else {
+            html = sb.toString();
+        }
 	}
 
 	protected StringBuilder makeHeader() {
@@ -134,7 +160,67 @@ public class TableComponent extends Action {
 		});
 	}
 
-	@Override
+    public void sortRowsByDragAndDrop(List<String> newOrder) {
+        if (rowDragDropIdFieldname == null) {
+            return;
+        }
+        IDataList list = (DataList) model.getList(listName);
+        List<IDataMap> neu = new ArrayList<>();
+        for (int i = 0; i < newOrder.size(); i++) {
+            IDataMap reihe = find(list, newOrder.get(i));
+            if (reihe == null) { // unexpected error -> abort
+                return;
+            }
+            neu.add(reihe);
+        }
+        list.clear();
+        list.addAll(neu);
+
+        Map<String, Integer> indexMap = new HashMap<>();
+        for (int i = 0; i < newOrder.size(); i++) {
+            indexMap.put(newOrder.get(i), i);
+        }
+        saveSortedRows(newOrder, indexMap);
+    }
+
+	private IDataMap find(IDataList rows, String id) {
+	    for (IDataMap row : rows) {
+            if (row.get(rowDragDropIdFieldname).toString().equals(id)) {
+                return row;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Use this for sorting your data: <br>
+     * <code>.sort(Comparator.comparingInt(i -> indexMap.getOrDefault(i.getId(), -1)));</code>
+     * @param newOrder ID list with new sort order
+     * @param indexMap key: ID, value: position
+     */
+    public void saveSortedRows(List<String> newOrder, Map<String, Integer> indexMap) {
+    }
+	
+	public TableComponent withRowDragDrop() {
+	    rowDragDrop = true;
+	    cols.add(0, new Col("", "<i class=\"fa fa-fw fa-arrows-v handle\" title=\"Sortieren\"></i>"
+            + "<input type=\"hidden\" name=\"" + TableSortAction.item + "\" value=\"{{i.id}}\"/>"));
+	    return this;
+	}
+	
+	public TableComponent withRowDragDrop(String css, String idFieldname, String title) {
+	    if (css == null || idFieldname == null || title == null) {
+	        throw new IllegalArgumentException("Parameters must not be null!");
+	    }
+        rowDragDrop = true;
+        cols.add(0, new Col("", "<i class=\"fa fa-fw fa-arrows-v handle\" title=\"" + title + "\"></i>"
+            + "<input type=\"hidden\" name=\"" + TableSortAction.item + "\" value=\"{{i." + idFieldname + "}}\"/>"));
+        rowDragDropCSS = css;
+        rowDragDropIdFieldname = idFieldname;
+        return this;
+	}
+	
+    @Override
 	protected String render() {
 		String ret = html;
 		html = null;
