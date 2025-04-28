@@ -169,6 +169,10 @@ public class AQuery<E> {
         return new AQuery<E>(query, newOptions);
     }
 
+    public AQuery<E> locale(String locale) {
+        return collation(Collation.builder().locale(locale).build());
+    }
+
     public AQuery<E> limit(int limit) {
         FindOptions newOptions = options == null ? new FindOptions() : options;
         newOptions = newOptions.limit(limit);
