@@ -4,6 +4,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.function.Function;
 import java.util.function.Predicate;
 
 import org.bson.Document;
@@ -115,6 +116,28 @@ public abstract class AbstractDAO<E> {
         DistinctIterable<T> distinct = ds().getCollection(getEntityClass()).distinct(fieldname, datatype);
         distinct.forEach(o -> ret.add(o));
         return ret;
+    }
+
+    /**
+     * @param id ID of current document
+     * @param nav "z" for backward, "v" for forward
+     * @param sortfield sort order of collection (single field, type String)
+     * @param sortfieldGetter function for getting content of sort field
+     * @param idGetter function for getting content of ID field
+     * @param locale "en" (or something else) for case-insensitive sort order, otherwise "simple" (see MongoDB collation, needs MongoDB 4)
+     * @return ID of previous or next document, fallback in case of problem: id
+     */
+    public String paging(String id, String nav, String sortfield, Function<E, String> sortfieldGetter, Function<E, String> idGetter, String locale) {
+        E akt = get(id);
+        E r = null;
+        if (akt == null) {
+            return id;
+        } else if ("z".equals(nav)) { // z=zurück
+            r = cq().lt(sortfield, sortfieldGetter.apply(akt)).locale(locale).limit1("-" + sortfield);
+        } else { // v=vor
+            r = cq().gt(sortfield, sortfieldGetter.apply(akt)).locale(locale).limit1(sortfield);
+        }
+        return r == null ? id : idGetter.apply(r);
     }
 
     public long size() {
