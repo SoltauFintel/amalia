@@ -4,6 +4,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import com.mongodb.client.model.Collation;
+
 import dev.morphia.DeleteOptions;
 import dev.morphia.query.FindOptions;
 import dev.morphia.query.Meta;
@@ -158,6 +160,12 @@ public class AQuery<E> {
         if (scoreField != null && !scoreField.isEmpty()) {
             newOptions = newOptions.sort(Meta.textScore(scoreField));
         }
+        return new AQuery<E>(query, newOptions);
+    }
+    
+    public AQuery<E> collation(Collation collation) {
+        FindOptions newOptions = options == null ? new FindOptions() : options;
+        newOptions = newOptions.collation(collation);
         return new AQuery<E>(query, newOptions);
     }
 
