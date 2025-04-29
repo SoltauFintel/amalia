@@ -164,8 +164,16 @@ public class TableComponent extends Action {
 			model.put(runVarName, map);
 			cols.forEach(col -> {
 				String content = col.template.render(model);
-				rows.append("\n\t\t<td class=\"" + col.getRowCSS() + col.getHeaderCSS()
-						+ (ColAlign.RIGHT.equals(col.getAlign()) ? " tar" : "") + "\">" + content + "</td>");
+				String css = col.getRowCSS() + col.getHeaderCSS() + (ColAlign.RIGHT.equals(col.getAlign()) ? " tar" : "");
+				if (css.isEmpty()) {
+                    rows.append("\n\t\t<td>");
+				} else {
+                    rows.append("\n\t\t<td class=\"");
+                    rows.append(css);
+                    rows.append("\">");
+				}
+                rows.append(content);
+                rows.append("</td>");
 			});
 			rows.append("\n\t</tr>");
 		});
