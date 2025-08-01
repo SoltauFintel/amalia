@@ -16,7 +16,7 @@ public class TableSortAction extends Action {
 	
 	public static String register(TableComponent table) {
 		synchronized (HANDLE) {
-			String id = IdGenerator.createId6();
+			String id = IdGenerator.createId25();
 			tables.put(id, table);
 			return path + id + "/";
 		}

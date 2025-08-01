@@ -200,7 +200,7 @@ public abstract class AbstractDAO<E> {
     }
 
     public static String genId() {
-        return IdGenerator.createId6();
+        return IdGenerator.createId25();
     }
 }
 
