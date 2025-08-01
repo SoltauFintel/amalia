@@ -16,15 +16,19 @@ import dev.morphia.mapping.NamingStrategy;
 import github.soltaufintel.amalia.web.config.AppConfig;
 
 public class Database {
+    private final String name;
     private MongoClient client;
     private Datastore ds;
-    private final String name;
     
     public Database(String dbhost, String name, String user, String password, Class<?> ... entityClasses) {
         this.name = name;
         client = createClient(dbhost, name, user, password);
         ds = createDatastore(client, name);
         initDatastore(ds, entityClasses);
+    }
+    
+    public Database(DatabaseConfig c) {
+        this(c.getDbhost(), c.getName(), c.getUser(), c.getPassword(), c.getEntityClasses().toArray(new Class<?>[0]));
     }
     
     protected MongoClient createClient(String dbhost, String name, String user, String password) {
@@ -77,17 +81,11 @@ public class Database {
     }
     
     public static void openDatabase(AppConfig config, Class<?>... entityClasses) {
-        String dbname = config.get("dbname");
-        if (dbname == null || dbname.isEmpty()) {
-            throw new RuntimeException("Config parameter 'dbname' missing!");
-        }
-        String dbhost = config.get("dbhost", "localhost");
-        String dbuser = config.get("dbuser", dbname);
-        String dbpw = config.get("dbpw");
-        AbstractDAO.database = new Database(dbhost, dbname, dbuser, dbpw, entityClasses);
-        System.out.println("MongoDB database: " + dbname + "@" + dbhost
+        var c = new DatabaseConfig(config);
+        AbstractDAO.database = new Database(c);
+        System.out.println("MongoDB database: " + c.getName() + "@" + c.getDbhost()
                 + (config.hasFilledKey("dbuser")
-                        ? (" with user " + dbuser + (config.hasFilledKey("dbpw") ? " with password" : ""))
+                        ? (" with user " + c.getUser() + (config.hasFilledKey("dbpw") ? " with password" : ""))
                         : ""));
     }
     
