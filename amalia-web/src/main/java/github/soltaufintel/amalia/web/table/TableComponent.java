@@ -410,6 +410,10 @@ public class TableComponent extends Action {
 		ASC_DESC;
 	}
 
+	/**
+	 * @param col 0 based column index
+	 * @return this
+	 */
 	public TableComponent sort(int col) {
 		if (col >= 0 && col < cols.size()) {
 			switch (cols.get(col).getSort()) {
@@ -437,6 +441,10 @@ public class TableComponent extends Action {
 		return this;
 	}
 	
+    /**
+     * @param col 0 based column index
+     * @return this
+     */
 	public TableComponent sortDesc(int col) {
 	    return sort(col).sort(col); 
 	}
