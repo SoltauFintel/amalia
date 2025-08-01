@@ -3,6 +3,7 @@ package github.soltaufintel.amalia.mongo;
 import org.bson.Document;
 import org.pmw.tinylog.Logger;
 
+import com.mongodb.MongoTimeoutException;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
@@ -91,5 +92,25 @@ public class Database {
     
     public GridFSDAO openGridFSDAO(String collection) {
         return new GridFSDAO(client.getDatabase(name), collection);
+    }
+    
+    /**
+     * Health check: Check if MongoDB is reachable. Sends ping.
+     * @param dbhost e.g. "localhost"
+     * @param adminDbName "admin"
+     * @return "ok": MongoDB is reachable; "timeout": MongoDB is not reachable; "error: ...": any other error message
+     */
+    public static String ping(String dbhost, String adminDbName) {
+        try (MongoClient mongoClient = MongoClients.create("mongodb://" + dbhost)) {
+            MongoDatabase database = mongoClient.getDatabase(adminDbName);
+            database.runCommand(new org.bson.Document("ping", 1));
+            return "ok";
+        } catch (MongoTimeoutException e) {
+            Logger.debug(e);
+            return "timeout";
+        } catch (Exception e) {
+            Logger.debug(e);
+            return "error: " + e.getMessage();
+        }
     }
 }
