@@ -164,7 +164,9 @@ public class TableComponent extends Action {
 			model.put(runVarName, map);
 			cols.forEach(col -> {
 				String content = col.template.render(model);
-				String css = col.getRowCSS() + col.getHeaderCSS() + (ColAlign.RIGHT.equals(col.getAlign()) ? " tar" : "");
+                String css = col.getRowCSS()
+                        // seems to be wrong ->  + col.getHeaderCSS()
+                        + (ColAlign.RIGHT.equals(col.getAlign()) ? " tar" : "");
 				if (css.isEmpty()) {
                     rows.append("\n\t\t<td>");
 				} else {
@@ -245,7 +247,11 @@ public class TableComponent extends Action {
 		html = null;
 		return ret;
 	}
-
+    
+    /**
+     * @param col 0 based column index
+     * @return this
+     */
 	public TableComponent sort(int col) {
 		if (col >= 0 && col < cols.size()) {
 			switch (cols.get(col).getSort()) {
@@ -271,6 +277,14 @@ public class TableComponent extends Action {
 			sortedColumn = col;
 		}
 		return this;
+	}
+	
+    /**
+     * @param col 0 based column index
+     * @return this
+     */
+	public TableComponent sortDesc(int col) {
+	    return sort(col).sort(col); 
 	}
 	
 	protected Comparator<IDataMap> comparator() {

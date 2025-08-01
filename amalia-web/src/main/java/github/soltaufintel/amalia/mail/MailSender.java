@@ -20,18 +20,24 @@ public class MailSender {
         String sendTo = forceTo.isBlank() ? getTo(mail) : forceTo;
 
         if (active) {
-            Mailer mailer = MailerBuilder
-                    .withSMTPServer(config.get(SMTP_SERVER), config.getInt("mail.smtp-server-port", getDefaultPort()))
-                    .withSMTPServerUsername(config.get("mail.username"))
-                    .withSMTPServerPassword(config.get("mail.password"))
-                    .buildMailer();
-            mailer.sendMail(EmailBuilder.startingBlank()
-                    .from(mail.getSendername(), fromMailAddress)
-                    .to(sendTo)
-                    .withSubject(mail.getSubject())
-                    .withPlainText(mail.getBody())
-                    .buildEmail());
-            logSendMail(mail, sendTo, fromMailAddress);
+            var host = config.get(SMTP_SERVER);
+            var port = config.getInt("mail.smtp-server-port", getDefaultPort());
+            try {
+                Mailer mailer = MailerBuilder
+                        .withSMTPServer(host, port)
+                        .withSMTPServerUsername(config.get("mail.username"))
+                        .withSMTPServerPassword(config.get("mail.password"))
+                        .buildMailer();
+                mailer.sendMail(EmailBuilder.startingBlank()
+                        .from(mail.getSendername(), fromMailAddress)
+                        .to(sendTo)
+                        .withSubject(mail.getSubject())
+                        .withPlainText(mail.getBody())
+                        .buildEmail());
+                logSendMail(mail, sendTo, fromMailAddress);
+            } catch (Exception e) {
+                handleException(e, mail, host, port);
+            }
         } else {
             to = mail.getToEmailaddress();
             subject = mail.getSubject();
@@ -44,7 +50,7 @@ public class MailSender {
      * @return 587
      */
     protected int getDefaultPort() {
-    	return 587;
+        return 587;
     }
     
     protected void logSendMail(Mail mail, String sendTo, String froMAString) {
@@ -56,5 +62,10 @@ public class MailSender {
             return mail.getToEmailaddress();
         }
         return "\"" + mail.getToName() + "\" <" + mail.getToEmailaddress() + ">";
+    }
+    
+    protected void handleException(Exception e, Mail mail, String host, int port) {
+        throw new RuntimeException("Email can not be sent.", e);
+        // Otherwise "Third party error" would be displayed to the user.
     }
 }

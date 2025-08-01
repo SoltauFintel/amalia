@@ -1,7 +1,9 @@
 package github.soltaufintel.amalia.mongo;
 
 import org.bson.Document;
+import org.pmw.tinylog.Logger;
 
+import com.mongodb.MongoTimeoutException;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
@@ -15,15 +17,19 @@ import dev.morphia.mapping.NamingStrategy;
 import github.soltaufintel.amalia.web.config.AppConfig;
 
 public class Database {
+    private final String name;
     private MongoClient client;
     private Datastore ds;
-    private final String name;
     
     public Database(String dbhost, String name, String user, String password, Class<?> ... entityClasses) {
         this.name = name;
         client = createClient(dbhost, name, user, password);
         ds = createDatastore(client, name);
         initDatastore(ds, entityClasses);
+    }
+    
+    public Database(DatabaseConfig c) {
+        this(c.getDbhost(), c.getName(), c.getUser(), c.getPassword(), c.getEntityClasses().toArray(new Class<?>[0]));
     }
     
     protected MongoClient createClient(String dbhost, String name, String user, String password) {
@@ -46,9 +52,12 @@ public class Database {
     
     protected void initDatastore(Datastore ds, Class<?> ... entityClasses) {
         for (Class<?> entityClass : entityClasses) {
+            Logger.debug("mapPackageFromClass: " + entityClass.getName());
             ds.getMapper().mapPackageFromClass(entityClass);
         }
+        Logger.debug("ensureIndexes");
         ds.ensureIndexes();
+        Logger.debug("ensureCaps");
         ds.ensureCaps();
     }
     
@@ -73,21 +82,35 @@ public class Database {
     }
     
     public static void openDatabase(AppConfig config, Class<?>... entityClasses) {
-        String dbname = config.get("dbname");
-        if (dbname == null || dbname.isEmpty()) {
-            throw new RuntimeException("Config parameter 'dbname' missing!");
-        }
-        String dbhost = config.get("dbhost", "localhost");
-        String dbuser = config.get("dbuser", dbname);
-        String dbpw = config.get("dbpw");
-        AbstractDAO.database = new Database(dbhost, dbname, dbuser, dbpw, entityClasses);
-        System.out.println("MongoDB database: " + dbname + "@" + dbhost
+        var c = new DatabaseConfig(config);
+        AbstractDAO.database = new Database(c);
+        System.out.println("MongoDB database: " + c.getName() + "@" + c.getDbhost()
                 + (config.hasFilledKey("dbuser")
-                        ? (" with user " + dbuser + (config.hasFilledKey("dbpw") ? " with password" : ""))
+                        ? (" with user " + c.getUser() + (config.hasFilledKey("dbpw") ? " with password" : ""))
                         : ""));
     }
     
     public GridFSDAO openGridFSDAO(String collection) {
         return new GridFSDAO(client.getDatabase(name), collection);
+    }
+    
+    /**
+     * Health check: Check if MongoDB is reachable. Sends ping.
+     * @param dbhost e.g. "localhost"
+     * @param adminDbName "admin"
+     * @return "ok": MongoDB is reachable; "timeout": MongoDB is not reachable; "error: ...": any other error message
+     */
+    public static String ping(String dbhost, String adminDbName) {
+        try (MongoClient mongoClient = MongoClients.create("mongodb://" + dbhost)) {
+            MongoDatabase database = mongoClient.getDatabase(adminDbName);
+            database.runCommand(new org.bson.Document("ping", 1));
+            return "ok";
+        } catch (MongoTimeoutException e) {
+            Logger.debug(e);
+            return "timeout";
+        } catch (Exception e) {
+            Logger.debug(e);
+            return "error: " + e.getMessage();
+        }
     }
 }

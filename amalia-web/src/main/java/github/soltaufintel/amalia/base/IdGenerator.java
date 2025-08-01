@@ -1,5 +1,6 @@
 package github.soltaufintel.amalia.base;
 
+import java.math.BigInteger;
 import java.util.UUID;
 import java.util.zip.CRC32;
 
@@ -18,6 +19,7 @@ public class IdGenerator {
     
     /**
      * Generates a short ID that is as good as a GUID. It looks nicer.
+     * With a million generations, there are approximately 220 collisions. It's better to use createId25.
      * @return 6 char long ID
      */
     public static String createId6() {
@@ -51,5 +53,19 @@ public class IdGenerator {
                 throw new RuntimeException("Illegal ID");
             }
         }
+    }
+    
+    /**
+     * Creates a 25 char long ID.
+     * @return letters are in lowercase
+     */
+    public static String createId25() {
+        UUID uuid = UUID.randomUUID();
+        // A UUID consists of two 64-bit numbers: mostSigBits and leastSigBits.
+        // To treat them as a single 128-bit number, we shift mostSigBits 64 bits to the left and add leastSigBits.
+        BigInteger val = new BigInteger(1, BigInteger.valueOf(uuid.getMostSignificantBits()).toByteArray());
+        val = val.shiftLeft(64);
+        val = val.add(new BigInteger(1, BigInteger.valueOf(uuid.getLeastSignificantBits()).toByteArray()));
+        return val.toString(36);
     }
 }
