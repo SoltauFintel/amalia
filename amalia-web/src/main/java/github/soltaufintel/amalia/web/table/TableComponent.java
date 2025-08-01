@@ -153,7 +153,7 @@ public class TableComponent extends Action {
 			model.put(runVarName, map);
 			cols.forEach(col -> {
 				String content = col.template.render(model);
-				rows.append("\n\t\t<td class=\"" + col.getRowCSS() + col.getHeaderCSS()
+				rows.append("\n\t\t<td class=\"" + col.getRowCSS() // seems to be wrong ->   + col.getHeaderCSS()
 						+ (ColAlign.RIGHT.equals(col.getAlign()) ? " tar" : "") + "\">" + content + "</td>");
 			});
 			rows.append("\n\t</tr>");
