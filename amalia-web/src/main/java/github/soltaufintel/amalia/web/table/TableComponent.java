@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
-import com.github.template72.compiler.CompiledTemplate;
 import com.github.template72.compiler.TemplateCompiler;
 import com.github.template72.compiler.TemplateCompilerBuilder;
 import com.github.template72.data.DataList;
@@ -18,6 +17,8 @@ import com.github.template72.data.IDataMap;
 
 import github.soltaufintel.amalia.spark.Context;
 import github.soltaufintel.amalia.web.action.Action;
+import github.soltaufintel.amalia.web.table.Col.ColAlign;
+import github.soltaufintel.amalia.web.table.Col.ColSort;
 
 /**
  * Using the TableComponent the use gets the ability to sort columns without reloading the entire page.
@@ -36,7 +37,7 @@ public class TableComponent extends Action {
 	protected boolean asc = false;
 	protected String html;
 	protected String rowClass;
-	// Sort rows by drag&drop
+	// Sort rows by drag&drop:
 	protected boolean rowDragDrop = false;
 	protected String rowDragDropCSS = "sortable";
 	protected String rowDragDropIdFieldname = "id";
@@ -82,12 +83,22 @@ public class TableComponent extends Action {
 		} else {
 		    sb.append("<table class=\"table table-striped table-hover mt2 " + tableCSS + " " + sid + "\">");
 		}
-		sb.append("\n<thead><tr>\n");
-		sb.append(makeHeader());
+        sb.append("\n<thead><tr>\n");
+        
+        sb.append(makeHeader());
+        
         sb.append("\n</tr></thead>");
-        sb.append("<tbody"
-                + (rowDragDrop ? " class=\"" + rowDragDropCSS + "\" hx-post=\"" + sortlink + "-2\" hx-target=\"#sid" + sid + "\" hx-trigger=\"end\"" : "")
-                + ">");
+        if (rowDragDrop) {
+            sb.append("<tbody class=\"");
+            sb.append(rowDragDropCSS);
+            sb.append("\" hx-post=\"");
+            sb.append(sortlink);
+            sb.append("-2\" hx-target=\"#sid"); // -2 see sort() and TableSortAction!
+            sb.append(sid);
+            sb.append("\" hx-trigger=\"end\"" + ">");
+        } else {
+            sb.append("<tbody>");
+        }
         
 		makeRows(sb);
 		
@@ -153,8 +164,18 @@ public class TableComponent extends Action {
 			model.put(runVarName, map);
 			cols.forEach(col -> {
 				String content = col.template.render(model);
-				rows.append("\n\t\t<td class=\"" + col.getRowCSS() // seems to be wrong ->   + col.getHeaderCSS()
-						+ (ColAlign.RIGHT.equals(col.getAlign()) ? " tar" : "") + "\">" + content + "</td>");
+                String css = col.getRowCSS()
+                        // seems to be wrong ->  + col.getHeaderCSS()
+                        + (ColAlign.RIGHT.equals(col.getAlign()) ? " tar" : "");
+                if (css.isEmpty()) {
+                    rows.append("\n\t\t<td>");
+                } else {
+                    rows.append("\n\t\t<td class=\"");
+                    rows.append(css);
+                    rows.append("\">");
+                }
+                rows.append(content);
+                rows.append("</td>");
 			});
 			rows.append("\n\t</tr>");
 		});
@@ -227,189 +248,6 @@ public class TableComponent extends Action {
 		return ret;
 	}
 	
-	public static class Cols extends ArrayList<Col> {
-		
-		public static Cols of(Col ...cols) {
-			Cols ret = new Cols();
-			for (Col i : cols) {
-				if (!i.isRemove()) {
-					ret.add(i);
-				}
-			}
-			return ret;
-		}
-	}
-	
-	public static class Col {
-		/** null or empty: sort by column content (but be aware if there's HTML as content!) */
-		private final String sortkey;
-		private final ColSort sort;
-		private final String headerCSS;
-		private final String headerHTML;
-		private final String rowCSS;
-		private final String rowHTML;
-		private final ColAlign align;
-		private final boolean remove;
-		CompiledTemplate template;
-
-		/**
-		 * Common Col constructor
-		 * @param headerHTML usually just the column title
-		 * @param rowHTML something like "{{i.FIELDNAME}}" where FIELDNAME varies. But it could be more complex HTML, e.g. a link.
-		 */
-		public Col(String headerHTML, String rowHTML) {
-			this(false, null, ColSort.NONE, "", headerHTML, "", rowHTML, ColAlign.LEFT);
-		}
-
-		/**
-		 * Col constructor with 2nd argument rowCSS
-		 * @param headerHTML usually just the column title
-		 * @param rowCSS CSS class for the cell in a row; can be empty
-		 * @param rowHTML something like "{{i.FIELDNAME}}" where FIELDNAME varies. But it could be more complex HTML, e.g. a link.
-		 */
-		public Col(String headerHTML, String rowCSS, String rowHTML) {
-			this(false, null, ColSort.NONE, "", headerHTML, rowCSS, rowHTML, ColAlign.LEFT);
-		}
-		
-		/**
-		 * Col constructor with 3rd argument rowCSS and 1st argument headerCSS
-		 * @param headerCSS CSS class for the cell in the header row; can be empty
-		 * @param headerHTML usually just the column title
-		 * @param rowCSS CSS class for the cell in a row; can be empty
-		 * @param rowHTML something like "{{i.FIELDNAME}}" where FIELDNAME varies. But it could be more complex HTML, e.g. a link.
-		 */
-		public Col(String headerCSS, String headerHTML, String rowCSS, String rowHTML) {
-			this(false, null, ColSort.NONE, headerCSS, headerHTML, rowCSS, rowHTML, ColAlign.LEFT);
-		}
-
-		protected Col(boolean remove, String sortkey, ColSort sort, String headerCSS, String headerHTML, String rowCSS,
-				String rowHTML, ColAlign align) {
-			this.remove = remove;
-			this.sortkey = sortkey;
-			this.sort = sort;
-			this.headerCSS = headerCSS;
-			this.headerHTML = headerHTML;
-			this.rowCSS = rowCSS;
-			this.rowHTML = rowHTML;
-			this.align = align;
-		}
-		
-		/**
-		 * Convenience method for creating a Col with run var "i".
-		 * @param header column title (can be HTML)
-		 * @param fieldname just the fieldname - makes rowHTML = "{{i.FIELDNAME}}"
-		 * @return new Col
-		 */
-		public static Col i(String header, String fieldname) {
-			return new Col(header, "{{i." + fieldname + "}}");
-		}
-
-		/**
-		 * Convenience method for creating a Col with run var "i". Col is a link.
-		 * @param header column title (can be HTML)
-		 * @param fieldname just the fieldname - makes rowHTML = "<a href=LINK>{{i.FIELDNAME}}</a>"
-		 * @param link -
-		 * @return new Col
-		 */
-		public static Col i(String header, String fieldname, String link) {
-			return new Col(header, "<a href=\"" + link + "\">{{i." + fieldname + "}}</a>").sortable(fieldname);
-		}
-
-		/**
-		 * Convenience method for creating a sortable Col with run var "i".
-		 * @param header column title (can be HTML)
-		 * @param fieldname just the fieldname - makes rowHTML = "{{i.FIELDNAME}}"
-		 * @return new Col, sorted by fieldname
-		 */
-		public static Col si(String header, String fieldname) {
-			return i(header, fieldname).sortable(fieldname);
-		}
-
-		/**
-		 * Convenience method for creating a Col with run var "i". Col is a link and is sortable.
-		 * @param header column title (can be HTML)
-		 * @param fieldname just the fieldname - makes rowHTML = "<a href=LINK>{{i.FIELDNAME}}</a>"
-		 * @param link -
-		 * @return new Col, sorted by fieldname
-		 */
-		public static Col si(String header, String fieldname, String link) {
-			return i(header, fieldname, link).sortable(fieldname);
-		}
-
-		public Col sortable(String sortkey) {
-			return new Col(remove, sortkey, ColSort.ASC_DESC, headerCSS, headerHTML, rowCSS, rowHTML, align);
-		}
-
-		public Col asc(String sortkey) {
-			return new Col(remove, sortkey, ColSort.ASC, headerCSS, headerHTML, rowCSS, rowHTML, align);
-		}
-
-		public Col desc(String sortkey) {
-			return new Col(remove, sortkey, ColSort.DESC, headerCSS, headerHTML, rowCSS, rowHTML, align);
-		}
-
-		public Col right() {
-			return new Col(remove, sortkey, sort, headerCSS, headerHTML, rowCSS, rowHTML, ColAlign.RIGHT);
-		}
-
-		/**
-		 * Must be called before Col is added to Cols.
-		 * @param condition true: this column will be removed
-		 * @return change Col
-		 */
-		public Col remove(boolean condition) {
-			return new Col(condition, sortkey, sort, headerCSS, headerHTML, rowCSS, rowHTML, align);
-		}
-
-		public String getSortkey() {
-			return sortkey;
-		}
-
-		public ColSort getSort() {
-			return sort;
-		}
-
-		public String getHeaderCSS() {
-			return headerCSS;
-		}
-
-		public String getHeaderHTML() {
-			return headerHTML;
-		}
-
-		public String getRowCSS() {
-			return rowCSS;
-		}
-
-		public String getRowHTML() {
-			return rowHTML;
-		}
-
-		public ColAlign getAlign() {
-			return align;
-		}
-		
-		public boolean isRemove() {
-			return remove;
-		}
-	}
-	
-	public enum ColAlign {
-		LEFT, // default
-		// CENTER,
-		RIGHT;
-	}
-	
-	/**
-	 * Sort order for column
-	 */
-	public enum ColSort {
-		NONE,
-		ASC,
-		DESC,
-		ASC_DESC;
-	}
-
 	/**
 	 * @param col 0 based column index
 	 * @return this

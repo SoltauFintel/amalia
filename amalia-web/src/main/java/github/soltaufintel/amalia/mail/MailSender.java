@@ -8,8 +8,6 @@ import org.simplejavamail.mailer.MailerBuilder;
 import github.soltaufintel.amalia.web.config.AppConfig;
 
 public class MailSender {
-    /** can also be 25 */
-    public static int defaultPort = 587;
     public static final String SMTP_SERVER = "mail.smtp-server";
     public static boolean active = true;
     public static String to;
@@ -23,7 +21,7 @@ public class MailSender {
 
         if (active) {
             var host = config.get(SMTP_SERVER);
-            var port = config.getInt("mail.smtp-server-port", defaultPort);
+            var port = config.getInt("mail.smtp-server-port", getDefaultPort());
             try {
                 Mailer mailer = MailerBuilder
                         .withSMTPServer(host, port)
@@ -45,6 +43,14 @@ public class MailSender {
             subject = mail.getSubject();
             body = mail.getBody();
         }
+    }
+    
+    /**
+     * Port can also be 25 or 2525.
+     * @return 587
+     */
+    protected int getDefaultPort() {
+        return 587;
     }
     
     protected void logSendMail(Mail mail, String sendTo, String froMAString) {
