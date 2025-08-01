@@ -437,6 +437,10 @@ public class TableComponent extends Action {
 		return this;
 	}
 	
+	public TableComponent sortDesc(int col) {
+	    return sort(col).sort(col); 
+	}
+	
 	protected Comparator<IDataMap> comparator() {
 		if (sortedColumn < 0) {
 			return null;
