@@ -1,6 +1,7 @@
 package github.soltaufintel.amalia.mongo;
 
 import org.bson.Document;
+import org.pmw.tinylog.Logger;
 
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
@@ -46,9 +47,12 @@ public class Database {
     
     protected void initDatastore(Datastore ds, Class<?> ... entityClasses) {
         for (Class<?> entityClass : entityClasses) {
+            Logger.debug("mapPackageFromClass: " + entityClass.getName());
             ds.getMapper().mapPackageFromClass(entityClass);
         }
+        Logger.debug("ensureIndexes");
         ds.ensureIndexes();
+        Logger.debug("ensureCaps");
         ds.ensureCaps();
     }
     
