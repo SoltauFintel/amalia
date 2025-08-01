@@ -9,7 +9,7 @@ import github.soltaufintel.amalia.web.config.AppConfig;
 
 public class MailSender {
     /** can also be 25 */
-    public static int DEFAULT_PORT = 587;
+    public static int defaultPort = 587;
     public static final String SMTP_SERVER = "mail.smtp-server";
     public static boolean active = true;
     public static String to;
@@ -22,18 +22,24 @@ public class MailSender {
         String sendTo = forceTo.isBlank() ? getTo(mail) : forceTo;
 
         if (active) {
-            Mailer mailer = MailerBuilder
-                    .withSMTPServer(config.get(SMTP_SERVER), config.getInt("mail.smtp-server-port", DEFAULT_PORT))
-                    .withSMTPServerUsername(config.get("mail.username"))
-                    .withSMTPServerPassword(config.get("mail.password"))
-                    .buildMailer();
-            mailer.sendMail(EmailBuilder.startingBlank()
-                    .from(mail.getSendername(), fromMailAddress)
-                    .to(sendTo)
-                    .withSubject(mail.getSubject())
-                    .withPlainText(mail.getBody())
-                    .buildEmail());
-            logSendMail(mail, sendTo, fromMailAddress);
+            var host = config.get(SMTP_SERVER);
+            var port = config.getInt("mail.smtp-server-port", defaultPort);
+            try {
+                Mailer mailer = MailerBuilder
+                        .withSMTPServer(host, port)
+                        .withSMTPServerUsername(config.get("mail.username"))
+                        .withSMTPServerPassword(config.get("mail.password"))
+                        .buildMailer();
+                mailer.sendMail(EmailBuilder.startingBlank()
+                        .from(mail.getSendername(), fromMailAddress)
+                        .to(sendTo)
+                        .withSubject(mail.getSubject())
+                        .withPlainText(mail.getBody())
+                        .buildEmail());
+                logSendMail(mail, sendTo, fromMailAddress);
+            } catch (Exception e) {
+                handleException(e, mail, host, port);
+            }
         } else {
             to = mail.getToEmailaddress();
             subject = mail.getSubject();
@@ -50,5 +56,10 @@ public class MailSender {
             return mail.getToEmailaddress();
         }
         return "\"" + mail.getToName() + "\" <" + mail.getToEmailaddress() + ">";
+    }
+    
+    protected void handleException(Exception e, Mail mail, String host, int port) {
+        throw new RuntimeException("Email can not be sent.", e);
+        // Otherwise "Third party error" would be displayed to the user.
     }
 }
