@@ -10,7 +10,7 @@ import github.soltaufintel.amalia.web.action.Action;
 public class TableSortAction extends Action {
 	private static final String HANDLE = "HANDLE_TSA";
 	public static String path = "/tablesort/";
-	private static Map<String, TableComponent> tables = new HashMap<>();
+	private static final Map<String, TableComponent> tables = new HashMap<>();
 	private String html;
 	public static String item = "item";
 	
@@ -18,7 +18,6 @@ public class TableSortAction extends Action {
 		synchronized (HANDLE) {
 			String id = IdGenerator.createId6();
 			tables.put(id, table);
-			// Problem: Map wird immer voller... Man könnte die immer gegen 3 Uhr clearen? Oder nach 3 Stunden?
 			return path + id + "/";
 		}
 	}
@@ -48,5 +47,15 @@ public class TableSortAction extends Action {
 	@Override
 	protected String render() {
 		return html;
+	}
+
+	/**
+	 * The tables cache is getting fuller and fuller.
+	 * It is recommended to use this method every night, for example at 2 a.m.
+	 */
+	public static void clearCache() {
+        synchronized (HANDLE) {
+            tables.clear();
+        }
 	}
 }
