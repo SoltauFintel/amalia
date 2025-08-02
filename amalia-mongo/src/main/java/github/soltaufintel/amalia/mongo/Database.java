@@ -29,7 +29,7 @@ public class Database {
     }
     
     public Database(DatabaseConfig c) {
-        this(c.getDbhost(), c.getName(), c.getUser(), c.getPassword(), c.getEntityClasses().toArray(new Class<?>[0]));
+        this(c.getDbhost(), c.getName(), c.getUser(), c.getPassword(), c.getEntityClasses() == null ? new Class<?>[0] : c.getEntityClasses().toArray(new Class<?>[0]));
     }
     
     protected MongoClient createClient(String dbhost, String name, String user, String password) {
