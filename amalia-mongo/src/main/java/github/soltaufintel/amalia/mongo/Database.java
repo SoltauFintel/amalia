@@ -1,5 +1,7 @@
 package github.soltaufintel.amalia.mongo;
 
+import java.util.Arrays;
+
 import org.bson.Document;
 import org.pmw.tinylog.Logger;
 
@@ -83,6 +85,7 @@ public class Database {
     
     public static void openDatabase(AppConfig config, Class<?>... entityClasses) {
         var c = new DatabaseConfig(config);
+        c.setEntityClasses(Arrays.asList(entityClasses));
         AbstractDAO.database = new Database(c);
         System.out.println("MongoDB database: " + c.getName() + "@" + c.getDbhost()
                 + (config.hasFilledKey("dbuser")
