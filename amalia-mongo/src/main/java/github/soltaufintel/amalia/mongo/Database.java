@@ -1,7 +1,5 @@
 package github.soltaufintel.amalia.mongo;
 
-import java.util.Arrays;
-
 import org.bson.Document;
 import org.pmw.tinylog.Logger;
 
@@ -29,7 +27,15 @@ public class Database {
         ds = createDatastore(client, name);
         initDatastore(ds, entityClasses);
     }
-    
+
+    /**
+     * @param c DatabaseConfig.entityClasses won't be used
+     * @param entityClasses -
+     */
+    public Database(DatabaseConfig c, Class<?> ... entityClasses) {
+        this(c.getDbhost(), c.getName(), c.getUser(), c.getPassword(), entityClasses);
+    }
+
     public Database(DatabaseConfig c) {
         this(c.getDbhost(), c.getName(), c.getUser(), c.getPassword(), c.getEntityClasses() == null ? new Class<?>[0] : c.getEntityClasses().toArray(new Class<?>[0]));
     }
@@ -85,8 +91,7 @@ public class Database {
     
     public static void openDatabase(AppConfig config, Class<?>... entityClasses) {
         var c = new DatabaseConfig(config);
-        c.setEntityClasses(Arrays.asList(entityClasses));
-        AbstractDAO.database = new Database(c);
+        AbstractDAO.database = new Database(c, entityClasses);
         System.out.println("MongoDB database: " + c.getName() + "@" + c.getDbhost()
                 + (config.hasFilledKey("dbuser")
                         ? (" with user " + c.getUser() + (config.hasFilledKey("dbpw") ? " with password" : ""))
