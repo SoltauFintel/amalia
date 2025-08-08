@@ -1,5 +1,6 @@
 package github.soltaufintel.amalia.timer;
 
+import java.util.List;
 import java.util.TimeZone;
 
 import org.pmw.tinylog.Logger;
@@ -92,7 +93,28 @@ public class Timer {
             }
         }
     }
-    
+
+    /**
+     * Use this method if you want to specify multiple cron expressions for 1 timer class.
+     * @param timerClass 1 timer class
+     * @param crons multiple cron expressions
+     */
+    public void createTimerWithMultipleCronExpressions(Class<? extends AbstractTimer> timerClass, List<String> crons) {
+        try {
+            JobDetail job = JobBuilder.newJob(timerClass).build();
+            for (String cron : crons) {
+                if (!isNullOrEmpty(cron) && !"-".equals(cron.trim())) {
+                    Trigger trigger = TriggerBuilder.newTrigger()
+                            .withSchedule(CronScheduleBuilder.cronSchedule(cron).inTimeZone(TimeZone.getTimeZone("CET"))).build();
+                    scheduler.scheduleJob(job, trigger);
+                    Logger.info(timerClass.getSimpleName() + " started. cron: " + cron);
+                }
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Error scheduling timer " + timerClass.getSimpleName() + " with crons " + crons, e);
+        }
+    }
+
     public static boolean checkIfTimersAreActive(Class<? extends AbstractTimer> timerClass) {
         boolean active = "1".equals(TIMER_ACTIVE);
         if (!active) {
