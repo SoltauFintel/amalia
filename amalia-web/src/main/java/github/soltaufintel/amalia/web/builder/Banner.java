@@ -13,7 +13,16 @@ import org.pmw.tinylog.Logger;
 import github.soltaufintel.amalia.web.config.AppConfig;
 
 public class Banner {
-
+    private final String filename;
+    
+    public Banner() {
+        this("/banner.txt");
+    }
+    
+    public Banner(String filename) {
+        this.filename = filename;
+    }
+    
     public void print(String appVersion, AppConfig config) {
         banner();
 		List<Integer> ports = config.getPorts();
@@ -34,7 +43,7 @@ public class Banner {
     }
 
     protected void banner() {
-        try (InputStream is = getClass().getResourceAsStream("/banner.txt")) {
+        try (InputStream is = getClass().getResourceAsStream(filename)) {
             if (is == null) {
                 return;
             }
@@ -47,7 +56,7 @@ public class Banner {
         } catch (IOException ignore) {
         }
     }
-
+    
     protected String getTimeInfo() {
         return "Date/time: " + DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss").format(LocalDateTime.now())
                 + ", timezone: " + ZoneId.systemDefault();

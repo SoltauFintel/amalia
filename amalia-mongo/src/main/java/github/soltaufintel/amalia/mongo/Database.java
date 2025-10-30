@@ -90,14 +90,19 @@ public class Database {
     }
     
     public static void openDatabase(AppConfig config, Class<?>... entityClasses) {
+        AbstractDAO.database = openDatabase2(config, entityClasses);
+    }
+
+    public static Database openDatabase2(AppConfig config, Class<?>... entityClasses) {
         var c = new DatabaseConfig(config);
-        AbstractDAO.database = new Database(c, entityClasses);
+        var database = new Database(c, entityClasses);
         System.out.println("MongoDB database: " + c.getName() + "@" + c.getDbhost()
                 + (config.hasFilledKey("dbuser")
                         ? (" with user " + c.getUser() + (config.hasFilledKey("dbpw") ? " with password" : ""))
                         : ""));
+        return database;
     }
-    
+
     public GridFSDAO openGridFSDAO(String collection) {
         return new GridFSDAO(client.getDatabase(name), collection);
     }

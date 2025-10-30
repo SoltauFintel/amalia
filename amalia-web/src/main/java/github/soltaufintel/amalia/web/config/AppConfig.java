@@ -28,6 +28,11 @@ public class AppConfig {
         configFile = load(dn);
     }
     
+    public AppConfig(String dn) {
+        properties = new Properties();
+        configFile = load(dn);
+    }
+    
     /** for test */
     public AppConfig(Properties properties, String configFile) {
         this.properties = properties;
