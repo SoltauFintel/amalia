@@ -71,10 +71,21 @@ public class Col {
      * @param header column title (can be HTML)
      * @param fieldname just the fieldname - makes rowHTML = "<a href=LINK>{{i.FIELDNAME}}</a>"
      * @param link -
-     * @return new Col
+     * @return new Col, sorted
      */
     public static Col i(String header, String fieldname, String link) {
-        return new Col(header, "<a href=\"" + link + "\">{{i." + fieldname + "}}</a>").sortable(fieldname);
+        return ix(header, fieldname, link).sortable(fieldname);
+    }
+
+    /**
+     * Convenience method for creating a Col with run var "i". Col is a link.
+     * @param header column title (can be HTML)
+     * @param fieldname just the fieldname - makes rowHTML = "<a href=LINK>{{i.FIELDNAME}}</a>"
+     * @param link -
+     * @return new Col, not sorted
+     */
+    public static Col ix(String header, String fieldname, String link) {
+        return new Col(header, "<a href=\"" + link + "\">{{i." + fieldname + "}}</a>");
     }
 
     /**
