@@ -10,11 +10,12 @@ public class MongoSimpleAuth extends Auth {
     private final IUserService userService;
 
     /**
-     * RememberMeInMongoDB, SimpleAuthRoutes, SimpleUserService, setCookieName
+     * RememberMeInMongoDB, SimpleAuthRoutes class, SimpleUserService, setCookieName
      * @param config config.getInt("encryption-frequency", 0)
+     * @param loginPageHtml -
      */
-    public MongoSimpleAuth(AppConfig config) {
-        super(config, new RememberMeInMongoDB(), config.getInt("encryption-frequency", 0), new SimpleAuthRoutes());
+    public MongoSimpleAuth(AppConfig config, LoginPageHtml loginPageHtml) {
+        super(config, new RememberMeInMongoDB(), config.getInt("encryption-frequency", 0), SimpleAuthRoutes.class, loginPageHtml);
         userService = new SimpleUserService(config);
         WebContext.setCookieName(config);
     }
