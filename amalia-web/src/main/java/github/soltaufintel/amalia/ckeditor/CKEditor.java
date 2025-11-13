@@ -30,7 +30,7 @@ public class CKEditor {
         this.var = var;
     }
 
-    public String getEditorStyle() {
+    protected String getEditorStyle() {
         return "min-height: 150px; ";
     }
 
