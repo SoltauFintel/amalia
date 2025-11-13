@@ -20,7 +20,6 @@ public class CKEditor {
     private final DataMap model;
     private final AbstractCKEditorModel text;
     private final String var;
-    public String editorStyle = "min-height: 150px; ";
     
     // TODO Bei Abbruch darf keine SiAbfr kommen!
     
@@ -32,11 +31,7 @@ public class CKEditor {
     }
 
     public String getEditorStyle() {
-        return editorStyle;
-    }
-
-    public void setEditorStyle(String editorStyle) {
-        this.editorStyle = editorStyle;
+        return "min-height: 150px; ";
     }
 
     public void get() {
@@ -49,7 +44,7 @@ public class CKEditor {
         
         model.put(var,
                 "<div class=\"form-group\"><div id=\"toolbar-container\"></div>"
-                        + "<div id=\"editor\" class=\"editbox\" style=\"" + editorStyle + "max-height: calc(100vh - " + text.vh() + "px);\">"
+                        + "<div id=\"editor\" class=\"editbox\" style=\"" + getEditorStyle() + "max-height: calc(100vh - " + text.vh() + "px);\">"
                         + text.getHTML() /* no esc */
                         + "</div></div>");
         
@@ -57,7 +52,7 @@ public class CKEditor {
         model.put("imageuploadlink", ImageUploadAction.imageService.getImageUploadLink(ctx));
         model.put("bigEditor", true);
         model.put("jspackage", "moco");
-        model.put("postcontentslink", "/aufgabentext/" + id + "/post/" + text.getType() + "?key=" + Escaper.urlEncode(text.getId(), ""));
+        model.put("postcontentslink", postcontentslink(text, id));
         model.put("errorName", text.getType());
         model.put("postExtra", "");// "titel: document.getElementById('titel').value,\r\n");
         model.put("postFailExtra", "");
@@ -68,6 +63,10 @@ public class CKEditor {
         model.put("onloadExtra", "");//"document.getElementById('titel').value = localStorage.getItem('error_titel." + id
                 //+ "');\r\n" + "localStorage.removeItem('error_titel." + id + "');\r\n");
         model.putInt("version", text.getVersion());
+    }
+
+    protected String postcontentslink(AbstractCKEditorModel ckeditorModel, String id) {
+        return "/aufgabentext/" + id + "/post/" + ckeditorModel.getType() + "?key=" + Escaper.urlEncode(ckeditorModel.getId(), "");
     }
     
     public void post() {
