@@ -14,6 +14,7 @@ dependencies {
     implementation 'javaxt:javaxt-core:1.7.9' // https://www.javaxt.com/downloads/
     implementation 'org.simplejavamail:simple-java-mail:6.0.5'
     api 'org.apache.httpcomponents:httpclient:4.5.5' // TODO implementation group: 'org.apache.httpcomponents.client5', name: 'httpclient5', version: '5.2.1'
+    api 'org.jsoup:jsoup:1.16.1'
 
     testImplementation 'junit:junit:4.12'
 }
