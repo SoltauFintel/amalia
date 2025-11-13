@@ -20,6 +20,7 @@ public class CKEditor {
     private final DataMap model;
     private final AbstractCKEditorModel text;
     private final String var;
+    public String editorStyle = "min-height: 150px; ";
     
     // TODO Bei Abbruch darf keine SiAbfr kommen!
     
@@ -28,6 +29,14 @@ public class CKEditor {
         this.model = model;
         this.text = text;
         this.var = var;
+    }
+
+    public String getEditorStyle() {
+        return editorStyle;
+    }
+
+    public void setEditorStyle(String editorStyle) {
+        this.editorStyle = editorStyle;
     }
 
     public void get() {
@@ -40,7 +49,7 @@ public class CKEditor {
         
         model.put(var,
                 "<div class=\"form-group\"><div id=\"toolbar-container\"></div>"
-                        + "<div id=\"editor\" class=\"editbox\" style=\"max-height: calc(100vh - " + text.vh() + "px);\">"
+                        + "<div id=\"editor\" class=\"editbox\" style=\"" + editorStyle + "max-height: calc(100vh - " + text.vh() + "px);\">"
                         + text.getHTML() /* no esc */
                         + "</div></div>");
         
