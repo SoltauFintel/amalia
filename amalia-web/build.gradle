@@ -10,6 +10,7 @@ dependencies {
     api 'com.google.guava:guava:31.1-jre'
     api 'com.google.code.gson:gson:2.12.1'
     api 'commons-lang:commons-lang:2.6' // TODO auf Version 3 gehen | Wofür wird das benötigt? (s.a. commons-text) Muss das "api" sein?
+    api 'commons-io:commons-io:2.21.0'
     api 'org.quartz-scheduler:quartz:2.3.2'
     implementation 'javaxt:javaxt-core:1.7.9' // https://www.javaxt.com/downloads/
     implementation 'org.simplejavamail:simple-java-mail:6.0.5'

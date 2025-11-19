@@ -8,7 +8,7 @@ public class GuruError404Page extends AbstractGuruErrorPage {
     protected void execute() {
         String msg = "Page not found. (404)";
         if (!"/fonts/glyphicons-halflings-regular.woff2".equals(ctx.path()) && !ctx.path().startsWith("/.")) {
-            Logger.error("Error rendering path \"" + ctx.path() + "\": " + msg);
+            Logger.error("Error rendering path \"" + ctx.path() + (ctx.req.queryString() == null ? "" : ("?" + ctx.req.queryString())) + "\": " + msg);
         }
         ctx.status(404);
         setMsg(msg);
