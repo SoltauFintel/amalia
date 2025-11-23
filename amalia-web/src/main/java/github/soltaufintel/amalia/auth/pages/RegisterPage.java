@@ -5,6 +5,7 @@ import org.pmw.tinylog.Logger;
 import github.soltaufintel.amalia.web.action.Page;
 
 public class RegisterPage extends Page {
+    // TODO Es fehlt die Möglichkeit die Registrierung ganz abzuschalten. Also dass schon dass es die RouteDef nicht gibt oder dass der AuthService alle Registrierungen abweist.
 
     @Override
     protected void execute() {
