@@ -61,18 +61,19 @@ public interface ImageService {
         if (!relevant) {
             return null;
         }
-        byte[] img = null;
         String id = idSupplier.get();
         String filename = filenameSupplier.get();
         var file = fromService.getFile(id, filename);
-        if (!file.isFile()) {
+        if (file == null || !file.isFile()) {
             // Image ist noch im upload dir.
             file = fromUploadDir.getFile(id, filename);
         } // kein else if !
-        if (file.isFile()) {   
-            img = FileService.loadBinaryFile(file);
+        if (file != null && file.isFile()) {   
+            byte[] img = FileService.loadBinaryFile(file);
+            return new BinaryData(img, filename);
+        } else {
+            return BinaryData.NULL;
         }
-        return new BinaryData(img, filename);
     }
     
     public interface GetFile {
