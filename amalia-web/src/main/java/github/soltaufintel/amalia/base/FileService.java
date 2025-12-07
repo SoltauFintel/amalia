@@ -32,11 +32,13 @@ public class FileService {
     
     public static List<String> listFolders(File folder) {
         List<String> ret = new ArrayList<>();
-        File[] folders = folder.listFiles();
-        if (folders != null) {
-            for (File f : folders) {
-                if (f.isDirectory() && !f.getName().startsWith(".")) {
-                    ret.add(f.getName());
+        if (folder.isDirectory()) {
+            File[] folders = folder.listFiles();
+            if (folders != null) {
+                for (File f : folders) {
+                    if (f.isDirectory() && !f.getName().startsWith(".")) {
+                        ret.add(f.getName());
+                    }
                 }
             }
         }
@@ -155,21 +157,35 @@ public class FileService {
             Files.copy(fromFile.toPath(), new File(toDir, fromFile.getName()).toPath(), //
                     StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException e) {
-            Logger.error(e);
-            throw new RuntimeException("Publish error. See log.");
+            Logger.error(e, "Error copying file from " + fromFile.getAbsolutePath() + " to dir: " + toDir.getAbsolutePath());
+            throw new RuntimeException("Error copying file. See log.");
         }
     }
     
     public static void copyFiles(File fromDir, File toDir) {
-        File[] files = fromDir.listFiles();
-        if (files != null) {
-            for (File file : files) {
-                copyFile(file, toDir);
+        if (fromDir != null && fromDir.isDirectory()) {
+            File[] files = fromDir.listFiles();
+            if (files != null && files.length > 0) {
+                toDir.mkdirs();
+                for (File file : files) {
+                    copyFile(file, toDir);
+                    try {
+                        Files.copy(file.toPath(), new File(toDir, file.getName()).toPath(), //
+                                StandardCopyOption.REPLACE_EXISTING);
+                    } catch (IOException e) {
+                        Logger.error(e, "Error copying file from " + file.getAbsolutePath() + " to dir: "
+                                + toDir.getAbsolutePath());
+                        throw new RuntimeException("Error copying files. See log.");
+                    }
+                }
             }
         }
     }
 
     public static void moveFiles(File fromDir, File toDir) {
+        if (fromDir == null || !fromDir.isDirectory()) {
+            return;
+        }
         File[] files = fromDir.listFiles();
         if (files == null) {
             return;
@@ -180,8 +196,8 @@ public class FileService {
                 try {
                     Files.move(file.toPath(), new File(toDir, file.getName()).toPath(), StandardCopyOption.REPLACE_EXISTING);
                 } catch (IOException e) {
-                    Logger.error(e);
-                    throw new RuntimeException("Can't move file. See log.");
+                    Logger.error(e, "Error moving file from " + file.getAbsolutePath() + " to dir: " + toDir.getAbsolutePath());
+                    throw new RuntimeException("Error moving file. See log.");
                 }
             } else if (file.isDirectory()) {
                 moveFiles(file, new File(toDir, file.getName()));
@@ -190,6 +206,9 @@ public class FileService {
     }
 
     public static void zip(File folder, File zipFile) {
+        if (folder == null || !folder.isDirectory()) {
+            return;
+        }
         zipFile.delete();
         int startOfFilenameWithRelativePath = folder.getAbsolutePath().length() + 1;
         try (ZipOutputStream out = new ZipOutputStream(new FileOutputStream(zipFile))) {
@@ -246,7 +265,7 @@ public class FileService {
     }
     
     public static List<File> findFiles(File folder, Predicate<File> test) {
-    	if (!folder.exists()) {
+    	if (!folder.isDirectory()) {
     		return List.of();
     	}
 		try {
@@ -276,15 +295,20 @@ public class FileService {
 		}
 	}
 
-    // not recursive
+    /**
+     * not recursive
+     * @param dir -
+     * @return filenames without directory, empty if dir is null or not a directory
+     */
     public static List<String> loadFilenames(File dir) {
         List<String> filenames = new ArrayList<>();
-        if (dir.isDirectory()) {
-            File[] files = dir.listFiles();
-            if (files != null) {
-                for (File file : files) {
-                    filenames.add(file.getName());
-                }
+        if (dir == null || !dir.isDirectory()) {
+            return filenames;
+        }
+        File[] files = dir.listFiles();
+        if (files != null) {
+            for (File file : files) {
+                filenames.add(file.getName());
             }
         }
         return filenames;
