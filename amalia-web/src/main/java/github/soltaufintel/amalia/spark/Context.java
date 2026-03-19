@@ -20,6 +20,18 @@ public class Context {
         return req.uri();
     }
     
+    /**
+     * @return path + query params
+     */
+    public String fullPath() {
+        String ret = req.uri();
+        String q = req.queryString();
+        if (q != null && !q.isEmpty()) {
+            ret += "?" + q;
+        }
+        return ret;
+    }
+    
     public int port() {
     	return req.port();
     }
