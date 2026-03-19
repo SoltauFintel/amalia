@@ -20,7 +20,7 @@ public class ImageServiceDispatcher implements ImageService {
     @Override
     public String saveImage(Context ctx, InputStream content, String filename) {
         if (infoLog) {
-            Logger.info("saveImage: " + ctx.path() + (ctx.req.queryString() == null ? "" : ("?" + ctx.req.queryString())));
+            Logger.info("saveImage: " + ctx.fullPath());
         }
         for (ImageService i : imageServices) {
             String url = i.saveImage(ctx, content, filename);
@@ -34,7 +34,7 @@ public class ImageServiceDispatcher implements ImageService {
     @Override
     public BinaryData loadImage(Context ctx) {
         if (infoLog) {
-            Logger.info("loadImage: " + ctx.path() + (ctx.req.queryString() == null ? "" : ("?" + ctx.req.queryString())));
+            Logger.info("loadImage: " + ctx.fullPath());
         }
         for (ImageService i : imageServices) {
             BinaryData bd = i.loadImage(ctx);
