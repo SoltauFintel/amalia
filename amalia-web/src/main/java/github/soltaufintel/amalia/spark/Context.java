@@ -76,11 +76,24 @@ public class Context {
         return ret;
     }
 
+    /**
+     * @param key -
+     * @return null if req.queryParamsValues(key) is null
+     */
     public List<String> queryParamsValues(String key) {
         String[] a = req.queryParamsValues(key);
         return a == null ? null : Arrays.asList(a);
     }
-    
+
+    /**
+     * @param key -
+     * @return not null
+     */
+    public List<String> queryParamsValuesNotNull(String key) {
+        var ret = queryParamsValues(key);
+        return ret == null ? new ArrayList<>() : ret;
+    }
+
     public String formParam(String key) {
         return req.queryParams(key);
     }
