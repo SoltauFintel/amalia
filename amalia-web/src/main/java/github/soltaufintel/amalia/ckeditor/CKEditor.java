@@ -75,7 +75,7 @@ public class CKEditor {
     public static void putVar(DataMap myModel, String idPostfix, String html, CKEditorModel model) {
         var style = "max-height: calc(100vh - " + model.getVh() + "px);" + model.getEditorStyle();
         myModel.put("ckeditor", "<div class=\"form-group\"><div id=\"toolbar-container" + idPostfix + "\"></div>"
-                + "<div id=\"editor" + idPostfix + "\" class=\"editbox\" style=\"" + style + "\">" + //
+                + "<div id=\"editor" + idPostfix + "\" class=\"" + model.getEditboxCSS() + "\" style=\"" + style + "\">" + //
                 html /* no esc */
                 + "</div></div>");
     }

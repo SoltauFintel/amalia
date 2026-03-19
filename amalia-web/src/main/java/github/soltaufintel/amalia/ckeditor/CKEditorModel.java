@@ -91,4 +91,12 @@ public interface CKEditorModel {
     default Collection<String> getAdditionalFields() {
         return List.of();
     }
+    
+    /**
+     * Returns CSS classes for edit box.
+     * @return "editbox"
+     */
+    default String getEditboxCSS() {
+        return "editbox";
+    }
 }
