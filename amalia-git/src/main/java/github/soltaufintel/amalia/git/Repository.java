@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 import org.eclipse.jgit.api.CloneCommand;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.ListBranchCommand.ListMode;
+import org.eclipse.jgit.api.ResetCommand.ResetType;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.diff.DiffEntry.ChangeType;
@@ -21,6 +22,7 @@ import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.RevWalk;
+import org.eclipse.jgit.transport.RefSpec;
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
 import org.eclipse.jgit.util.FileUtils;
 import org.eclipse.jgit.util.io.DisabledOutputStream;
@@ -35,7 +37,8 @@ public class Repository {
     private static final Object LOCK = new Object();
     private final RepositoryDefinition repo;
     private Git git;
-    private String currentBranch = "master"; 
+    private String currentBranch = "master";
+    private boolean onlyRemoteBranches = true;
 
     public Repository(RepositoryDefinition repo) {
         this.repo = repo;
@@ -161,33 +164,233 @@ public class Repository {
         }
     }
 
+    /**
+     * @param contains null: no filter
+     * @return tag list
+     */
     public List<Tag> getTags(String contains) {
         synchronized (LOCK) {
             try {
                 Git git = getGit();
-                return git.tagList().call().stream()
-                        .filter(tag -> tag.getName().contains(contains))
-                        .map(tag -> new Tag(tag, git))
+                var c = git.tagList().call().stream();
+                if (contains != null) {
+                    c = c.filter(tag -> tag.getName().contains(contains));
+                }
+                return c.map(tag -> new Tag(tag, git))
                         .collect(Collectors.toList());
             } catch (GitAPIException e) {
-                throw new RuntimeException(e);
+                throw new RuntimeException("Error loading tags", e);
             }
         }
     }
     
-    public List<String> getBranchNames() {
+    /**
+     * @return list of tag names
+     */
+    public List<String> getTagNames() {
+        return getTags(null).stream().map(Tag::getName).collect(Collectors.toList());
+    } 
+    
+    /**
+     * Creates tag on given commit and pushs it.
+     * @param tagName e.g. "3.18.4"
+     * @param commit null: current commit, otherwise commit hash or tag name
+     * @param user user to log into remote Git repository, e.g. "builder", null: don't push
+     * @param password password to log into remote Git repository
+     * @param msg (new argument) "tagged by git-service-" + VERSION + ".jar"
+     */
+    public void tag(String tagName, String commit, String user, String password, String msg) {
+        // TODO Maybe there's an better implementation for this!
+        String m = null;
+        if (commit != null) {
+            m = getBranch();
+            selectCommit(commit);
+        }
         try {
-            return getGit().branchList()
-                    .setListMode(ListMode.REMOTE)
-                    .call()
-                    .stream()
-                    .map(ref -> ref.getName().replace("refs/remotes/origin/", ""))
-                    .collect(Collectors.toList());
-        } catch (GitAPIException e) {
-            throw new RuntimeException(e);
+            doTag(tagName, user, password, msg);
+        } finally {
+            if (commit != null) {
+                switchToBranch(m);
+            }
         }
     }
+    
+    private void doTag(String tagName, String user, String password, String msg) {
+        String action = "creating";
+        try {
+            var git = getGit();
+            // step 1: create
+            git.tag()
+                .setName(tagName)
+                .setMessage(msg)
+                .call();
+            
+            // step 2: push
+            if (user != null) {
+                try {
+                    action = "pushing";
+                    git.push()
+                        .setPushTags()
+                        .setRefSpecs(new RefSpec(tagName))
+                        .setCredentialsProvider(new UsernamePasswordCredentialsProvider(user, password))
+                        .call();
+                } catch (Exception up) {
+                    try {
+                        deleteTag(tagName, git);
+                        Logger.warn("tag push error! -> compensation: local tag " + tagName + " deleted");
+                    } catch (Throwable ignore) { //
+                    }
+                    throw up;
+                }
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Error " + action + " a tag! " + e.getMessage(), e);
+        }
+    }
+    
+    /**
+     * Delete local tag
+     * @param tagName e.g. "3.12.4"
+     */
+    public void deleteTag(String tagName) {
+        try {
+            deleteTag(tagName, getGit());
+        } catch (Exception e) {
+            throw new RuntimeException("Error deleting local tag " + tagName + "\n" + e.getMessage(), e);
+        }
+    }
+    
+    /**
+     * Delete all tags that a returned by getTags(). Does no push.
+     */
+    public void clearTags() {
+        try {
+            var git = getGit();
+            for (Tag tag : getTags(null)) {
+                deleteTag(tag.getName(), git);
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Error deleting all local tags!\n" + e.getMessage(), e);
+        }
+    }
+    
+    private void deleteTag(String tagName, Git git) throws GitAPIException {
+        git.tagDelete()
+            .setTags(tagName)
+            .call();
+    }
+    /**
+     * Creates branch on current commit.
+     * This method creates no root tag!
+     * See other branch() method if you also want to push the commit.
+     * @param name branch name, e.g. "3.21.x"
+     */
+    public void branch(String name) {
+        branch(name, null, null, null);
+    }
 
+    /**
+     * Creates branch and pushs it.
+     * This method creates no root tag!
+     * @param name branch name, e.g. "3.21.x"
+     * @param commit null: current commit, otherwise commit hash or tag name
+     * @param user user to log into remote Git repository, e.g. "builder", null: don't push
+     * @param password password to log into remote Git repository
+     */
+    public void branch(String name, String commit, String user, String password) {
+        // TODO Maybe there's an better implementation for this! branchCreate().setStartPoint?
+        String m = null;
+        if (commit != null) {
+            m = getBranch();
+            selectCommit(commit);
+        }
+        try {
+            branch(name, user, password);
+        } finally {
+            if (commit != null) {
+                switchToBranch(m);
+            }
+        }
+    }
+    
+    private void branch(String name, String user, String password) {
+        String action = "creating";
+        try {
+            var git = getGit();
+            // step 1: create
+            git.branchCreate()
+                .setName(name)
+                .call();
+            
+            // step 2: push
+            if (user != null) {
+                try {
+                    action = "pushing";
+                    git.push()
+                        .setRemote("origin")
+                        .setRefSpecs(new RefSpec(name + ":" + name))
+                        .setCredentialsProvider(new UsernamePasswordCredentialsProvider(user, password))
+                        .call();
+                } catch (Exception up) {
+                    try {
+                        git.branchDelete()
+                            .setBranchNames(name)
+                            .call();
+                        Logger.warn("branch push error! -> compensation: local branch " + name + " deleted");
+                    } catch (Throwable ignore) { //
+                    }
+                    throw up;
+                }
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Error " + action + " a branch! " + e.getMessage(), e);
+        }
+    }
+    
+    /**
+     * checkout: Set HEAD to other commit
+     * @param commit commit hash, can be short form
+     * A tag name should also work.
+     */
+    public void selectCommit(String commit) {
+        try {
+            getGit().checkout()
+                .setName(commit)
+                .call();
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Error selecting commit! " + e.getMessage(), e);
+        }
+    }
+    
+    /**
+     * onlyRemoteBranches setting is used.
+     * @return branch list
+     */
+    public List<Branch> getBranches() {
+        try {
+            var git = getGit();
+            return git.branchList()
+                    .setListMode(onlyRemoteBranches ? ListMode.REMOTE : ListMode.ALL)
+                    .call()
+                    .stream()
+                    .filter(ref -> !"HEAD".equals(ref.getName()))
+                    .map(ref -> new Branch(ref, git))
+                    .collect(Collectors.toList());
+        } catch (Exception e) {
+            throw new RuntimeException("Error loading branches!", e);
+        }
+    }
+    
+    /**
+     * onlyRemoteBranches setting is used.
+     * @return branch names as list
+     */
+    public List<String> getBranchNames() {
+        return getBranches().stream()
+                .map(Branch::getName)
+                .collect(Collectors.toList());
+    }
+    
     public String getBranchStartDate(String branch) {
         // Hier dynamisch gegen den gesetzten Branch prüfen statt hartcodiert gegen "master"
         if (!currentBranch.equals(branch)) {
@@ -301,6 +504,62 @@ public class Repository {
         }
     }
     
+    /**
+     * Add all changes and commit them.
+     * See other commit() method if you also want to push the commit.
+     * @param commitMessage -
+     * @param authorName also committer name
+     * @param mail email address of author/committer
+     * @return commit hash of newly created commit
+     */
+    public String commit(String commitMessage, String authorName, String mail) {
+        return commit(commitMessage, authorName, mail, null, null);
+    }
+    
+    /**
+     * Add all changes, commit and push them.
+     * @param commitMessage -
+     * @param authorName also committer name
+     * @param mail email address of author/committer
+     * @param user user to log into remote Git repository, null: don't push
+     * @param password password to log into remote Git repository
+     * @return commit hash of newly created commit
+     */
+    public String commit(String commitMessage, String authorName, String mail, String user, String password) {
+        return commit(commitMessage, authorName, mail, user, password, "."/*=all files*/);
+    }
+    
+    public String commit(String commitMessage, String authorName, String mail, String user, String password, String filepattern) {
+        if (commitMessage == null || commitMessage.trim().isEmpty()) {
+            throw new IllegalArgumentException("commitMessage must not be empty!");
+        }
+        if (authorName == null || authorName.trim().isEmpty()) {
+            throw new IllegalArgumentException("authorName must not be empty!");
+        }
+        if (mail == null || mail.trim().isEmpty()) {
+            throw new IllegalArgumentException("mail must not be empty!");
+        }
+        try {
+            var git = getGit();
+            git.add()
+                .addFilepattern(filepattern)
+                .call();
+            RevCommit commit = git.commit()
+                .setMessage(commitMessage)
+                .setAuthor(authorName, mail)
+                .setCommitter(authorName, mail)
+                .call();
+            if (user != null) {
+                git.push()
+                    .setCredentialsProvider(new UsernamePasswordCredentialsProvider(user, password))
+                    .call();
+            }
+            return commit.getName();
+        } catch (Exception e) {
+            throw new RuntimeException("Error committing changes!\n" + e.getMessage(), e);
+        }
+    }
+
     private UsernamePasswordCredentialsProvider cred() {
         Credentials cred = getCredentials();
         return new UsernamePasswordCredentialsProvider(cred.getUser(), cred.getPassword());
@@ -351,5 +610,38 @@ public class Repository {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+    
+    /**
+     * This call may take 4 seconds.
+     * @return false if there is a change in the work tree, e.g. an added or changed file
+     * <br>true if there is nothing to be committed (but maybe something to push)
+     * <br>Of course any changes in gitignore folders are not detected (e.g. build folder).
+     */
+    public boolean isWorkspaceClean() {
+        try {
+            return getGit().status().call().isClean();
+        } catch (Exception e) {
+            throw new RuntimeException("Error while detecting if workspace is clean!", e);
+        }
+    }
+    
+    public void resetHard() {
+        try {
+            getGit().reset().setMode(ResetType.HARD).call();
+        } catch (Exception e) {
+            throw new RuntimeException("Error while executing 'reset hard'!", e);
+        }
+    }
+
+    /**
+     * @return true: only remote branch (default), false: all branches
+     */
+    public boolean isOnlyRemoteBranches() {
+        return onlyRemoteBranches;
+    }
+
+    public void setOnlyRemoteBranches(boolean onlyRemoteBranches) {
+        this.onlyRemoteBranches = onlyRemoteBranches;
     }
 }

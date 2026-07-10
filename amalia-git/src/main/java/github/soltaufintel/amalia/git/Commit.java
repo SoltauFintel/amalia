@@ -1,5 +1,7 @@
 package github.soltaufintel.amalia.git;
 
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import github.soltaufintel.amalia.base.StringService;
@@ -15,6 +17,8 @@ public class Commit implements ICommit {
     /** changes ID */
     private String cid;
     private List<String> files;
+    private ZonedDateTime realCommitDate;
+    private String fullMessage;
 
     public Commit() {}
     
@@ -106,5 +110,41 @@ public class Commit implements ICommit {
 
     public void setFiles(List<String> files) {
         this.files = files;
+    }
+
+    /**
+     * @return commit date as ZonedDateTime
+     */
+    public ZonedDateTime getRealCommitDate() {
+        return realCommitDate;
+    }
+
+    public void setRealCommitDate(ZonedDateTime realCommitDate) {
+        this.realCommitDate = realCommitDate;
+    }
+    
+    public String getCommitDateForDisplay() {
+        return realCommitDate.format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm"));
+    }
+
+    public String getCommitDateForSort() {
+        return realCommitDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
+    }
+
+    public String getCommitDateForManifest() {
+        return realCommitDate.format(DateTimeFormatter.ofPattern("yyyy.MM.dd.HH.mm.ss"));
+    }
+
+    public String getFullMessage() {
+        return fullMessage;
+    }
+
+    public void setFullMessage(String fullMessage) {
+        this.fullMessage = fullMessage;
+    }
+    
+    @Override
+    public String toString() {
+        return "commit " + id + ": \"" + shortMessage + "\"";
     }
 }

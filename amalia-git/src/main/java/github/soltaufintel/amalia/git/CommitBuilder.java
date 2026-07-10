@@ -11,6 +11,7 @@ import org.eclipse.jgit.revwalk.RevCommit;
 import github.soltaufintel.amalia.base.IdGenerator;
 
 public class CommitBuilder {
+    public static ZoneId zoneId = ZoneId.of("Europe/Berlin");
 
     public Commit build(RevCommit commit, String changes) {
         if (commit == null) {
@@ -19,9 +20,12 @@ public class CommitBuilder {
         Commit ret = new Commit();
         ret.setId(commit.getId().getName());
         ret.setShortMessage(commit.getShortMessage());
+        ret.setFullMessage(commit.getFullMessage());
         ret.setAuthoredDate(getAuthoredDate(commit));
         ret.setAutor(commit.getAuthorIdent().getName());
         ret.setAutorInitialien(getAutorInitialien(commit));
+        Instant instant = Instant.ofEpochSecond(commit.getCommitTime());
+        ret.setRealCommitDate(ZonedDateTime.ofInstant(instant, zoneId));
         ret.setCommitDate(getCommitDate(commit));
         ret.setCommitterInitialien(getCommitterInitialien(commit));
         if (changes != null) {
@@ -41,7 +45,6 @@ public class CommitBuilder {
     }
 
     private String d(Instant instant, PersonIdent ident) {
-        ZoneId zoneId = ZoneId.of("Europe/Berlin");
         ZonedDateTime date = ZonedDateTime.ofInstant(instant, zoneId);
         return date.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
     }
