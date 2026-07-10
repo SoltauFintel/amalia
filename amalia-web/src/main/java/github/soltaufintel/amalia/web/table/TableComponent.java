@@ -115,11 +115,22 @@ public class TableComponent extends Action {
 		for (int i = 0; i < cols.size(); i++) {
 			Col col = cols.get(i);
 			if (ColSort.NONE.equals(col.getSort())) {
-				headers.append("\n<th class=\"" + col.getHeaderCSS() + (ColAlign.RIGHT.equals(col.getAlign()) ? " tar" : "") + "\">");
+                headers.append("\n<th class=\"" + col.getHeaderCSS());
+                if (ColAlign.RIGHT.equals(col.getAlign())) {
+                    headers.append(" tar");
+                } else if (ColAlign.CENTER.equals(col.getAlign())) {
+                    headers.append(" tac");
+                }
+                headers.append("\">");
 			} else {
-				headers.append("\n<th" + (ColAlign.RIGHT.equals(col.getAlign()) ? " class=\"tar\"" : "")
-						+ "><a href=\"#\" class=\"sortlink " + col.getHeaderCSS() + "\" hx-get=\"" + sortlink
-						+ i + "\" hx-target=\"." + sid + "\" hx-swap=\"outerHTML\">");
+                headers.append("\n<th");
+                if (ColAlign.RIGHT.equals(col.getAlign())) {
+                    headers.append(" class=\"tar\"");
+                } else if (ColAlign.CENTER.equals(col.getAlign())) {
+                    headers.append(" class=\"tac\"");
+                }
+                headers.append("><a href=\"#\" class=\"sortlink " + col.getHeaderCSS() + "\" hx-get=\"" + sortlink + i
+                        + "\" hx-target=\"." + sid + "\" hx-swap=\"outerHTML\">");
 			}
 			String content = compiler.compile(col.getHeaderHTML()).render(model);
 			headers.append(content);
@@ -127,8 +138,9 @@ public class TableComponent extends Action {
 			if (!ColSort.NONE.equals(col.getSort()) && i == sortedColumn) {
 				sortIcon = asc ? "fa-arrow-down" : "fa-arrow-up";
 			}
-			headers.append("<i class=\"fa " + (ColAlign.RIGHT.equals(col.getAlign()) ? "" : "fa-fw ") + sortIcon
-					+ " sortarrow\"></i>");
+            headers.append("<i class=\"fa ");
+            headers.append(ColAlign.CENTER.equals(col.getAlign()) || ColAlign.RIGHT.equals(col.getAlign()) ? "" : "fa-fw ");
+            headers.append(sortIcon + " sortarrow\"></i>");
 			if (!ColSort.NONE.equals(col.getSort())) {
 				headers.append("</a>");
 			}
@@ -164,9 +176,12 @@ public class TableComponent extends Action {
 			model.put(runVarName, map);
 			cols.forEach(col -> {
 				String content = col.template.render(model);
-                String css = col.getRowCSS()
-                        // seems to be wrong ->  + col.getHeaderCSS()
-                        + (ColAlign.RIGHT.equals(col.getAlign()) ? " tar" : "");
+                String css = col.getRowCSS();
+                if (ColAlign.RIGHT.equals(col.getAlign())) {
+                    css += " tar";
+                } else if (ColAlign.CENTER.equals(col.getAlign())) {
+                    css += " tac";
+                }
                 if (css.isEmpty()) {
                     rows.append("\n\t\t<td>");
                 } else {

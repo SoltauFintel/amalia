@@ -121,6 +121,10 @@ public class Col {
         return new Col(remove, sortkey, ColSort.DESC, headerCSS, headerHTML, rowCSS, rowHTML, align);
     }
 
+    public Col center() {
+        return new Col(remove, sortkey, sort, headerCSS, headerHTML, rowCSS, rowHTML, ColAlign.CENTER);
+    }
+    
     public Col right() {
         return new Col(remove, sortkey, sort, headerCSS, headerHTML, rowCSS, rowHTML, ColAlign.RIGHT);
     }
@@ -177,7 +181,7 @@ public class Col {
     
     public enum ColAlign {
         LEFT, // default
-        // CENTER,
+        CENTER,
         RIGHT;
     }
     
