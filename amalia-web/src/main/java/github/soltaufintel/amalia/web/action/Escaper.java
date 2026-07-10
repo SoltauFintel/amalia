@@ -5,7 +5,7 @@ import java.net.URLEncoder;
 import java.text.Normalizer;
 import java.text.Normalizer.Form;
 
-import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.text.StringEscapeUtils;
 import org.pmw.tinylog.Logger;
 
 public class Escaper {
@@ -15,7 +15,7 @@ public class Escaper {
     
     /** Escape HTML */
     public static String esc(String text) {
-        return text == null ? "" : StringEscapeUtils.escapeHtml(text);
+        return text == null ? "" : StringEscapeUtils.escapeHtml4(text);
     }
 
     public static String toPrettyURL(String string) {
