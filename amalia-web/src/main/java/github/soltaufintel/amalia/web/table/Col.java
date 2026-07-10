@@ -126,6 +126,15 @@ public class Col {
     }
 
     /**
+     * no break
+     * @return row HTML with nowrap white-space
+     */
+    public Col nobr() {
+        return new Col(remove, sortkey, sort, headerCSS, headerHTML, rowCSS,
+                "<span style=\"white-space: nowrap;\">" + rowHTML + "</span>", align);
+    }
+
+    /**
      * Must be called before Col is added to Cols.
      * @param condition true: this column will be removed
      * @return change Col
