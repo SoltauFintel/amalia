@@ -82,6 +82,25 @@ public class AppConfig {
         return a == null ? pDefault : Integer.parseInt(a);
     }
 
+    /**
+     * separator is ","
+     * @param key -
+     * @return separated trimmed values, no empty values, null if key does not exist, empty list if value is empty
+     */
+    public List<String> getList(String key) {
+        var r = get(key, null);
+        if (r == null) {
+            return null;
+        }
+        List<String> ret = new ArrayList<>();
+        for (String i : r.split(",")) {
+            if (!i.isBlank()) {
+                ret.add(i.trim());
+            }
+        }
+        return ret;
+    }
+
     public String getFilename() {
         return configFile;
     }
