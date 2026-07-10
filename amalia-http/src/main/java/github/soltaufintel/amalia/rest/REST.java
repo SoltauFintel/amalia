@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 import org.apache.http.HttpHost;
 import org.apache.http.HttpStatus;
@@ -237,7 +238,94 @@ public class REST {
         return ContentType.create("application/json", Charset.forName("cp1252"));
     }
     
+    /**
+     * @return ContentType.APPLICATION_JSON
+     */
     public static ContentType json_utf8() {
-        return ContentType.create("application/json", Charset.forName("UTF-8"));
+        return ContentType.APPLICATION_JSON;
+    }
+
+    /**
+     * Retrieve JSON UTF-8 data with GET.
+     * @param url -
+     * @return UTF-8 String response
+     */
+    public String utf8_get(String url) {
+        return utf8_get(url, null);
+    }
+    
+    /**
+     * Call GET and retrieve JSON UTF-8 response.
+     * @param url -
+     * @param token Authorization Bearer token, can be null
+     * @return UTF-8 String response
+     */
+    public String utf8_get(String url, String token) {
+        return auth_AcceptJSON(url, token)
+            .get()
+            .response(StandardCharsets.UTF_8);
+    }
+
+    /**
+     * Call DELETE and retrieve JSON UTF-8 response.
+     * @param url -
+     * @param token Authorization Bearer token, can be null
+     * @return UTF-8 String response
+     */
+    public String utf8_delete(String url, String token) {
+        return auth_AcceptJSON(url, token)
+            .delete()
+            .response(StandardCharsets.UTF_8);
+    }
+
+    /**
+     * POST JSON data and retrieve JSON response. Everything in UTF-8.
+     * @param url -
+     * @param token Authorization Bearer token, can be null
+     * @param body UTF-8 String body
+     * @return UTF-8 String response
+     */
+    public String utf8_post(String url, String token, String body) {
+        return auth_AcceptJSON(url, token)
+            .post(body, ContentType.APPLICATION_JSON) // "Content-Type"="application/json", UTF-8
+            .response(StandardCharsets.UTF_8);
+    }
+    
+    /**
+     * PUT JSON data and retrieve JSON response. Everything in UTF-8.
+     * @param url -
+     * @param token Authorization Bearer token, can be null
+     * @param body UTF-8 String body
+     * @return UTF-8 String response
+     */
+    public String utf8_put(String url, String token, String body) {
+        return auth_AcceptJSON(url, token)
+            .put(body, ContentType.APPLICATION_JSON) // "Content-Type"="application/json", UTF-8
+            .response(StandardCharsets.UTF_8);
+    }
+    
+    /**
+     * PATCH JSON data and retrieve JSON response. Everything in UTF-8.
+     * @param url -
+     * @param token Authorization Bearer token, can be null
+     * @param body UTF-8 String body
+     * @return UTF-8 String response
+     */
+    public String utf8_patch(String url, String token, String body) {
+        return auth_AcceptJSON(url, token)
+            .patch(body, ContentType.APPLICATION_JSON) // "Content-Type"="application/json", UTF-8
+            .response(StandardCharsets.UTF_8);
+    }
+    
+    private REST auth_AcceptJSON(String url, String token) {
+        return new REST(url) {
+            @Override
+            protected void initRequest(HttpRequestBase request) {
+                if (token != null) {
+                    request.addHeader("Authorization", "Bearer " + token);
+                }
+                request.addHeader("Accept", "application/json");
+            };
+        };
     }
 }

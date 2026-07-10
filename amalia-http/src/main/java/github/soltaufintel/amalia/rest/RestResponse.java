@@ -2,6 +2,7 @@ package github.soltaufintel.amalia.rest;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
+import java.nio.charset.Charset;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -46,9 +47,36 @@ public class RestResponse {
      */
     public String response() {
         try {
-            String ret = EntityUtils.toString(response.getEntity()); // must fetch result before closing http client
-            close();
-            return ret;
+            var ent = response.getEntity();
+            if (ent != null) {
+                String ret = EntityUtils.toString(ent); // must fetch result before closing http client
+                close();
+                return ret;
+            } else {
+                close();
+                return null;
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * close() is called.
+     * @param charset encoding e.g. "UTF-8", not null
+     * @return response String
+     */
+    public String response(Charset charset) {
+        try {
+            var ent = response.getEntity();
+            if (ent != null) {
+                String ret = EntityUtils.toString(ent, charset); // must fetch result before closing http client
+                close();
+                return ret;
+            } else {
+                close();
+                return null;
+            }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
