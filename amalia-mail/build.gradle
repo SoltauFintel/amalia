@@ -1,0 +1,3 @@
+dependencies {
+    implementation 'org.simplejavamail:simple-java-mail:6.0.5'
+}

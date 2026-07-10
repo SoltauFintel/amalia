@@ -1,2 +1,7 @@
-include 'amalia-web'
+include 'amalia-file'
+include 'amalia-git'
+include 'amalia-http'
+include 'amalia-mail'
 include 'amalia-mongo'
+include 'amalia-string'
+include 'amalia-web'

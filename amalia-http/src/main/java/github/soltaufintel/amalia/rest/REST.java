@@ -6,6 +6,7 @@ import java.net.URI;
 import java.nio.charset.Charset;
 
 import org.apache.http.HttpHost;
+import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
@@ -21,7 +22,6 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
-import org.eclipse.jetty.http.HttpStatus;
 import org.pmw.tinylog.Logger;
 
 import com.google.gson.Gson;
@@ -179,7 +179,7 @@ public class REST {
 
     protected void handleError(CloseableHttpResponse response) {
         final int status = response.getStatusLine().getStatusCode();
-        if (status == HttpStatus.INTERNAL_SERVER_ERROR_500) {
+        if (status == HttpStatus.SC_INTERNAL_SERVER_ERROR) {
             try {
                 String entityStr = EntityUtils.toString(response.getEntity());
                 Logger.debug("REST error response: " + entityStr);
@@ -190,7 +190,7 @@ public class REST {
             } catch (JsonSyntaxException | IOException fallthru) {
             }
         }
-        if (status < HttpStatus.OK_200 || status > 299) { // Status 2xx is okay.
+        if (status < HttpStatus.SC_OK || status > 299) { // Status 2xx is okay.
             throw new RestStatusException(status);
         }
     }

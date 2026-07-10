@@ -1,71 +1,48 @@
 package github.soltaufintel.amalia.mail;
 
 import org.pmw.tinylog.Logger;
-import org.simplejavamail.api.mailer.Mailer;
-import org.simplejavamail.email.EmailBuilder;
-import org.simplejavamail.mailer.MailerBuilder;
 
 import github.soltaufintel.amalia.web.config.AppConfig;
 
-public class MailSender {
+public class MailSender extends AbstractMailSender {
     public static final String SMTP_SERVER = "mail.smtp-server";
-    public static boolean active = true;
-    public static String to;
-    public static String subject;
-    public static String body;
-    
-    public void send(Mail mail, AppConfig config) {
-        String fromMailAddress = config.get("mail.from.mail-address");
-        String forceTo = config.get("mail.to", "");
-        String sendTo = forceTo.isBlank() ? getTo(mail) : forceTo;
 
-        if (active) {
-            var host = config.get(SMTP_SERVER);
-            var port = config.getInt("mail.smtp-server-port", getDefaultPort());
-            try {
-                Mailer mailer = MailerBuilder
-                        .withSMTPServer(host, port)
-                        .withSMTPServerUsername(config.get("mail.username"))
-                        .withSMTPServerPassword(config.get("mail.password"))
-                        .buildMailer();
-                mailer.sendMail(EmailBuilder.startingBlank()
-                        .from(mail.getSendername(), fromMailAddress)
-                        .to(sendTo)
-                        .withSubject(mail.getSubject())
-                        .withPlainText(mail.getBody())
-                        .buildEmail());
-                logSendMail(mail, sendTo, fromMailAddress);
-            } catch (Exception e) {
-                handleException(e, mail, host, port);
+    public void send(Mail mail, AppConfig app) {
+        send(mail, new MailConfig() {
+            @Override
+            public String getUsername() {
+                return app.get("mail.username");
             }
-        } else {
-            to = mail.getToEmailaddress();
-            subject = mail.getSubject();
-            body = mail.getBody();
-        }
+
+            @Override
+            public String getPassword() {
+                return app.get("mail.password");
+            }
+
+            @Override
+            public String getServer() {
+                return app.get(SMTP_SERVER);
+            }
+
+            @Override
+            public int getPort() {
+                return app.getInt("mail.smtp-server-port", getDefaultPort());
+            }
+
+            @Override
+            public String getFromMailAddress() {
+                return app.get("mail.from.mail-address");
+            }
+
+            @Override
+            public String getForceTo() {
+                return app.get("mail.to", "");
+            }
+        });
     }
-    
-    /**
-     * Port can also be 25 or 2525.
-     * @return 587
-     */
-    protected int getDefaultPort() {
-        return 587;
-    }
-    
+
+    @Override
     protected void logSendMail(Mail mail, String sendTo, String froMAString) {
         Logger.info("Mail sent to: " + sendTo + " \"" + mail.getSubject() + "\"");
-    }
-    
-    private String getTo(Mail mail) {
-        if (mail.getToName() == null || mail.getToName().isBlank()) {
-            return mail.getToEmailaddress();
-        }
-        return "\"" + mail.getToName() + "\" <" + mail.getToEmailaddress() + ">";
-    }
-    
-    protected void handleException(Exception e, Mail mail, String host, int port) {
-        throw new RuntimeException("Email can not be sent.", e);
-        // Otherwise "Third party error" would be displayed to the user.
     }
 }

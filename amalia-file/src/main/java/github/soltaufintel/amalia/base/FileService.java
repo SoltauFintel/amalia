@@ -313,4 +313,27 @@ public class FileService {
         }
         return filenames;
     }
+
+    public static boolean isDirEmpty(File dir) {
+        File[] files = dir.listFiles();
+        return files != null && files.length == 0;
+    }
+
+    public static long calculateFolderSize(Path folderPath) throws IOException {
+        final long[] totalSize = { 0 };
+        Files.walkFileTree(folderPath, new SimpleFileVisitor<>() {
+            @Override
+            public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
+                totalSize[0] += attrs.size(); // Add the size of each file
+                return FileVisitResult.CONTINUE;
+            }
+
+            @Override
+            public FileVisitResult visitFileFailed(Path file, IOException exc) {
+                System.err.println("Failed to access file: " + file + " (" + exc.getMessage() + ")");
+                return FileVisitResult.CONTINUE; // Continue even if some files are inaccessible
+            }
+        });
+        return totalSize[0];
+    }
 }
