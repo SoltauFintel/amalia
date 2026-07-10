@@ -250,7 +250,7 @@ public class REST {
      * @param url -
      * @return UTF-8 String response
      */
-    public String utf8_get(String url) {
+    public static String utf8_get(String url) {
         return utf8_get(url, null);
     }
     
@@ -260,7 +260,7 @@ public class REST {
      * @param token Authorization Bearer token, can be null
      * @return UTF-8 String response
      */
-    public String utf8_get(String url, String token) {
+    public static String utf8_get(String url, String token) {
         return auth_AcceptJSON(url, token)
             .get()
             .response(StandardCharsets.UTF_8);
@@ -272,7 +272,7 @@ public class REST {
      * @param token Authorization Bearer token, can be null
      * @return UTF-8 String response
      */
-    public String utf8_delete(String url, String token) {
+    public static String utf8_delete(String url, String token) {
         return auth_AcceptJSON(url, token)
             .delete()
             .response(StandardCharsets.UTF_8);
@@ -285,7 +285,7 @@ public class REST {
      * @param body UTF-8 String body
      * @return UTF-8 String response
      */
-    public String utf8_post(String url, String token, String body) {
+    public static String utf8_post(String url, String token, String body) {
         return auth_AcceptJSON(url, token)
             .post(body, ContentType.APPLICATION_JSON) // "Content-Type"="application/json", UTF-8
             .response(StandardCharsets.UTF_8);
@@ -298,7 +298,7 @@ public class REST {
      * @param body UTF-8 String body
      * @return UTF-8 String response
      */
-    public String utf8_put(String url, String token, String body) {
+    public static String utf8_put(String url, String token, String body) {
         return auth_AcceptJSON(url, token)
             .put(body, ContentType.APPLICATION_JSON) // "Content-Type"="application/json", UTF-8
             .response(StandardCharsets.UTF_8);
@@ -311,13 +311,13 @@ public class REST {
      * @param body UTF-8 String body
      * @return UTF-8 String response
      */
-    public String utf8_patch(String url, String token, String body) {
+    public static String utf8_patch(String url, String token, String body) {
         return auth_AcceptJSON(url, token)
             .patch(body, ContentType.APPLICATION_JSON) // "Content-Type"="application/json", UTF-8
             .response(StandardCharsets.UTF_8);
     }
     
-    private REST auth_AcceptJSON(String url, String token) {
+    private static REST auth_AcceptJSON(String url, String token) {
         return new REST(url) {
             @Override
             protected void initRequest(HttpRequestBase request) {
