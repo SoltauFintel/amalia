@@ -1,6 +1,6 @@
 package github.soltaufintel.amalia.web.action;
 
-import java.util.List;
+import java.util.Collection;
 
 import com.github.template72.data.DataList;
 import com.github.template72.data.DataMap;
@@ -18,7 +18,7 @@ public class ComboboxCreator {
      * @param withEmptyItem -
      * @param model -
      */
-    public static void combobox(String listName, List<String> items, String selected, boolean withEmptyItem, DataMap model) {
+    public static void combobox(String listName, Collection<String> items, String selected, boolean withEmptyItem, DataMap model) {
         DataList list = model.list(listName);
         if (withEmptyItem) {
             DataMap map1 = list.add();
@@ -40,7 +40,7 @@ public class ComboboxCreator {
      * @param withEmptyItem -
      * @param model -
      */
-    public static void combobox_idAndLabel(String listName, List<IdAndLabel> items, String selected, boolean withEmptyItem, DataMap model) {
+    public static void combobox_idAndLabel(String listName, Collection<IdAndLabel> items, String selected, boolean withEmptyItem, DataMap model) {
         DataList list = model.list(listName);
         if (withEmptyItem) {
             DataMap map1 = list.add();
@@ -64,7 +64,7 @@ public class ComboboxCreator {
      * @param withEmptyItem -
      * @param model -
      */
-    public static void combobox(String listName, List<String> items, List<String> selectedItems, boolean withEmptyItem, DataMap model) {
+    public static void combobox(String listName, Collection<String> items, Collection<String> selectedItems, boolean withEmptyItem, DataMap model) {
         DataList list = model.list(listName);
         if (withEmptyItem) {
             DataMap map1 = list.add();
@@ -86,7 +86,7 @@ public class ComboboxCreator {
      * @param withEmptyItem -
      * @param model -
      */
-    public static void combobox_idAndLabel(String listName, List<IdAndLabel> items, List<String> selectedItems, boolean withEmptyItem, DataMap model) {
+    public static void combobox_idAndLabel(String listName, Collection<IdAndLabel> items, Collection<String> selectedItems, boolean withEmptyItem, DataMap model) {
         DataList list = model.list(listName);
         if (withEmptyItem) {
             DataMap map1 = list.add();

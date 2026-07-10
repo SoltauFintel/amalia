@@ -1,7 +1,6 @@
 package github.soltaufintel.amalia.web.action;
 
 import java.util.Collection;
-import java.util.List;
 
 import com.github.template72.compiler.CompiledTemplates;
 import com.github.template72.data.DataList;
@@ -86,7 +85,7 @@ public abstract class Page extends Action {
      * @param selected can be null or empty
      * @param withEmptyItem -
      */
-    public void combobox(String listName, List<String> items, String selected, boolean withEmptyItem) {
+    public void combobox(String listName, Collection<String> items, String selected, boolean withEmptyItem) {
         ComboboxCreator.combobox(listName, items, selected, withEmptyItem, model);
     }
 
@@ -97,7 +96,7 @@ public abstract class Page extends Action {
      * @param selected ID can be null or empty
      * @param withEmptyItem -
      */
-    public void combobox_idAndLabel(String listName, List<IdAndLabel> items, String selected, boolean withEmptyItem) {
+    public void combobox_idAndLabel(String listName, Collection<IdAndLabel> items, String selected, boolean withEmptyItem) {
         ComboboxCreator.combobox_idAndLabel(listName, items, selected, withEmptyItem, model);
     }
 
@@ -108,7 +107,7 @@ public abstract class Page extends Action {
      * @param selectedItems list can be null
      * @param withEmptyItem -
      */
-    public void combobox(String listName, List<String> items, List<String> selectedItems, boolean withEmptyItem) {
+    public void combobox(String listName, Collection<String> items, Collection<String> selectedItems, boolean withEmptyItem) {
         ComboboxCreator.combobox(listName, items, selectedItems, withEmptyItem, model);
     }
 
@@ -119,7 +118,7 @@ public abstract class Page extends Action {
      * @param selectedItems ID list, list can be null
      * @param withEmptyItem -
      */
-    public void combobox_idAndLabel(String listName, List<IdAndLabel> items, List<String> selectedItems, boolean withEmptyItem) {
+    public void combobox_idAndLabel(String listName, Collection<IdAndLabel> items, Collection<String> selectedItems, boolean withEmptyItem) {
         ComboboxCreator.combobox_idAndLabel(listName, items, selectedItems, withEmptyItem, model);
     }
 }
