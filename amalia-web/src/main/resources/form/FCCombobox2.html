@@ -1,0 +1,8 @@
+<label for="{{id}}" class="col-lg-{{indent}} control-label">{{label}}</label>
+<div class="col-lg-{{width}}">
+    <select class="form-control" id="{{id}}" name="{{id}}}">
+        {{each a in list}}
+            <option value="{{a.id}}"{{if a.selected}} selected{{/if}}>{{a.text}}</option>
+        {{/each}}
+    </select>
+</div>
