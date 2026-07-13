@@ -11,13 +11,14 @@ public abstract class FCBaseItem implements FCItem {
     private final List<FCItem> items = new ArrayList<>();
     private final String id;
     private String label;
+    private boolean soloGroup = false;
     
     public FCBaseItem(String id, String label) {
         this.id = id;
         this.label = label;
     }
     
-    @Override
+//    @Override
     public List<FCItem> getItems() {
         return items;
     }
@@ -30,7 +31,11 @@ public abstract class FCBaseItem implements FCItem {
         model.put("label", esc(label));
         model.put("attrs", "");
         fill(model);
-        return templates.render(getTemplateFile(), model);
+        String html = templates.render(getTemplateFile(), model);
+        if (soloGroup) {
+            html = FCGroup.surround(html);
+        }
+        return html;
     }
     
     protected String getTemplateFile() {
@@ -53,5 +58,10 @@ public abstract class FCBaseItem implements FCItem {
     
     protected final String esc(String text) {
         return Escaper.esc(text);
+    }
+    
+    @Override
+    public void setSoloGroup(boolean v) {
+        soloGroup = v;
     }
 }
