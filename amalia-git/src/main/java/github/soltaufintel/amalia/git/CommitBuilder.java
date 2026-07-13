@@ -20,12 +20,9 @@ public class CommitBuilder {
         Commit ret = new Commit();
         ret.setId(commit.getId().getName());
         ret.setShortMessage(commit.getShortMessage());
-        ret.setFullMessage(commit.getFullMessage());
         ret.setAuthoredDate(getAuthoredDate(commit));
         ret.setAutor(commit.getAuthorIdent().getName());
         ret.setAutorInitialien(getAutorInitialien(commit));
-        Instant instant = Instant.ofEpochSecond(commit.getCommitTime());
-        ret.setRealCommitDate(ZonedDateTime.ofInstant(instant, zoneId));
         ret.setCommitDate(getCommitDate(commit));
         ret.setCommitterInitialien(getCommitterInitialien(commit));
         if (changes != null) {
