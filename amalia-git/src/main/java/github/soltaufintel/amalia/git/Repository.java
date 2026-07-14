@@ -35,7 +35,7 @@ import github.soltaufintel.amalia.base.FileService;
  */
 public class Repository {
     private static final Object LOCK = new Object();
-    private final RepositoryDefinition repo;
+    protected final RepositoryDefinition repo;
     private Git git;
     private String currentBranch = "master";
     private boolean onlyRemoteBranches = true;
@@ -44,7 +44,6 @@ public class Repository {
         this.repo = repo;
     }
 
-    // 2. Die neue Methode, um den Branch vorab zu setzen
     public void switchToBranch(String branchName) {
         if (branchName != null && !branchName.isBlank()) {
             this.currentBranch = branchName;
@@ -55,6 +54,13 @@ public class Repository {
         fetchOrPull(false, bare);
     }
 
+    /**
+     * pull, not bare
+     */
+    public void pull() {
+        pull(false);
+    }
+    
     public void pull(boolean bare) {
         fetchOrPull(true, bare);
     }
@@ -83,12 +89,12 @@ public class Repository {
     }
 
     // Hilfsmethode, um den lokalen Branch zu wechseln und ggf. Remote-Tracking einzurichten
-    private void checkoutAndTrackBranch(Git git) throws GitAPIException, IOException {
+    protected void checkoutAndTrackBranch(Git git) throws GitAPIException, IOException {
         String localBranch = git.getRepository().getBranch();
         if (!currentBranch.equals(localBranch)) {
             Logger.info("Switching branch from " + localBranch + " to " + currentBranch);
             
-            // Prüfen, ob der lokale Branch bereits existiert
+            // Pruefen, ob der lokale Branch bereits existiert
             boolean localExists = git.branchList().call().stream()
                     .anyMatch(ref -> org.eclipse.jgit.lib.Repository.shortenRefName(ref.getName()).equals(currentBranch));
 
@@ -133,7 +139,7 @@ public class Repository {
         }
     }
 
-    private Git getGit() {
+    protected Git getGit() {
         if (git == null) {
             try {
                 git = Git.open(repo.getLocalFolder());
@@ -392,7 +398,7 @@ public class Repository {
     }
     
     public String getBranchStartDate(String branch) {
-        // Hier dynamisch gegen den gesetzten Branch prüfen statt hartcodiert gegen "master"
+        // Hier dynamisch gegen den gesetzten Branch pruefen statt hartcodiert gegen "master"
         if (!currentBranch.equals(branch)) {
             synchronized (LOCK) {
                 String x = "root_" + branch;
@@ -559,6 +565,16 @@ public class Repository {
             throw new RuntimeException("Error committing changes!\n" + e.getMessage(), e);
         }
     }
+    
+    public void push(String user, String password) {
+        try {
+            getGit().push()
+                .setCredentialsProvider(new UsernamePasswordCredentialsProvider(user, password))
+                .call();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     private UsernamePasswordCredentialsProvider cred() {
         Credentials cred = getCredentials();
@@ -643,5 +659,32 @@ public class Repository {
 
     public void setOnlyRemoteBranches(boolean onlyRemoteBranches) {
         this.onlyRemoteBranches = onlyRemoteBranches;
+    }
+    
+    /**
+     * @param localBranch e.g. "refs/heads/master"
+     * @param remoteBranch e.g. "refs/remotes/origin/master"
+     * @return 1: local branch has unpushed commits / 0: local branch must not be pushed /
+     * 2: remote branch does not exist yet; all commits have to be pushed.
+     */
+    public int hasUnpushedCommits(String localBranch, String remoteBranch) {
+        try {
+            org.eclipse.jgit.lib.Repository repository = getGit().getRepository();
+            // 1. IDs der beiden Branches aufloesen
+            ObjectId local = repository.resolve(localBranch);
+            if (local == null) {
+                throw new RuntimeException("Local branch does not exist");
+            }
+            ObjectId remote = repository.resolve(remoteBranch);
+            if (remote == null) {
+                return 2;
+            }
+            // 2. Log-Befehl fuer die Differenz (remote..local) konfigurieren
+            Iterable<RevCommit> unpushedCommits = git.log().addRange(remote, local).call();
+            // 3. Auswerten, ob Commits gefunden wurden
+            return unpushedCommits.iterator().hasNext() ? 1 : 0;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }
