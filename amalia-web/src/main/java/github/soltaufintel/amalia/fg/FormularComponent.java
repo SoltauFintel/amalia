@@ -29,6 +29,8 @@ public class FormularComponent extends Action {
     
     // TODO checkbox
     // TODO textarea
+    // TODO Sollte man noch weiterdenken? Die Eingabedaten gehen direkt ins POJO?
+    // TODO ListEditor !?
     
     private <ITEM extends FCItem> ITEM add(ITEM item) {
         if (group == null) {
