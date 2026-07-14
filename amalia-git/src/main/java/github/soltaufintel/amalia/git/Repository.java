@@ -13,11 +13,13 @@ import java.util.stream.Collectors;
 import org.eclipse.jgit.api.CloneCommand;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.ListBranchCommand.ListMode;
+import org.eclipse.jgit.api.PullResult;
 import org.eclipse.jgit.api.ResetCommand.ResetType;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.diff.DiffEntry.ChangeType;
 import org.eclipse.jgit.diff.DiffFormatter;
+import org.eclipse.jgit.lib.BranchConfig.BranchRebaseMode;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.revwalk.RevCommit;
@@ -39,6 +41,7 @@ public class Repository {
     private Git git;
     private String currentBranch = "master";
     private boolean onlyRemoteBranches = true;
+    private String rebaseResult;
 
     public Repository(RepositoryDefinition repo) {
         this.repo = repo;
@@ -51,7 +54,7 @@ public class Repository {
     }
 
     public void fetch(boolean bare) {
-        fetchOrPull(false, bare);
+        fetchOrPull(false, false, bare);
     }
 
     /**
@@ -61,11 +64,20 @@ public class Repository {
         pull(false);
     }
     
+    /**
+     * pull, not rebase
+     * @param bare -
+     */
     public void pull(boolean bare) {
-        fetchOrPull(true, bare);
+        pull(false, bare);
     }
-    
-    private void fetchOrPull(boolean pull, boolean bare) {
+
+    public void pull(boolean rebase, boolean bare) {
+        fetchOrPull(true, rebase, bare);
+    }
+
+    private void fetchOrPull(boolean pull, boolean rebase, boolean bare) {
+        rebaseResult = null;
         if (repo.getLocalFolder().isDirectory()) {
             synchronized (LOCK) {
                 try {
@@ -74,9 +86,14 @@ public class Repository {
                     // Sicherstellen, dass das lokale Repo auf dem richtigen Branch steht und diesen trackt
                     checkoutAndTrackBranch(git);
 
-                    var cmd = pull ? git.pull() : git.fetch();
+                    var cmd = pull ? (rebase ? git.pull().setRebase(BranchRebaseMode.REBASE) : git.pull())
+                            : git.fetch();
                     cmd.setCredentialsProvider(cred());
-                    cmd.call();
+                    var r = cmd.call();
+                    
+                    if (pull && rebase && r instanceof PullResult pr) {
+                        rebaseResult = pr.getRebaseResult().getStatus().name();
+                    }
                 } catch (Exception e) {
                     Logger.error((pull ? "pull" : "fetch") + " error: " + repo.getUrl() + " => " + repo.getLocalFolder().getAbsolutePath());
                     Logger.error(e);
@@ -86,6 +103,10 @@ public class Repository {
         } else {
             cloneRepo(bare);
         }
+    }
+
+    public String getRebaseResult() {
+        return rebaseResult;
     }
 
     // Hilfsmethode, um den lokalen Branch zu wechseln und ggf. Remote-Tracking einzurichten
