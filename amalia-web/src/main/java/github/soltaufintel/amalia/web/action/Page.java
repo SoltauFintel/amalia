@@ -5,6 +5,7 @@ import java.util.Collection;
 import com.github.template72.compiler.CompiledTemplates;
 import com.github.template72.data.DataList;
 import com.github.template72.data.DataMap;
+import com.github.template72.data.IDataMap;
 import com.github.template72.exceptions.MissingContentException;
 
 public abstract class Page extends Action {
@@ -64,6 +65,10 @@ public abstract class Page extends Action {
         component.init(ctx);
         String html = component.run();
         put(name, html); // no esc
+    }
+    
+    public void put(String name, IDataMap datamap) {
+        model.put(name, datamap);
     }
     
     public boolean hasVar(String name) {
