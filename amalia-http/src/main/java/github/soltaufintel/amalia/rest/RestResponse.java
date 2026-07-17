@@ -27,6 +27,14 @@ public class RestResponse {
     public HttpResponse getHttpResponse() {
         return response;
     }
+    
+    /**
+     * This method does not call close().
+     * @return HTTP status code
+     */
+    public int status() {
+        return response.getStatusLine().getStatusCode();
+    }
 
     /**
      * Must only be called if these methods have not been called: response(), fromJson()
