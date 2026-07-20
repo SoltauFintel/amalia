@@ -2,5 +2,6 @@
 <!-- input: {{id}} -->
 <label for="{{id}}" class="col-lg-{{indent}} control-label">{{label}}</label>
 <div class="col-lg-{{width}}">
-    <input class="form-control" type="text" id="{{id}}" name="{{id}}"{{attrs}}>
+    <input class="form-control" type="text" id="{{id}}" name="{{id}}"{{attrs}}>{{if hint}}
+    <small>{{hint}}</small>{{/if}}
 </div>

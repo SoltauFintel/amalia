@@ -12,6 +12,7 @@ public abstract class FCBaseItem implements FCItem {
     private final String id;
     private String label;
     private boolean soloGroup = false;
+    private String hint = null;
     
     public FCBaseItem(String id, String label) {
         this.id = id;
@@ -30,6 +31,7 @@ public abstract class FCBaseItem implements FCItem {
         model.put("id", esc(id));
         model.put("label", esc(label));
         model.put("attrs", "");
+        model.put("hint", esc(hint));
         fill(model);
         String html = templates.render(getTemplateFile(), model);
         if (soloGroup) {
@@ -63,5 +65,13 @@ public abstract class FCBaseItem implements FCItem {
     @Override
     public void setSoloGroup(boolean v) {
         soloGroup = v;
+    }
+
+    public String getHint() {
+        return hint;
+    }
+
+    public void setHint(String hint) {
+        this.hint = hint;
     }
 }
