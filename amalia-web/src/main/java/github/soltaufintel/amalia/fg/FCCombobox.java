@@ -53,6 +53,9 @@ public class FCCombobox extends FCBaseItem {
     @Override
     protected void fill(DataMap model) {
         model.putInt("width", width);
+        if (cc == null) {
+            throw new RuntimeException("Please call entries() or idAndLabelEntries() on combobox " + getId());
+        }
         cc.render(model);
     }
     

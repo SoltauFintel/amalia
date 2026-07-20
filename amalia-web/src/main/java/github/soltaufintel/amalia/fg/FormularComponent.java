@@ -23,12 +23,24 @@ public class FormularComponent extends Action {
         return add(new FCInput(id, label, size));
     }
 
+    public FCTextarea textarea(String id, String label, int size, int rows) {
+        return add(new FCTextarea(id, label, size, rows));
+    }
+
     public FCCombobox combo(String id, String label, int size) {
         return add(new FCCombobox(id, label, size));
     }
+
+    public FCCheckbox checkbox(String id, String label) {
+        return add(new FCCheckbox(id, label));
+    }
+
+    public FCSaveCancel saveCancel(String cancellink) {
+        return add(new FCSaveCancel(cancellink));
+    }
+
     
-    // TODO checkbox
-    // TODO textarea
+    
     // TODO Sollte man noch weiterdenken? Die Eingabedaten gehen direkt ins POJO?
     // TODO ListEditor !?
     
@@ -45,8 +57,14 @@ public class FormularComponent extends Action {
     @Override
     protected void execute() {
         String itemsHTML = "";
+        boolean first = true;
         for (FCItem item : items) {
-            itemsHTML += item.render(templates);
+            var h = item.render(templates);
+            if (first) {
+                first = false;
+                h = h.replace("<input ", "<input autofocus ");
+            }
+            itemsHTML += h;
         }
         var model = new DataMap();
         model.put("items", itemsHTML);

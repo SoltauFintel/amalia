@@ -2,7 +2,7 @@
 <!-- combobox: {{id}} -->
 <label for="{{id}}" class="col-lg-{{indent}} control-label">{{label}}</label>
 <div class="col-lg-{{width}}">
-    <select class="form-control" id="{{id}}" name="{{id}}}">
+    <select class="form-control" id="{{id}}" name="{{id}}">
         {{each a in list}}
             <option{{if a.selected}} selected{{/if}}>{{a.text}}</option>
         {{/each}}
