@@ -22,7 +22,7 @@ public class WebAppBuilder {
     private final String appVersion;
     private final List<Initializer> initializers = new ArrayList<>();
     private LoggingInitializer logging = new LoggingInitializer(Level.INFO);
-    private AppConfig config = new AppConfig();
+    private AppConfig config;
     private final List<Routes> routes = new ArrayList<>();
     private PageInitializer pageInit = new PageInitializer();
     private Banner banner = new Banner();
@@ -34,7 +34,9 @@ public class WebAppBuilder {
     }
 
     public WebApp build() {
-        return new WebApp(appVersion, logging, config, initializers, routes, pageInit, banner);
+        return new WebApp(appVersion, logging,
+                config == null ? new AppConfig() : config,
+                initializers, routes, pageInit, banner);
     }
     
     public WebAppBuilder withDefaultLogLevel(Level level) {
