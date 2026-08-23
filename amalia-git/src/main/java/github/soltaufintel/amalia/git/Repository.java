@@ -4,7 +4,6 @@ package github.soltaufintel.amalia.git;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -138,7 +137,7 @@ public class Repository {
                 if (repo.getLocalFolder().isDirectory()) {
                     FileUtils.delete(repo.getLocalFolder(), FileUtils.RECURSIVE);
                 }
-                Files.createDirectory(repo.getLocalFolder().toPath());
+                repo.getLocalFolder().mkdirs();
     
                 Logger.info("cloning Git repository (" + currentBranch + ") " + repo.getUrl() + " => " + repo.getLocalFolder().getAbsolutePath());
                 CloneCommand clone = Git.cloneRepository();

@@ -10,8 +10,10 @@ import java.nio.file.Path;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.nio.file.attribute.PosixFilePermission;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Predicate;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -157,7 +159,18 @@ public class FileService {
             Files.copy(fromFile.toPath(), new File(toDir, fromFile.getName()).toPath(), //
                     StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException e) {
-            Logger.error(e, "Error copying file from " + fromFile.getAbsolutePath() + " to dir: " + toDir.getAbsolutePath());
+            Logger.error(e, "Error copying file from " + fromFile.getAbsolutePath() + " to dir " + toDir.getAbsolutePath());
+            throw new RuntimeException("Error copying file. See log.");
+        }
+    }
+    
+    public static void copyFileToFile(File fromFile, File toFile) {
+        try {
+            toFile.getParentFile().mkdirs();
+            Files.copy(fromFile.toPath(), toFile.toPath(), //
+                    StandardCopyOption.REPLACE_EXISTING);
+        } catch (IOException e) {
+            Logger.error(e, "Error copying file from " + fromFile.getAbsolutePath() + " to file " + toFile.getAbsolutePath());
             throw new RuntimeException("Error copying file. See log.");
         }
     }
@@ -335,5 +348,26 @@ public class FileService {
             }
         });
         return totalSize[0];
+    }
+
+    public static void makeExecutable(Path binaryPath) throws IOException { // 755
+        if (isWindows()) {
+            return;
+        }
+        Set<PosixFilePermission> permissions = Set.of(
+                PosixFilePermission.OWNER_READ,
+                PosixFilePermission.OWNER_WRITE,
+                PosixFilePermission.OWNER_EXECUTE,
+                PosixFilePermission.GROUP_READ,
+                PosixFilePermission.GROUP_EXECUTE,
+                PosixFilePermission.OTHERS_READ,
+                PosixFilePermission.OTHERS_EXECUTE
+        );
+        Files.setPosixFilePermissions(binaryPath, permissions);
+    }
+
+    public static boolean isWindows() {
+        String os = System.getProperty("os.name");
+        return os != null && os.toLowerCase().contains("win");
     }
 }

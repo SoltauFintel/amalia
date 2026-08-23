@@ -3,6 +3,7 @@ package github.soltaufintel.amalia.web.action;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -14,9 +15,13 @@ import com.github.template72.data.DataMap;
 public class NLSService {
     
     public static Map<String, String> loadRB(String language, String filename, Class<?> cls) {
+        return loadRB(language, filename, cls, Charset.defaultCharset());
+    }
+    
+    public static Map<String, String> loadRB(String language, String filename, Class<?> cls, Charset charset) {
         // Properties Klasse ist doof
         Map<String, String> map = new HashMap<>();
-        try (BufferedReader r = new BufferedReader(new InputStreamReader(cls.getResourceAsStream(filename)))) {
+        try (BufferedReader r = new BufferedReader(new InputStreamReader(cls.getResourceAsStream(filename), charset))) {
             String line;
             while ((line = r.readLine()) != null) {
                 if (line.trim().startsWith("#")) {
